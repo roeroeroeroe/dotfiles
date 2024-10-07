@@ -1,0 +1,2 @@
+set format_title=%a :: %t
+set format_current= %a :: %t

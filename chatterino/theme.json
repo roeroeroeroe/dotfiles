@@ -1,0 +1,114 @@
+{
+	"$schema": "https://raw.githubusercontent.com/Chatterino/chatterino2/v2.5.0/docs/ChatterinoTheme.schema.json",
+	"colors": {
+		"accent": "#d65d0e",
+		"messages": {
+			"backgrounds": {
+				"alternate": "#3c3836",
+				"regular": "#282828"
+			},
+			"disabled": "#00282828",
+			"highlightAnimationEnd": "#8ec07c",
+			"highlightAnimationStart": "#fabd2f",
+			"selection": "#504945",
+			"textColors": {
+				"caret": "#ebdbb2",
+				"chatPlaceholder": "#a89984",
+				"link": "#d65d0e",
+				"regular": "#ebdbb2",
+				"system": "#a89984"
+			}
+		},
+		"scrollbars": {
+			"background": "#282828",
+			"thumb": "#7c6f64",
+			"thumbSelected": "#bdae93"
+		},
+		"splits": {
+			"background": "#282828",
+			"dropPreview": "#d65d0e",
+			"dropPreviewBorder": "#d65d0e",
+			"dropTargetRect": "#d65d0e",
+			"dropTargetRectBorder": "#d65d0e",
+			"header": {
+				"background": "#282828",
+				"border": "#3c3836",
+				"focusedBackground": "#282828",
+				"focusedBorder": "#3c3836",
+				"focusedText": "#ebdbb2",
+				"text": "#ebdbb2"
+			},
+			"input": {
+				"background": "#282828",
+				"text": "#d65d0e"
+			},
+			"messageSeperator": "#504945",
+			"resizeHandle": "#d65d0e",
+			"resizeHandleBackground": "#d65d0e"
+		},
+		"tabs": {
+			"dividerLine": "#d65d0e",
+			"highlighted": {
+				"backgrounds": {
+					"hover": "#282828",
+					"regular": "#282828",
+					"unfocused": "#282828"
+				},
+				"line": {
+					"hover": "#d65d0e",
+					"regular": "#d65d0e",
+					"unfocused": "#d65d0e"
+				},
+				"text": "#d65d0e"
+			},
+			"liveIndicator": "#d65d0e",
+			"newMessage": {
+				"backgrounds": {
+					"hover": "#282828",
+					"regular": "#282828",
+					"unfocused": "#282828"
+				},
+				"line": {
+					"hover": "#ebdbb2",
+					"regular": "#ebdbb2",
+					"unfocused": "#ebdbb2"
+				},
+				"text": "#ebdbb2"
+			},
+			"regular": {
+				"backgrounds": {
+					"hover": "#282828",
+					"regular": "#282828",
+					"unfocused": "#282828"
+				},
+				"line": {
+					"hover": "#282828",
+					"regular": "#282828",
+					"unfocused": "#282828"
+				},
+				"text": "#ebdbb2"
+			},
+			"rerunIndicator": "#fabd2f",
+			"selected": {
+				"backgrounds": {
+					"hover": "#504945",
+					"regular": "#504945",
+					"unfocused": "#504945"
+				},
+				"line": {
+					"hover": "#d65d0e",
+					"regular": "#d65d0e",
+					"unfocused": "#d65d0e"
+				},
+				"text": "#ebdbb2"
+			}
+		},
+		"window": {
+			"background": "#282828",
+			"text": "#ebdbb2"
+		}
+	},
+	"metadata": {
+		"iconTheme": "light"
+	}
+}

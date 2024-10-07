@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+	echo "Usage: gpt <prompt>"
+	exit 1
+fi
+
+PROMPT="$*"
+
+PAYLOAD=$(jq -n --arg prompt "$PROMPT" \
+	'{
+		prompt: $prompt,
+		model: "gpt-4",
+		markdown: false
+	}'
+)
+
+RESPONSE=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
+	-H "Content-Type: application/json" \
+	-d "$PAYLOAD"
+)
+
+PARSED_RESPONSE=$(echo "$RESPONSE" | sed 's/^_*//')
+GPT_RESPONSE=$(echo "$PARSED_RESPONSE" | jq -r '.gpt')
+
+if [ "$GPT_RESPONSE" != "null" ]; then
+	echo "$GPT_RESPONSE"
+else
+	echo "null"
+fi

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+OUT=""
+API="api.ipify.org"
+TIMED_OUT_STR="Request timed out"
+DOWN_STR="Proxy connection failed"
+NOTIFICATION_TITLE_STR="API used: $API"
+
+PORTS=(
+	9050
+	2080
+)
+
+PROXY_NAMES=(
+	"tor"
+	"vless"
+)
+
+for i in ${!PORTS[@]}; do
+	PORT=${PORTS[$i]}
+	PROXY_NAME=${PROXY_NAMES[$i]}
+
+	RESPONSE=$(curl -s -m 3 -x socks4://127.0.0.1:$PORT $API 2>&1)
+
+	if [[ $? -eq 0 ]]; then
+		OUT="$OUT$PROXY_NAME: Up ($RESPONSE)\n"
+	else
+		if [[ "$RESPONSE" == *"Connection timed out"* ]]; then
+			OUT="$OUT$PROXY_NAME: Down ($TIMED_OUT_STR)\n"
+		else
+			OUT="$OUT$PROXY_NAME: Down ($DOWN_STR)\n"
+		fi
+	fi
+done
+
+RESPONSE=$(curl -s -m 3 $API 2>&1)
+
+if [[ $? -eq 0 ]]; then
+	OUT="$OUT""direct: Up ($RESPONSE)"
+else
+	if [[ "$RESPONSE" == *"Connection timed out"* ]]; then
+		OUT="$OUT""direct: Down ($TIMED_OUT_STR)"
+	else
+		OUT="$OUT""non-proxied: Down"
+	fi
+fi
+
+dunstify -r 9965 -t 10000 "$NOTIFICATION_TITLE_STR" "$OUT"

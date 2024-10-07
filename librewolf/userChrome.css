@@ -1,0 +1,16 @@
+#personal-bookmarks .bookmark-item .toolbarbutton-icon { 
+	display:none !important;
+}
+
+#PlacesToolbarItems {
+	display: flex !important;
+	justify-content: center !important;
+}
+
+#PersonalToolbar toolbarbutton {
+	padding: 0 10px !important;
+}
+
+.tab-icon-image {
+	display: none;
+}

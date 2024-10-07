@@ -1,0 +1,98 @@
+:root {
+	--font: "JetBrainsMonoNL Nerd Font Mono";
+	--interactive-normal: #ebdbb2;
+	--text-normal: #ebdbb2;
+	--background-primary: #1d2021;
+	--background-secondary: #181b1b;
+	--background-tertiary: #1d2021;
+	--channels-default: #83a598;
+	--deprecated-panel-background: #161818;
+	--channeltextarea-background: #32302f;
+}
+
+::placeholder,
+body,
+button,
+input,
+select,
+textarea {
+	font-family: var(--font), sans-serif;
+}
+
+.da-popouts .da-container,
+.da-friendsTableHeader,
+.da-friendsTable,
+.da-autocomplete,
+.da-themedPopout,
+.da-header,
+.da-footer,
+.da-userPopout > *,
+.da-systemPad,
+.da-autocompleteHeaderBackground {
+	background-color: var(--background-secondary) !important;
+	border-color: transparent !important;
+}
+
+.theme-dark .da-messageGroupWrapper {
+	background-color: var(--background-tertiary) !important;
+	border-color: transparent;
+}
+
+.theme-dark .da-option:after {
+	background-image: none !important;
+}
+
+.theme-dark #bd-settings-sidebar .ui-tab-bar-item {
+	color: var(--interactive-normal);
+}
+
+.theme-dark #bd-settings-sidebar .ui-tab-bar-header,
+div[style*="color: rgb(114, 137, 218);"],
+.da-addButtonIcon {
+	color: var(--channels-default) !important;
+}
+
+.theme-dark #bd-settings-sidebar .ui-tab-bar-item.selected,
+.theme-dark .da-autocompleteRow .da-selectorSelected {
+	background-color: var(--background-modifier-selected);
+	color: var(--interactive-active);
+}
+
+.da-emojiButtonNormal .da-contents .da-sprite {
+	filter: sepia(1) !important;
+}
+
+.da-messagesWrapper .da-scroller::-webkit-scrollbar,
+.da-messagesWrapper .da-scroller::-webkit-scrollbar-track-piece {
+	background-color: var(--background-tertiary) !important;
+	border-color: rgba(0, 0, 0, 0) !important;
+}
+
+.da-scrollerThemed .da-scroller::-webkit-scrollbar-thumb,
+.da-scrollerWrap .da-scroller::-webkit-scrollbar-thumb {
+	background-color: var(--background-secondary) !important;
+	border-color: var(--background-tertiary) !important;
+}
+
+.hljs-code,
+.hljs-meta,
+.hljs-regexp,
+.hljs-selector-id,
+.hljs-template-variable {
+	color: #fe8019;
+}
+
+.hljs-comment {
+	color: #928374;
+}
+
+.hljs-comment,
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-section,
+.hljs-strong,
+.hljs-tag {
+	font-weight: bold;
+}
