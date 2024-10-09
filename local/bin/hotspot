@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# deps: networkmanager, dnsmasq, nftables
+CONNECTION_NAME="Hotspot"
+WLAN_IF="wlan0"
+SSID="$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 12)"
+UUIDS=$(nmcli connection show | grep "$CONNECTION_NAME" | awk '{print $2}')
+
+is_wlan_busy() {
+	nmcli device show "$WLAN_IF" | grep -q "(connected)"
+}
+
+if [ "$1" = "-d" ]; then
+	if [ -z "$UUIDS" ]; then
+		echo "No connection with name '$CONNECTION_NAME' found"
+		exit 1
+	fi
+
+	for UUID in $UUIDS; do
+		nmcli connection delete uuid "$UUID"
+	done
+	exit
+fi
+
+if is_wlan_busy; then
+	echo "Interface $WLAN_IF is currently busy"
+	exit 1
+fi
+
+if [ ! -z "$UUIDS" ]; then
+	echo "Connection '$CONNECTION_NAME' already exists, use option -d to delete it"
+	exit 1
+fi
+
+PASSWORD=$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 8)
+
+nmcli con add \
+	type wifi \
+	ifname "$WLAN_IF" \
+	con-name "$CONNECTION_NAME" \
+	ssid "$SSID" \
+	autoconnect yes \
+	802-11-wireless.mode ap \
+	802-11-wireless.band bg \
+	ipv4.method shared \
+	wifi-sec.key-mgmt wpa-psk \
+	wifi-sec.psk "$PASSWORD" \
+	802-11-wireless-security.pmf disable
+
+sleep 3
+nmcli con up "$CONNECTION_NAME"
+nmcli d w s
+

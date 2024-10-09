@@ -7,7 +7,7 @@
 				"alternate": "#3c3836",
 				"regular": "#282828"
 			},
-			"disabled": "#00282828",
+			"disabled": "#4D000000",
 			"highlightAnimationEnd": "#8ec07c",
 			"highlightAnimationStart": "#fabd2f",
 			"selection": "#504945",
