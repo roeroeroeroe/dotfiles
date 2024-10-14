@@ -17,11 +17,11 @@ static const char col_gray1[]       = "#282828";
 static const char col_gray2[]       = "#3c3836";
 static const char col_gray3[]       = "#ebdbb2";
 static const char col_gray4[]       = "#fbf1c7";
-static const char col_cyan[]        = "#d65d0e";
+static const char col_accent[]        = "#d65d0e";
 static const char *colors[][3]      = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	/*               fg         bg           border   */
+	[SchemeNorm] = { col_gray3, col_gray1,   col_gray2 },
+	[SchemeSel]  = { col_gray4, col_accent,  col_accent },
 };
 
 static const char *tags[] = { ">.<", ":x", "^=^", "^w^", "^o^", "^_^", "^.^", ":w", "c:", ":3" };
@@ -59,9 +59,6 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 static char dmenumon[2] = "0";
-static const char *powermenu[] = { "/home/roe/.config/dmenu/bin/powermenu.sh", NULL };
-static const char *screenshot[] = { "/home/roe/.config/dmenu/bin/screenshot.sh", NULL };
-static const char *soundoptions[] = { "/home/roe/.config/dmenu/bin/volume.sh", NULL };
 static const char *termcmd[]  = { "st", NULL };
 static const char *dmenucmd[] = {
 	"dmenu_run",
@@ -69,7 +66,7 @@ static const char *dmenucmd[] = {
 	"-fn", dmenufont,
 	"-nb", col_gray1,
 	"-nf", col_gray3,
-	"-sb", col_cyan,
+	"-sb", col_accent,
 	"-sf", col_gray4,
 	NULL
 };
@@ -79,9 +76,9 @@ static const Key keys[] = {
 	{ Mod1Mask,                     XK_p,      spawn,          SHCMD("playerctl play-pause; sleep 0.1; dunstify -r 9990 -t 2000 \"$(playerctl status)\"") },
 	{ Mod1Mask|ControlMask,         XK_p,      spawn,          SHCMD("connstatus") },
 	{ Mod1Mask,                     XK_m,      spawn,          SHCMD("togglemic") },
-	{ Mod1Mask|ControlMask,         XK_m,      spawn,          {.v = powermenu } },
-	{ Mod1Mask|ControlMask,         XK_s,      spawn,          {.v = soundoptions } },
-	{ 0,                            XK_Print,  spawn,          {.v = screenshot } },
+	{ Mod1Mask|ControlMask,         XK_m,      spawn,          SHCMD("$HOME/.config/dmenu/bin/powermenu.sh") },
+	{ Mod1Mask|ControlMask,         XK_s,      spawn,          SHCMD("$HOME/.config/dmenu/bin/volume.sh") },
+	{ 0,                            XK_Print,  spawn,          SHCMD("$HOME/.config/dmenu/bin/screenshot.sh") },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY|ShiftMask,             XK_j,      rotatestack,    {.i = +1 } },

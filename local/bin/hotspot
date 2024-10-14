@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 
-# deps: networkmanager, dnsmasq, nftables
+# deps: networkmanager, dnsmasq, nftables, tor, iptables
 CONNECTION_NAME="Hotspot"
 WLAN_IF="wlan0"
 SSID="$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 12)"
 UUIDS=$(nmcli connection show | grep "$CONNECTION_NAME" | awk '{print $2}')
+TOR=false
 
 is_wlan_busy() {
 	nmcli device show "$WLAN_IF" | grep -q "(connected)"
 }
 
-if [ "$1" = "-d" ]; then
+hotspot_down() {
+	sudo iptables -t nat -F
+	sudo killall -q tor
 	if [ -z "$UUIDS" ]; then
 		echo "No connection with name '$CONNECTION_NAME' found"
 		exit 1
@@ -19,8 +22,19 @@ if [ "$1" = "-d" ]; then
 	for UUID in $UUIDS; do
 		nmcli connection delete uuid "$UUID"
 	done
-	exit
-fi
+}
+
+for arg in "$@"; do
+	case $arg in
+		-d|--down)
+			hotspot_down
+			exit
+			;;
+		-t|--tor)
+			TOR=true
+			;;
+	esac
+done
 
 if is_wlan_busy; then
 	echo "Interface $WLAN_IF is currently busy"
@@ -49,5 +63,15 @@ nmcli con add \
 
 sleep 3
 nmcli con up "$CONNECTION_NAME"
-nmcli d w s
 
+if [ "$TOR" = true ]; then
+	sudo setsid tor --VirtualAddrNetwork 10.192.0.0/10 \
+		--AutomapHostsSuffixes .onion,.exit \
+		--AutomapHostsOnResolve 1 \
+		--TransPort 10.42.0.1:9040 \
+		--DNSPort 10.42.0.1:53
+	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p udp --dport 53 -j REDIRECT --to-ports 53
+	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p tcp --syn -j REDIRECT --to-ports 9040
+fi
+
+nmcli d w s

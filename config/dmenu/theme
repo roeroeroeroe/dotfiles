@@ -5,12 +5,12 @@ col_gray1="#282828"
 col_gray2="#3c3836"
 col_gray3="#ebdbb2"
 col_gray4="#fbf1c7"
-col_cyan="#d65d0e"
+col_accent="#d65d0e"
 
 dmenu_options=(
 	-fn "$dmenufont"
 	-nb "$col_gray1"
 	-nf "$col_gray3"
-	-sb "$col_cyan"
+	-sb "$col_accent"
 	-sf "$col_gray4"
 )

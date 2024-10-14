@@ -1,5 +1,5 @@
-#personal-bookmarks .bookmark-item .toolbarbutton-icon { 
-	display:none !important;
+#alltabs-button, #personal-bookmarks .bookmark-item .toolbarbutton-icon, .tab-icon-image { 
+	display: none !important;
 }
 
 #PlacesToolbarItems {
@@ -11,6 +11,3 @@
 	padding: 0 10px !important;
 }
 
-.tab-icon-image {
-	display: none;
-}

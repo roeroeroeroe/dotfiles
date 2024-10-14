@@ -38,5 +38,10 @@ alias у='setxkbmap "us"'
 alias yay='PKGEXT=.pkg.tar yay' # skip compression
 alias fixdev='xset -dpms s off; xset r rate 250 30; xset m 0 0; xinput --set-prop "pointer:Razer Razer DeathAdder Essential" "libinput Accel Profile Enabled" 0, 1'
 
+# func
+weather() {
+	curl "wttr.in/$1?3&F"
+}
+
 # misc
 setopt histignorespace

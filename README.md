@@ -1,4 +1,4 @@
-dunst feh go gvfs htop imagemagick jq jre-openjdk-headless keepassxc leafpad lf lxappearance mpv ncdu neovim noto-fonts-cjk noto-fonts-emoji pcmanfm playerctl proxychains-ng streamlink tor viewnior yt-dlp zsh cmus nodejs fzf<br><br>
+dunst feh go gvfs htop imagemagick jq jre-openjdk-headless keepassxc leafpad lf lxappearance mpv ncdu neovim noto-fonts-cjk noto-fonts-emoji pcmanfm playerctl proxychains-ng streamlink tor viewnior yt-dlp zsh cmus nodejs fzf dnsmasq nftables<br><br>
 **aur:** librewolf-bin simplescreenrecorder vesktop-bin vscodium-bin yay picom-git xcursor-simp1e-gruvbox-dark<br><br>
 oh-my-zsh<br>
 https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme<br>

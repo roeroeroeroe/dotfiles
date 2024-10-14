@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 toggle_mic() {
 	amixer set Capture toggle
