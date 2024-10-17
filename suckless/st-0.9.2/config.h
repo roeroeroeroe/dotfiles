@@ -1,4 +1,4 @@
-static char *font = "JetBrainsMono Nerd Font Mono:style=SemiBold:pixelsize=16:antialias=true:autohint=true";
+static char *font = "JetBrainsMono Nerd Font:style=SemiBold:pixelsize=16:antialias=true:autohint=true";
 static int borderpx = 10;
 
 /*

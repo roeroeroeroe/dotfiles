@@ -22,10 +22,6 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR='nvim'
 export CHATTERINO2_RECENT_MESSAGES_URL='https://recent-messages.zneix.eu/api/v2/recent-messages/%1'
 
-# appimages
-alias chatterino="setsid ~/Appimages/Chatterino-x86_64.AppImage"
-alias nekoray="setsid ~/Appimages/nekoray-3.26-2023-12-09-linux-x64.AppImage"
-
 # aliases
 alias ls='ls --color=auto'
 alias la='ls -A'

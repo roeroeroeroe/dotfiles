@@ -64,14 +64,18 @@ nmcli con add \
 sleep 3
 nmcli con up "$CONNECTION_NAME"
 
+# WLAN_GATEWAY="10.42.0.1"
+WLAN_GATEWAY="$(ip -4 -o addr show "$WLAN_IF" | cut -d ' ' -f7 | cut -d '/' -f1)"
+
 if [ "$TOR" = true ]; then
 	sudo setsid tor --VirtualAddrNetwork 10.192.0.0/10 \
 		--AutomapHostsSuffixes .onion,.exit \
 		--AutomapHostsOnResolve 1 \
-		--TransPort 10.42.0.1:9040 \
-		--DNSPort 10.42.0.1:53
+		--TransPort "$WLAN_GATEWAY":9040 \
+		--DNSPort "$WLAN_GATEWAY":53
 	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p udp --dport 53 -j REDIRECT --to-ports 53
 	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p tcp --syn -j REDIRECT --to-ports 9040
 fi
 
 nmcli d w s
+
