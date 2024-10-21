@@ -1,78 +1,36 @@
 return {
 	"hrsh7th/nvim-cmp",
-	event = "InsertEnter",
+	event = "VeryLazy",
 	dependencies = {
-		{ "hrsh7th/cmp-nvim-lsp" },
-		{ "hrsh7th/cmp-path" },
-		{
-			"L3MON4D3/LuaSnip",
-			version = "v2.*",
-			build = "make install_jsregexp",
-		},
-		{ "saadparwaiz1/cmp_luasnip" },
+		"hrsh7th/cmp-nvim-lsp",
+		"hrsh7th/cmp-buffer",
+		"hrsh7th/cmp-path",
+		"garymjr/nvim-snippets",
 	},
 	config = function()
-		local luasnip = require("luasnip")
 		local cmp = require("cmp")
-
-		local cmp_kinds = {
-			Text = " ",
-			Method = " ",
-			Function = " ",
-			Constructor = " ",
-			Field = " ",
-			Variable = " ",
-			Class = " ",
-			Interface = " ",
-			Module = " ",
-			Property = " ",
-			Unit = " ",
-			Value = " ",
-			Enum = " ",
-			Keyword = " ",
-			Snippet = " ",
-			Color = " ",
-			File = " ",
-			Reference = " ",
-			Folder = " ",
-			EnumMember = " ",
-			Constant = " ",
-			Struct = " ",
-			Event = " ",
-			Operator = " ",
-			TypeParameter = " ",
-		}
+		local lspkind = require("lspkind")
+		local cmp_select_opts = { behavior = cmp.SelectBehavior.Select }
 
 		cmp.setup({
-			preselect = cmp.PreselectMode.None,
-			completion = {
-				completeopt = "menu,menuone,noinsert",
-			},
 			snippet = {
 				expand = function(args)
-					luasnip.lsp_expand(args.body)
+					vim.snippet.expand(args.body)
 				end,
 			},
-			window = {
-				completion = cmp.config.window.bordered({
-					border = "single",
-					winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-				}),
-				documentation = cmp.config.window.bordered({
-					border = "single",
-					winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-				}),
+			preselect = cmp.PreselectMode.None,
+			completion = {
+				completeopt = "menu,menuone,noinsert,noselect",
 			},
-			mapping = cmp.mapping.preset.insert({
-				["<C-d>"] = cmp.mapping.scroll_docs(-4),
-				["<C-f>"] = cmp.mapping.scroll_docs(4),
-				["<C-m>"] = cmp.mapping.abort(),
-				["<C-e"] = cmp.mapping.close(),
+			mapping = {
 				["<CR>"] = cmp.mapping.confirm({
 					select = true,
 					behavior = cmp.ConfirmBehavior.Replace,
 				}),
-				["<C-Space>"] = cmp.mapping.complete(),
+				["<C-e>"] = cmp.mapping.abort(),
+				["<C-d>"] = cmp.mapping.scroll_docs(-4),
+				["<C-f>"] = cmp.mapping.scroll_docs(4),
+				["<C-Space>"] = cmp.mapping.close(),
 				["<Tab>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
 						cmp.select_next_item()
@@ -90,21 +48,44 @@ return {
 					else
 						fallback()
 					end
-				end, { "i", "s" }),
-			}),
-			formatting = {
-				fields = { "kind", "abbr" },
-				format = function(_, vim_item)
-					vim_item.kind = cmp_kinds[vim_item.kind] or ""
-					vim_item.menu = ""
-					return vim_item
-				end,
+				end),
 			},
 			sources = cmp.config.sources({
-				{ name = "nvim_lsp" },
+				{ name = "lazydev", group_index = 0 },
+				{ name = "nvim_lsp", keyword_length = 1 },
+				{
+					name = "snippets",
+					entry_filter = function()
+						local ctx = require("cmp.config.context")
+						local in_string = ctx.in_syntax_group("String") or ctx.in_treesitter_capture("string")
+						local in_comment = ctx.in_syntax_group("Comment") or ctx.in_treesitter_capture("comment")
+						return not in_string and not in_comment
+					end,
+				},
+			}, {
+				{ name = "buffer", keyword_length = 3 },
 				{ name = "path" },
-				{ name = "luasnip" },
-			}, {}),
+			}),
+			formatting = {
+				format = lspkind.cmp_format({
+					mode = "symbol",
+					menu = {
+						nvim_lsp = "[lsp]",
+						luasnip = "[snip]",
+						snippets = "[snip]",
+						path = "[path]",
+						nvim_lua = "[api]",
+						buffer = "[buf]",
+					},
+				}),
+			},
+		})
+
+		cmp.setup.cmdline({ "/" }, {
+			mapping = cmp.mapping.preset.cmdline(),
+			sources = {
+				{ name = "buffer" },
+			},
 		})
 	end,
 }
