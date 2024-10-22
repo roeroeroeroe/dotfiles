@@ -1,21 +1,43 @@
 return {
 	"hrsh7th/nvim-cmp",
-	event = "VeryLazy",
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-buffer",
 		"hrsh7th/cmp-path",
-		"garymjr/nvim-snippets",
+		{
+			"L3MON4D3/LuaSnip",
+			version = "v2.*",
+			dependencies = { "rafamadriz/friendly-snippets" },
+			build = "make install_jsregexp",
+		},
+		"saadparwaiz1/cmp_luasnip",
+		"onsails/lspkind-nvim",
 	},
 	config = function()
 		local cmp = require("cmp")
 		local lspkind = require("lspkind")
+		local luasnip = require("luasnip")
 		local cmp_select_opts = { behavior = cmp.SelectBehavior.Select }
+		require("luasnip.loaders.from_vscode").lazy_load()
+		require("luasnip.config").set_config({
+			history = true,
+			updateEvents = "TextChanged,TextChangedI",
+		})
+		vim.api.nvim_create_autocmd("InsertLeave", {
+			callback = function()
+				if
+					require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
+					and not require("luasnip").session.jump_active
+				then
+					require("luasnip").unlink_current()
+				end
+			end,
+		})
 
 		cmp.setup({
 			snippet = {
 				expand = function(args)
-					vim.snippet.expand(args.body)
+					luasnip.lsp_expand(args.body)
 				end,
 			},
 			preselect = cmp.PreselectMode.None,
@@ -34,12 +56,12 @@ return {
 				["<Tab>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
 						cmp.select_next_item()
-					elseif luasnip.jumpable(1) then
-						luasnip.jump(1)
+					elseif luasnip.expand_or_jumpable() then
+						luasnip.expand_or_jump()
 					else
 						fallback()
 					end
-				end),
+				end, { "i", "s" }),
 				["<S-Tab>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
 						cmp.select_prev_item()
@@ -48,20 +70,11 @@ return {
 					else
 						fallback()
 					end
-				end),
+				end, { "i", "s" }),
 			},
 			sources = cmp.config.sources({
-				{ name = "lazydev", group_index = 0 },
-				{ name = "nvim_lsp", keyword_length = 1 },
-				{
-					name = "snippets",
-					entry_filter = function()
-						local ctx = require("cmp.config.context")
-						local in_string = ctx.in_syntax_group("String") or ctx.in_treesitter_capture("string")
-						local in_comment = ctx.in_syntax_group("Comment") or ctx.in_treesitter_capture("comment")
-						return not in_string and not in_comment
-					end,
-				},
+				{ name = "nvim_lsp" },
+				{ name = "luasnip" },
 			}, {
 				{ name = "buffer", keyword_length = 3 },
 				{ name = "path" },
@@ -72,7 +85,6 @@ return {
 					menu = {
 						nvim_lsp = "[lsp]",
 						luasnip = "[snip]",
-						snippets = "[snip]",
 						path = "[path]",
 						nvim_lua = "[api]",
 						buffer = "[buf]",

@@ -12,6 +12,7 @@ vim.opt.cursorlineopt = "line,number"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
+vim.opt.undofile = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.shortmess = "I"

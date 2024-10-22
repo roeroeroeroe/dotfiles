@@ -1,22 +1,55 @@
 # path
 export PATH=$HOME/.local/bin:/usr/local/bin:$PATH
 
+# autoload
+autoload -U vcs_info select-word-style compinit; compinit
+
+# prompt
+NEWLINE=$'\n'
+setopt prompt_subst
+zstyle ":vcs_info:*" check-for-changes true
+zstyle ":vcs_info:*" unstagedstr "%F{green}*%f"
+zstyle ":vcs_info:*" stagedstr "%F{green}+%f"
+zstyle ":vcs_info:git:*" formats "%b%u%c"
+precmd() {
+	vcs_info
+	local git_branch=""
+	[[ -n ${vcs_info_msg_0_} ]] && git_branch="%F{yellow} [git::${vcs_info_msg_0_}%F{yellow}]%f"
+	PS1="${NEWLINE}%F{white}%~%f${git_branch}%f%F{white} [%n@%m] [%T]%f %F{yellow}${NEWLINE}>%f "
+}
+PS2="%F{white}>%f "
+PS3="%F{white}?>%f "
+
+# binds
+select-word-style bash
+bindkey -e
+bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
+bindkey "^W" backward-kill-word
+bindkey "^[w" kill-whole-line
+bindkey -s "^[l" "ls^M"
+
+# completion
+zstyle ":completion:*" list-colors ${(s.:.)LS_COLORS}
+zstyle ":completion:*" menu select
+
+# plugins
+PLUGINS_DIR="$HOME/.zsh/plugins"
+source $PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $PLUGINS_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+typeset -g ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+
 # history
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
-
-# oh-my-zsh
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME='frisk'
-zstyle ':omz:update' mode disabled
-DISABLE_UNTRACKED_FILES_DIRTY='true'
-plugins=(
-	zsh-autosuggestions
-	zsh-syntax-highlighting
-	timer
-)
-source $ZSH/oh-my-zsh.sh
+setopt extended_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_verify
+setopt share_history
+setopt inc_append_history
 
 # env
 export EDITOR='nvim'
@@ -32,12 +65,14 @@ alias nfzf='selected_file=$(fzf) && [ -n "$selected_file" ] && nvim "$selected_f
 alias ru='setxkbmap "ru"'
 alias у='setxkbmap "us"'
 alias yay='PKGEXT=.pkg.tar yay' # skip compression
-alias fixdev='xset -dpms s off; xset r rate 250 30; xset m 0 0; xinput --set-prop "pointer:Razer Razer DeathAdder Essential" "libinput Accel Profile Enabled" 0, 1'
+alias whois='whois -H'
+alias history="history 1"
 
 # func
-weather() {
-	curl "wttr.in/$1?3&F"
+ivr() {
+	curl -X GET https://api.ivr.fi/v2/twitch/user\?login=$1 | jq
 }
 
-# misc
-setopt histignorespace
+streamlink() {
+	command streamlink twitch.tv/$1 best
+}

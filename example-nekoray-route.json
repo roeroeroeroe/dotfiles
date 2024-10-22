@@ -1,0 +1,12 @@
+{
+	"rules": [
+		{
+			"domain_keyword": ["yandex"],
+			"outbound": "direct"
+		},
+		{
+			"domain_suffix": [".ru", ".su", ".by", ".рф"],
+			"outbound": "direct"
+		}
+	]
+}
