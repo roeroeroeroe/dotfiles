@@ -4,6 +4,9 @@ export PATH=$HOME/.local/bin:/usr/local/bin:$PATH
 # autoload
 autoload -U vcs_info select-word-style compinit; compinit
 
+# lscolors
+[ -x /usr/bin/dircolors ] && test -r ~/.dircolors && source <(dircolors -b ~/.dircolors) || source <(dircolors -b)
+
 # prompt
 NEWLINE=$'\n'
 setopt prompt_subst
@@ -32,11 +35,12 @@ bindkey -s "^[l" "ls^M"
 # completion
 zstyle ":completion:*" list-colors ${(s.:.)LS_COLORS}
 zstyle ":completion:*" menu select
+zstyle ":completion:*" matcher-list "m:{a-zA-Z}={A-Za-z}" "r:|=*" "l:|=* r:|=*"
 
 # plugins
-PLUGINS_DIR="$HOME/.zsh/plugins"
-source $PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $PLUGINS_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+ZSH_DIR="$HOME/.zsh"
+source $ZSH_DIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $ZSH_DIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 typeset -g ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 
 # history
@@ -52,20 +56,22 @@ setopt share_history
 setopt inc_append_history
 
 # env
-export EDITOR='nvim'
-export CHATTERINO2_RECENT_MESSAGES_URL='https://recent-messages.zneix.eu/api/v2/recent-messages/%1'
+export EDITOR="nvim"
+export CHATTERINO2_RECENT_MESSAGES_URL="https://recent-messages.zneix.eu/api/v2/recent-messages/%1"
 
 # aliases
-alias ls='ls --color=auto'
-alias la='ls -A'
-alias lh='ls -lh'
-alias copy='xclip -selection clipboard'
-alias fzf='fzf --prompt "$(pwd) "'
-alias nfzf='selected_file=$(fzf) && [ -n "$selected_file" ] && nvim "$selected_file"'
-alias ru='setxkbmap "ru"'
-alias у='setxkbmap "us"'
-alias yay='PKGEXT=.pkg.tar yay' # skip compression
-alias whois='whois -H'
+alias ls="ls --color=auto"
+alias grep="grep --color=auto"
+alias la="ls -A"
+alias lh="ls -lh"
+alias lah="la -lh"
+alias copy="xclip -selection clipboard"
+alias fzf="fzf --prompt '$(pwd) '"
+alias nfzf='selected=$(fzf) && [ -n "$selected" ] && nvim "$selected"'
+alias ru="setxkbmap 'ru'"
+alias у="setxkbmap 'us'"
+alias yay="PKGEXT=.pkg.tar yay" # skip compression
+alias whois="whois -H"
 alias history="history 1"
 
 # func
