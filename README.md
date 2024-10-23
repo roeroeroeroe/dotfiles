@@ -12,9 +12,9 @@ yay -S librewolf-bin simplescreenrecorder vesktop-bin \
 ```
 ## zsh
 ```bash
-mkdir -p ~/.zsh/plugins
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.zsh/plugins/zsh-autosuggestions
+mkdir -p ~/.config/zsh/plugins
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.config/zsh/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.config/zsh/plugins/zsh-autosuggestions
 ```
 ## webtunnel
 ```bash

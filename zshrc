@@ -1,8 +1,9 @@
 # path
 export PATH=$HOME/.local/bin:/usr/local/bin:$PATH
+ZSH_PATH="$HOME/.config/zsh"
 
 # autoload
-autoload -U vcs_info select-word-style compinit; compinit
+autoload -U vcs_info select-word-style compinit; compinit -d "$ZSH_PATH/.zcompdump-$HOST"
 
 # lscolors
 [ -x /usr/bin/dircolors ] && test -r ~/.dircolors && source <(dircolors -b ~/.dircolors) || source <(dircolors -b)
@@ -38,13 +39,12 @@ zstyle ":completion:*" menu select
 zstyle ":completion:*" matcher-list "m:{a-zA-Z}={A-Za-z}" "r:|=*" "l:|=* r:|=*"
 
 # plugins
-ZSH_DIR="$HOME/.zsh"
-source $ZSH_DIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $ZSH_DIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "$ZSH_PATH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$ZSH_PATH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 typeset -g ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 
 # history
-HISTFILE=~/.zsh_history
+HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000
 SAVEHIST=10000
 setopt extended_history
