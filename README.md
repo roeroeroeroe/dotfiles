@@ -3,7 +3,8 @@ sudo pacman -S --needed dunst feh go gvfs htop imagemagick jq \
 	jre-openjdk-headless keepassxc leafpad lf lxappearance \
 	mpv ncdu neovim noto-fonts-cjk noto-fonts-emoji pcmanfm \
 	playerctl proxychains-ng streamlink tor viewnior yt-dlp \
-	zsh cmus nodejs fzf dnsmasq nftables qbittorrent
+	zsh cmus nodejs fzf dnsmasq nftables ttf-jetbrains-mono-nerd \
+	qbittorrent
 ```
 ```bash
 yay -S librewolf-bin simplescreenrecorder vesktop-bin \
@@ -25,4 +26,3 @@ sudo cp client /usr/local/bin/webtunnel
 - [GTK theme](https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme)
 - [GTK icons](https://github.com/jmattheis/gruvbox-dark-icons-gtk)
 - [firefox theme](https://addons.mozilla.org/en-US/firefox/addon/gruvboxgruvboxgruvboxgruvboxgr)
-- [font](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip)

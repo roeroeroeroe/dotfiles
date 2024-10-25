@@ -11,7 +11,8 @@ return {
 			automatic_installation = true,
 			ensure_installed = {
 				"ts_ls",
-				"gopls"
+				"gopls",
+				"bashls"
 			},
 		})
 

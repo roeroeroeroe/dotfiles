@@ -3,31 +3,51 @@ return {
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
-		{ "folke/neodev.nvim", opts = {} },
 	},
+
 	config = function()
 		local nvim_lsp = require("lspconfig")
 		local mason_lspconfig = require("mason-lspconfig")
-
-		local protocol = require("vim.lsp.protocol")
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
+		
+		local register_remaps = function()
+			local wk = require("which-key")
+			wk.add({
+				{
+					"<leader>lgd",
+					function()
+						vim.lsp.buf.definition()
+					end,
+					desc = "Go to definition",
+				},
+				{
+					"<leader>lh",
+					function()
+						vim.lsp.buf.hover()
+					end,
+					desc = "Hover",
+				},
+				{
+					"<leader>lfr",
+					function()
+						vim.lsp.buf.references()
+					end,
+					desc = "Find references",
+				},
+				{
+					"<leader>lrn",
+					function()
+						vim.lsp.buf.rename()
+					end,
+					desc = "Rename",
+				},
+			})
+		end
 		mason_lspconfig.setup_handlers({
 			function(server)
 				nvim_lsp[server].setup({
 					capabilities = capabilities,
-				})
-			end,
-			["ts_ls"] = function()
-				nvim_lsp["ts_ls"].setup({
-					on_attach = on_attach,
-					capabilities = capabilities,
-				})
-			end,
-			["gopls"] = function()
-				nvim_lsp["gopls"].setup({
-					on_attach = on_attach,
-					capabilities = capabilities,
+					on_attach = register_remaps,
 				})
 			end,
 		})

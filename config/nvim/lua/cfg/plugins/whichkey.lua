@@ -18,6 +18,13 @@ return {
 			end,
 			desc = "Format",
 		},
+		{
+			"<leader>u",
+			"<cmd>UndotreeToggle<cr>",
+			desc = "Toggle undo tree",
+			mode = "n",
+		},
+
 	},
 }
 

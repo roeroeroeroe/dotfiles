@@ -12,6 +12,6 @@ return {
 				folds = true,
 			},
 		})
-		vim.cmd([[colorscheme gruvbox]])
+		vim.cmd("colorscheme gruvbox")
 	end,
 }
