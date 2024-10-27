@@ -8,8 +8,8 @@ sudo pacman -S --needed dunst feh go gvfs htop imagemagick jq \
 ```
 ```bash
 yay -S librewolf-bin simplescreenrecorder vesktop-bin \
-	vscodium-bin picom-git xcursor-simp1e-gruvbox-dark \
-	nekoray sing-geoip-db sing-geosite-db chatterino2-git
+	picom-git xcursor-simp1e-gruvbox-dark nekoray \
+	sing-geoip-db sing-geosite-db chatterino2-git
 ```
 ## zsh
 ```bash

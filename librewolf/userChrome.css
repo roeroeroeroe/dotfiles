@@ -1,13 +1,14 @@
-#alltabs-button, #personal-bookmarks .bookmark-item .toolbarbutton-icon, .tab-icon-image { 
-	display: none !important;
+#alltabs-button,
+#personal-bookmarks .bookmark-item .toolbarbutton-icon,
+.tab-icon-image {
+  display: none !important;
 }
 
 #PlacesToolbarItems {
-	display: flex !important;
-	justify-content: center !important;
+  display: flex !important;
+  justify-content: center !important;
 }
 
 #PersonalToolbar toolbarbutton {
-	padding: 0 10px !important;
+  padding: 0 10px !important;
 }
-

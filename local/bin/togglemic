@@ -19,6 +19,5 @@ if [ "$current_state" == "on" ]; then
 elif [ "$current_state" == "off" ]; then
 	toggle_mic
 	notify_state "Unmuted"
-else
-	dunstify "Microphone state unknown" -r 11345 -t 2000
 fi
+

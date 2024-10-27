@@ -32,7 +32,6 @@ static const Rule rules[] = {
 	{ "nekoray",      NULL,       NULL,       1 << 0,       0,           1 },
 	{ "Tor Browser",  NULL,       NULL,       0,            1,           -1 },
 	{ "steam",        NULL,       NULL,       0,            1,           -1 },
-	{ "Spotify",      NULL,       NULL,       1 << 2,       0,           1 },
 	{ "vesktop",      NULL,       NULL,       1 << 3,       0,           1 },
 };
 

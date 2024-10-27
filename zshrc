@@ -31,6 +31,7 @@ bindkey "^[[1;5D" backward-word
 bindkey "^[[1;5C" forward-word
 bindkey "^W" backward-kill-word
 bindkey "^[w" kill-whole-line
+bindkey "^[[P" delete-char
 bindkey -s "^[l" "ls^M"
 
 # completion
@@ -65,6 +66,8 @@ alias grep="grep --color=auto"
 alias la="ls -A"
 alias lh="ls -lh"
 alias lah="la -lh"
+alias mv="mv -iv"
+alias cp="cp -iv"
 alias copy="xclip -selection clipboard"
 alias fzf="fzf --prompt '$(pwd) '"
 alias nfzf='selected=$(fzf) && [ -n "$selected" ] && nvim "$selected"'
@@ -75,6 +78,10 @@ alias whois="whois -H"
 alias history="history 1"
 
 # func
+fmp3() {
+    ffmpeg -i "$1" -vn -acodec libmp3lame "$(basename "${1:r}").mp3"
+}
+
 ivr() {
 	curl -X GET https://api.ivr.fi/v2/twitch/user\?login=$1 | jq
 }

@@ -1,5 +1,14 @@
-@-moz-document url("about:home"), url("about:newtab"), url("about:privatebrowsing") {
-	.search-inner-wrapper {
-		display: none !important;
-	}
+@-moz-document url("about:home"), url("about:preferences"), url("about:config"), url("about:newtab"), url("about:privatebrowsing") {
+  * {
+    color: #ebdbb2 !important;
+  }
+  body {
+    background-color: #282828 !important;
+  }
+  .search-inner-wrapper {
+    display: none !important;
+  }
+}
+:root {
+  --in-content-page-background: #282828 !important;
 }

@@ -99,5 +99,10 @@ return {
 				{ name = "buffer" },
 			},
 		})
+		cmp.setup.cmdline({ ":" }, {
+			sources = {
+				{ name = "cmdline" },
+			},
+		})
 	end,
 }

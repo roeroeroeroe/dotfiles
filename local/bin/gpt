@@ -5,9 +5,7 @@ if [ -z "$1" ]; then
 	exit 1
 fi
 
-PROMPT="$*"
-
-PAYLOAD=$(jq -n --arg prompt "$PROMPT" \
+PAYLOAD=$(jq -n --arg prompt "$*" \
 	'{
 		prompt: $prompt,
 		model: "gpt-4",
@@ -20,11 +18,5 @@ RESPONSE=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	-d "$PAYLOAD"
 )
 
-PARSED_RESPONSE=$(echo "$RESPONSE" | sed 's/^_*//')
-GPT_RESPONSE=$(echo "$PARSED_RESPONSE" | jq -r '.gpt')
+echo "$RESPONSE" | sed 's/^_*//' | jq -r '.gpt'
 
-if [ "$GPT_RESPONSE" != "null" ]; then
-	echo "$GPT_RESPONSE"
-else
-	echo "null"
-fi
