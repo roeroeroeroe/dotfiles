@@ -4,7 +4,7 @@ sudo pacman -S --needed dunst feh go gvfs htop imagemagick jq \
 	mpv ncdu neovim noto-fonts-cjk noto-fonts-emoji pcmanfm \
 	playerctl proxychains-ng streamlink tor viewnior yt-dlp \
 	zsh cmus nodejs fzf dnsmasq nftables ttf-jetbrains-mono-nerd \
-	qbittorrent
+	qbittorrent ripgrep
 ```
 ```bash
 yay -S librewolf-bin simplescreenrecorder vesktop-bin \

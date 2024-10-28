@@ -7,11 +7,6 @@ end
 map('n', '<Tab>', '<Cmd>BufferNext<CR>')
 map('n', '<S-Tab>', '<Cmd>BufferPrevious<CR>')
 
-map("n", "<leader>ff", "<CMD>Telescope find_files<CR>")
-map("n", "<leader>fb", "<CMD>Telescope buffers<CR>")
-map("n", "<leader>fh", "<CMD>Telescope help_tags<CR>")
-map("n", "<leader>fz", "<CMD>Telescope current_buffer_fuzzy_find<CR>")
-
 map("n", "<leader>o", "<CMD>vsplit<CR>")
 map("n", "<leader>p", "<CMD>split<CR>")
 

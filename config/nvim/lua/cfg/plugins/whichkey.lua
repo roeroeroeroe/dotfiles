@@ -11,6 +11,11 @@ return {
 			desc = "Buffer Local Keymaps (which-key)",
 		},
 		{
+			"<leader>u",
+			"<cmd>UndotreeToggle<cr>",
+			desc = "Toggle undo tree",
+		},
+		{
 			"<leader>fm",
 			function()
 				local bufnr = vim.api.nvim_get_current_buf()
@@ -24,9 +29,29 @@ return {
 			desc = "Format",
 		},
 		{
-			"<leader>u",
-			"<cmd>UndotreeToggle<cr>",
-			desc = "Toggle undo tree",
+			"<leader>ff",
+			"<cmd>Telescope find_files<cr>",
+			desc = "Telescope find files",
+		},
+		{
+			"<leader>fb",
+			"<cmd>Telescope buffers<cr>",
+			desc = "Telescope buffers",
+		},
+		{
+			"<leader>fh",
+			"<cmd>Telescope help_tags<cr>",
+			desc = "Telescope help tags",
+		},
+		{
+			"<leader>fz",
+			"<cmd>Telescope current_buffer_fuzzy_find<cr>",
+			desc = "Telescope current buffer fuzzy find",
+		},
+		{
+			"<leader>fg",
+			"<cmd>Telescope live_grep<cr>",
+			desc = "Telescope live grep",
 		},
 	},
 }

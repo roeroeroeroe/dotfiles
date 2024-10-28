@@ -5,18 +5,34 @@ if [ -z "$1" ]; then
 	exit 1
 fi
 
-PAYLOAD=$(jq -n --arg prompt "$*" \
-	'{
-		prompt: $prompt,
-		model: "gpt-4",
-		markdown: false
-	}'
-)
-
-RESPONSE=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
+TASK=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	-H "Content-Type: application/json" \
-	-d "$PAYLOAD"
+	-d "$(jq -n --arg prompt "$*" \
+		'{
+			prompt: $prompt,
+			model: "gpt-4",
+			markdown: false
+		}'
+	)"
 )
 
-echo "$RESPONSE" | sed 's/^_*//' | jq -r '.gpt'
+TASK_ID=$(echo "$TASK" | jq -r '.id')
+if [ -z "$TASK_ID" ] || [ "$TASK_ID" == "null" ]; then
+	echo "No task id in response, exiting"
+	exit 1
+fi
 
+STATUS="pending"
+while [ "$STATUS" == "pending" ]; do
+	RESPONSE=$(curl -s -X GET "https://nexra.aryahcr.cc/api/chat/task/$TASK_ID" \
+		-H "Content-Type: application/json"
+	)
+
+	STATUS=$(echo "$RESPONSE" | jq -r '.status')
+	case "$STATUS" in
+		"pending") sleep 0.5 ;;
+		"completed") echo "$RESPONSE" | jq -r '.gpt' ;;
+		"error" | "not_found") echo "Error (status: $STATUS)"; exit 1 ;;
+		*) echo "Unexpected status ($STATUS)"; exit 1 ;;
+	esac
+done
