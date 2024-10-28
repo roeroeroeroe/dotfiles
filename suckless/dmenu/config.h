@@ -1,12 +1,12 @@
 static int topbar = 1;
 static const char *fonts[] = {
-	"JetBrainsMono Nerd Font Mono:style=SemiBold:pixelsize=16"
+	"JetBrainsMono Nerd Font Mono:style=SemiBold:size=12"
 };
 static const char *prompt = NULL;
 static const char *colors[SchemeLast][2] = {
 	/*               fg         bg       */
-	[SchemeNorm] = { "#bbbbbb", "#1e1e2e" },
-	[SchemeSel]  = { "#eeeeee", "#b4befe" },
+	[SchemeNorm] = { "#ebdbb2", "#282828" },
+	[SchemeSel]  = { "#fbf1c7", "#d65d0e" },
 	[SchemeOut]  = { "#000000", "#00ffff" },
 };
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */

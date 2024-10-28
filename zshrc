@@ -80,7 +80,7 @@ alias diff="diff --color=auto -u"
 
 # func
 fmp3() {
-    ffmpeg -i "$1" -vn -acodec libmp3lame "$(basename "${1:r}").mp3"
+	ffmpeg -i "$1" -vn -acodec libmp3lame "$(basename "${1:r}").mp3"
 }
 
 ivr() {

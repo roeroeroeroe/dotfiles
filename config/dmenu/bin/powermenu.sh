@@ -6,8 +6,6 @@ option_1="lock"
 option_2="logout"
 option_3="reboot"
 option_4="shutdown"
-yes='yes'
-no='no'
 
 dmenu_cmd() {
 	dmenu -l 4 "${dmenu_options[@]}" 2>/dev/null
@@ -18,7 +16,7 @@ run_dmenu() {
 }
 
 confirm_cmd() {
-	echo -e "$yes\n$no" | dmenu "${dmenu_options[@]}" -p 'Are you sure?' -l 2 2>/dev/null
+	echo -e "yes\nno" | dmenu "${dmenu_options[@]}" -l 2 2>/dev/null
 }
 
 confirm_exit() {
@@ -27,7 +25,7 @@ confirm_exit() {
 
 confirm_run () {
 	selected="$(confirm_exit)"
-	if [[ "$selected" == "$yes" ]]; then
+	if [[ "$selected" == "yes" ]]; then
 		${1} && ${2} && ${3}
 	else
 		exit

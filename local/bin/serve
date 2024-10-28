@@ -27,6 +27,8 @@ shout() {
 	printf "%s\c"
 }
 
+trap "exit 0" SIGINT
+
 while true; do
 	printf "\033[1;32mServing $file ($size bytes) on http://$addr:$port\033[0m\n"
 	shout | nc -l -p $port
