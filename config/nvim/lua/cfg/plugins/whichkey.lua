@@ -14,7 +14,12 @@ return {
 			"<leader>fm",
 			function()
 				local bufnr = vim.api.nvim_get_current_buf()
-				require("conform").format({ bufnr = bufnr })
+				require("conform").format({
+					bufnr = bufnr,
+					lsp_fallback = true,
+					async = true,
+					timeout_ms = 1000,
+				})
 			end,
 			desc = "Format",
 		},
@@ -22,9 +27,6 @@ return {
 			"<leader>u",
 			"<cmd>UndotreeToggle<cr>",
 			desc = "Toggle undo tree",
-			mode = "n",
 		},
-
 	},
 }
-

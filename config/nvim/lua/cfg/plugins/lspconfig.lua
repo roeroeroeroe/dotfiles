@@ -43,6 +43,7 @@ return {
 				},
 			})
 		end
+
 		mason_lspconfig.setup_handlers({
 			function(server)
 				nvim_lsp[server].setup({

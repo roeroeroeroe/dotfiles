@@ -76,6 +76,7 @@ alias у="setxkbmap 'us'"
 alias yay="PKGEXT=.pkg.tar yay" # skip compression
 alias whois="whois -H"
 alias history="history 1"
+alias diff="diff --color=auto -u"
 
 # func
 fmp3() {
