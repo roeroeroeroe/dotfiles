@@ -3,6 +3,7 @@ return {
 	priority = 1000,
 	config = function()
 		require("gruvbox").setup({
+			transparent_mode = true,
 			bold = false,
 			italic = {
 				strings = false,

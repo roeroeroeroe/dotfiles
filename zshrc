@@ -68,6 +68,9 @@ alias lh="ls -lh"
 alias lah="la -lh"
 alias mv="mv -iv"
 alias cp="cp -iv"
+alias df="df -h"
+alias free="free -h"
+alias mkdir="mkdir -vp"
 alias copy="xclip -selection clipboard"
 alias fzf="fzf --prompt '$(pwd) '"
 alias nfzf='selected=$(fzf) && [ -n "$selected" ] && nvim "$selected"'
@@ -77,14 +80,19 @@ alias yay="PKGEXT=.pkg.tar yay" # skip compression
 alias whois="whois -H"
 alias history="history 1"
 alias diff="diff --color=auto -u"
+alias shred="shred -vzu"
+alias http="python -m http.server --bind "$(ip -4 -o a s enp3s0 | cut -d ' ' -f7 | cut -d '/' -f1)" 8000"
 
 # func
-fmp3() {
-	ffmpeg -i "$1" -vn -acodec libmp3lame "$(basename "${1:r}").mp3"
+ansi() {
+	for COLOR in {1..255}; do
+		echo -en "\033[38;5;${COLOR}m"
+		echo -n "${COLOR} "
+	done
 }
 
-ivr() {
-	curl -X GET https://api.ivr.fi/v2/twitch/user\?login=$1 | jq
+fmp3() {
+	ffmpeg -i "$1" -vn -acodec libmp3lame "$(basename "${1:r}").mp3"
 }
 
 streamlink() {

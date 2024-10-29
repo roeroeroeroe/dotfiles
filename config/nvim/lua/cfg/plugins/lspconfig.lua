@@ -41,6 +41,13 @@ return {
 					end,
 					desc = "Rename",
 				},
+				{
+					"<leader>lca",
+					function()
+						vim.lsp.buf.code_action()
+					end,
+					desc = "Code actions",
+				},
 			})
 		end
 
