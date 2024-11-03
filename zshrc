@@ -19,7 +19,8 @@ precmd() {
 	vcs_info
 	local git_branch=""
 	[[ -n ${vcs_info_msg_0_} ]] && git_branch="%F{yellow} [git::${vcs_info_msg_0_}%F{yellow}]%f"
-	PS1="${NEWLINE}%F{white}%~%f${git_branch}%f%F{white} [%n@%m] [%T]%f %F{yellow}${NEWLINE}>%f "
+	PS1="${NEWLINE}%F{white}%~%f${git_branch}%f%F{white} [%n@%M] [%T] %(1j.[%j].)%f %F{yellow}${NEWLINE}>%f "
+	RPROMPT="%(?..%F{white}%?%f) "
 }
 PS2="%F{white}>%f "
 PS3="%F{white}?>%f "
@@ -82,6 +83,7 @@ alias history="history 1"
 alias diff="diff --color=auto -u"
 alias shred="shred -vzu"
 alias http="python -m http.server --bind "$(ip -4 -o a s enp3s0 | cut -d ' ' -f7 | cut -d '/' -f1)" 8000"
+alias pc="proxychains"
 
 # func
 ansi() {
@@ -91,10 +93,8 @@ ansi() {
 	done
 }
 
-fmp3() {
-	ffmpeg -i "$1" -vn -acodec libmp3lame "$(basename "${1:r}").mp3"
-}
-
 streamlink() {
-	command streamlink twitch.tv/$1 best
+	for arg in $*; do
+		command streamlink twitch.tv/$arg best &
+	done
 }
