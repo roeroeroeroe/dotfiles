@@ -1,15 +1,10 @@
 ```bash
-sudo pacman -S --needed dunst feh go gvfs htop imagemagick jq \
-	jre-openjdk-headless keepassxc leafpad lf lxappearance \
-	mpv ncdu neovim noto-fonts-cjk noto-fonts-emoji pcmanfm \
-	playerctl proxychains-ng streamlink tor viewnior yt-dlp \
-	zsh cmus nodejs npm fzf dnsmasq nftables ttf-jetbrains-mono-nerd \
-	qbittorrent ripgrep unzip maim xclip alsa-utils libnotify
+sudo pacman -S --needed - < pkglist
+yay -S --needed - < aurpkglist
 ```
 ```bash
-yay -S librewolf-bin simplescreenrecorder vesktop-bin \
-	picom-git xcursor-simp1e-gruvbox-dark nekoray \
-	sing-geoip-db sing-geosite-db chatterino2-git
+sed -i "s/enp3s0/interface/" suckless/slstatus-1.0/config.h
+sed -i "s/roe/user/" suckless/slock-1.5/config.h
 ```
 ## zsh
 ```bash
