@@ -42,3 +42,4 @@ if [[ -n "${commands[$choice]}" ]]; then
 	dunstify -r 5009 -t 2000 "Copied to clipboard."
 	viewnior "${dir}/$file"
 fi
+

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+fmt_s() {
+	printf "%02d:%02d" "$(( $1 / 60 ))" "$(( $1 % 60 ))"
+}
+
+handle_cmus() {
+	output=$1
+	status=$(echo "$output" | grep "^status " | awk '{print $2}')
+	if [ "$status" == "stopped" ]; then
+		echo ""
+		exit 0
+	fi
+
+	case "$status" in
+		"playing") icon="󰐊" ;;
+		"paused") icon="󰏤" ;;
+		*) icon="" ;;
+	esac
+
+	duration=$(echo "$output" | grep "^duration " | awk '{print $2}')
+	position=$(echo "$output" | grep "^position " | awk '{print $2}')
+	timestamp="$(fmt_s "$position")/$(fmt_s "$duration")"
+
+	title=$(echo "$output" | grep "^tag title " | cut -d " " -f 3-)
+	[ "${#title}" -gt 20 ] && title="$(echo "$title" | cut -c1-20) ..."
+
+	echo "$icon [$timestamp] $title"
+}
+
+handle_playerctl() {
+	status=$1
+	if [ -z "$status" ]; then
+		echo ""
+		exit 0
+	fi
+
+	case "$status" in
+		"Playing") icon="󰐊" ;;
+		"Paused") icon="󰏤" ;;
+		*) icon="" ;;
+	esac
+
+	title=$(playerctl metadata title)
+	[ "${#title}" -gt 20 ] && title="$(echo "$title" | cut -c1-20) ..."
+
+	echo "$icon $title"
+}
+
+output=$(cmus-remote -Q 2>/dev/null)
+[ -n "$output" ] && handle_cmus "$output" || handle_playerctl "$(playerctl status 2>/dev/null)"

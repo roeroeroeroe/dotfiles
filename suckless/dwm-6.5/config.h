@@ -31,7 +31,6 @@ static const Rule rules[] = {
 	/* class          instance    title       tags mask     isfloating   monitor */
 	{ "nekoray",      NULL,       NULL,       1 << 0,       0,           1 },
 	{ "Tor Browser",  NULL,       NULL,       0,            1,           -1 },
-	{ "steam",        NULL,       NULL,       0,            1,           -1 },
 	{ "vesktop",      NULL,       NULL,       1 << 3,       0,           1 },
 };
 
@@ -72,12 +71,12 @@ static const char *dmenucmd[] = {
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ Mod1Mask,                     XK_p,      spawn,          SHCMD("playerctl play-pause; sleep 0.1; dunstify -r 9990 -t 2000 \"$(playerctl status)\"") },
-	{ Mod1Mask|ControlMask,         XK_p,      spawn,          SHCMD("connstatus") },
-	{ Mod1Mask,                     XK_m,      spawn,          SHCMD("togglemic") },
-	{ Mod1Mask|ControlMask,         XK_m,      spawn,          SHCMD("$HOME/.config/dmenu/powermenu.sh") },
+	{ Mod1Mask,                     XK_p,      spawn,          SHCMD("play_pause_notify") },
+	{ Mod1Mask|ControlMask,         XK_p,      spawn,          SHCMD("proxy_check_notify") },
+	{ Mod1Mask,                     XK_m,      spawn,          SHCMD("toggle_mic_notify") },
+	{ Mod1Mask|ControlMask,         XK_m,      spawn,          SHCMD("powermenu_dmenu") },
+	{ 0,                            XK_Print,  spawn,          SHCMD("screenshot_dmenu") },
 	{ Mod1Mask|ControlMask,         XK_s,      spawn,          SHCMD("pavucontrol") },
-	{ 0,                            XK_Print,  spawn,          SHCMD("$HOME/.config/dmenu/screenshot.sh") },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY|ShiftMask,             XK_j,      rotatestack,    {.i = +1 } },

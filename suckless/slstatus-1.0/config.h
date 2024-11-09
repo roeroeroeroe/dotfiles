@@ -63,11 +63,12 @@ static const char unknown_str[] = "n/a";
  * wifi_perc           WiFi signal in percent          interface name (wlan0)
  */
 static const struct arg args[] = {
-	/* function     format        argument */
- { netspeed_tx,   "%s | ",      "enp3s0"      },
- { io_perc,       "%s% | ",     NULL          },
- { disk_used,     "%s | ",      "/"           },
- { ram_used,      "%s | ",      NULL          },
- { uptime,        "%s | ",      NULL          },
- { datetime,      "%s ",        "%m/%d %H:%M" }, 
+	/* function      format        argument */
+ { run_command,   "%s | ",      "player_slstatus" },
+ { netspeed_tx,   "%s | ",      "enp3s0"          },
+ { io_perc,       "%s% | ",     NULL              },
+ { disk_used,     "%s | ",      "/"               },
+ { ram_used,      "%s | ",      NULL              },
+ { uptime,        "%s | ",      NULL              },
+ { datetime,      "%s ",        "%m/%d %H:%M"     }, 
 };
