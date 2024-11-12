@@ -40,11 +40,6 @@ zstyle ":completion:*" list-colors ${(s.:.)LS_COLORS}
 zstyle ":completion:*" menu select
 zstyle ":completion:*" matcher-list "m:{a-zA-Z}={A-Za-z}" "r:|=*" "l:|=* r:|=*"
 
-# plugins
-source "$ZSH_PATH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-source "$ZSH_PATH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-typeset -g ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
-
 # history
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000
@@ -59,6 +54,7 @@ setopt inc_append_history
 
 # env
 export EDITOR="nvim"
+export PAGER="less -igmj .5"
 export CHATTERINO2_RECENT_MESSAGES_URL="https://recent-messages.zneix.eu/api/v2/recent-messages/%1"
 
 # aliases
@@ -69,11 +65,9 @@ alias lh="ls -lh"
 alias lah="la -lh"
 alias mv="mv -iv"
 alias cp="cp -iv"
-alias df="df -h"
-alias free="free -h"
 alias mkdir="mkdir -vp"
+alias less="less -igmj .5"
 alias copy="xclip -selection clipboard"
-alias fzf="fzf --prompt '$(pwd) '"
 alias nfzf='selected=$(fzf) && [ -n "$selected" ] && nvim "$selected"'
 alias ru="setxkbmap 'ru'"
 alias у="setxkbmap 'us'"
@@ -82,7 +76,6 @@ alias whois="whois -H"
 alias history="history 1"
 alias diff="diff --color=auto -u"
 alias shred="shred -vzu"
-alias http="python -m http.server --bind "$(ip -4 -o a s enp3s0 | cut -d ' ' -f7 | cut -d '/' -f1)" 8000"
 alias pc="proxychains"
 alias temp="awk '{print \$1/1000 \"°C\"}' /sys/class/thermal/thermal_zone0/temp"
 
@@ -99,3 +92,22 @@ streamlink() {
 		command streamlink twitch.tv/$arg best &
 	done
 }
+
+fzf() {
+	command fzf --prompt "$(pwd) "
+}
+
+http() {
+	local addr=$(ip -4 -o a s enp3s0 | cut -d ' ' -f7 | cut -d '/' -f1)
+	python -m http.server --bind "$addr" 8000
+}
+
+ech() {
+	[ -z "$1" ] && return
+	curl -s "https://dns.google/resolve?name=$1&type=HTTPS" | jq -r ".Answer[0].data" | grep -q "ech=" && echo true || echo false
+}
+
+# plugins
+source "$ZSH_PATH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$ZSH_PATH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+typeset -g ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)

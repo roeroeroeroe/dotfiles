@@ -9,10 +9,11 @@ static const int showsystray        = 1;
 static const int showbar            = 1;
 static const int topbar             = 1;
 static const char *fonts[]          = {
-	"JetBrainsMono NFP:style=SemiBold:size=12",
+	"JetBrainsMono NFP:style=SemiBold:pixelsize=16",
+	// "Terminess Nerd Font:pixelsize=16",
 	"Noto Color Emoji:size=12"
 };
-static const char dmenufont[]       = "JetBrainsMono NFP:style=SemiBold:size=12";
+
 static const char col_gray1[]       = "#282828";
 static const char col_gray2[]       = "#3c3836";
 static const char col_gray3[]       = "#ebdbb2";
@@ -61,11 +62,6 @@ static const char *termcmd[]  = { "st", NULL };
 static const char *dmenucmd[] = {
 	"dmenu_run",
 	"-m", dmenumon,
-	"-fn", dmenufont,
-	"-nb", col_gray1,
-	"-nf", col_gray3,
-	"-sb", col_accent,
-	"-sf", col_gray4,
 	NULL
 };
 
