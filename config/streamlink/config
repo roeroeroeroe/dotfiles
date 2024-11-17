@@ -1,6 +1,0 @@
-twitch-low-latency
-hls-live-edge 1
-stream-segment-threads=10
-stream-timeout=20
-player=mpv
-ffmpeg-ffmpeg=ffmpeg

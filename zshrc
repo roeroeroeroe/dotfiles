@@ -6,7 +6,7 @@ ZSH_PATH="$HOME/.config/zsh"
 autoload -U vcs_info select-word-style compinit; compinit -d "$ZSH_PATH/.zcompdump-$HOST"
 
 # lscolors
-[ -x /usr/bin/dircolors ] && test -r ~/.dircolors && source <(dircolors -b ~/.dircolors) || source <(dircolors -b)
+[[ -x /usr/bin/dircolors && -r ~/.dircolors ]] && source <(dircolors -b ~/.dircolors) || source <(dircolors -b)
 
 # prompt
 NEWLINE=$'\n'
@@ -88,9 +88,19 @@ ansi() {
 }
 
 streamlink() {
-	for arg in $*; do
-		command streamlink twitch.tv/$arg best &
+	for arg in "$@"; do
+		command streamlink \
+			--twitch-low-latency \
+			--hls-live-edge 1 \
+			--stream-segment-threads 10 \
+			--stream-timeout 20 \
+			--player mpv \
+			"twitch.tv/$arg" best &
 	done
+}
+
+yt() {
+	pc yt-dlp -f 'bestvideo[height=1080][fps=60]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
 }
 
 fzf() {

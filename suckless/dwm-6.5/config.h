@@ -25,7 +25,7 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_accent,  col_accent },
 };
 
-static const char *tags[] = { ">.<", ":x", "^=^", "^w^", "^o^", "^_^", "^.^", ":w", "c:", ":3" };
+static const char *tags[] = { ">.<", "^.^", "^=^", "^w^" };
 // static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
 
 static const Rule rules[] = {
@@ -42,9 +42,9 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
-	{ "[M]",      monocle },
+	{ "t",      tile },    /* first entry is default */
+	{ "f",      NULL },    /* no layout function means floating behavior */
+	{ "0",      monocle },
 };
 
 #define MODKEY Mod4Mask
@@ -92,19 +92,19 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY,                       XK_minus,  setgaps,        {.i = -1 } },
-	{ MODKEY,                       XK_equal,  setgaps,        {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
+	{ MODKEY,                       XK_minus,  setgaps,        {.i = -6 } },
+	{ MODKEY,                       XK_equal,  setgaps,        {.i = +6 } },
+	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
 	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
-	TAGKEYS(                        XK_0,                      9)
+	// TAGKEYS(                        XK_5,                      4)
+	// TAGKEYS(                        XK_6,                      5)
+	// TAGKEYS(                        XK_7,                      6)
+	// TAGKEYS(                        XK_8,                      7)
+	// TAGKEYS(                        XK_9,                      8)
+	// TAGKEYS(                        XK_0,                      9)
 	{ MODKEY,                       XK_grave,  view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_grave,  tag,            {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
@@ -114,7 +114,7 @@ static const Key keys[] = {
 static const Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
+	// { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },

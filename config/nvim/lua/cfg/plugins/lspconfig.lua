@@ -9,7 +9,7 @@ return {
 		local nvim_lsp = require("lspconfig")
 		local mason_lspconfig = require("mason-lspconfig")
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
-		
+
 		local register_remaps = function()
 			local wk = require("which-key")
 			wk.add({
@@ -30,7 +30,11 @@ return {
 				{
 					"<leader>lfr",
 					function()
-						vim.lsp.buf.references()
+						require("telescope.builtin").lsp_references({
+							initial_mode = "normal",
+							layout_strategy = "vertical",
+						})
+						-- vim.lsp.buf.references()
 					end,
 					desc = "Find references",
 				},
