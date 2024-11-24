@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+NOTES_DIR="$HOME/Documents/notes"
+[ ! -d "$NOTES_DIR" ] && { dunstify -t 3000 -r 14094 "Notes directory doesn't exist"; exit 1; }
+
+NOTES=$(find $NOTES_DIR -maxdepth 1 -type f -printf "%f\n")
+CHOICE=$(echo -e "$NOTES" | dmenu)
+[[ -z "$CHOICE" || "$CHOICE" = */* ]] && exit 1
+
+st -e nvim "$NOTES_DIR/$CHOICE"

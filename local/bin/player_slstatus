@@ -6,11 +6,8 @@ fmt_s() {
 
 handle_cmus() {
 	output=$1
-	status=$(echo "$output" | grep "^status " | awk '{print $2}')
-	if [ "$status" == "stopped" ]; then
-		echo ""
-		exit 0
-	fi
+	status=$(echo "$output" | grep -m 1 "^status " | cut -d " " -f 2-)
+	[ "$status" = "stopped" ] && exit
 
 	case "$status" in
 		"playing") icon="󰐊" ;;
@@ -18,22 +15,19 @@ handle_cmus() {
 		*) icon="" ;;
 	esac
 
-	duration=$(echo "$output" | grep "^duration " | awk '{print $2}')
-	position=$(echo "$output" | grep "^position " | awk '{print $2}')
+	duration=$(echo "$output" | grep -m 1 "^duration " | cut -d " " -f 2-)
+	position=$(echo "$output" | grep -m 1 "^position " | cut -d " " -f 2-)
 	timestamp="$(fmt_s "$position")/$(fmt_s "$duration")"
 
 	title=$(echo "$output" | grep "^tag title " | cut -d " " -f 3-)
-	[ "${#title}" -gt 20 ] && title="$(echo "$title" | cut -c1-20) ..."
+	[ "${#title}" -gt 20 ] && title="$(cut -c1-20 - <<<"$title") ..."
 
 	echo "$icon [$timestamp] $title"
 }
 
 handle_playerctl() {
 	status=$1
-	if [ -z "$status" ]; then
-		echo ""
-		exit 0
-	fi
+	[ -z "$status" ] && exit
 
 	case "$status" in
 		"Playing") icon="󰐊" ;;
@@ -42,7 +36,7 @@ handle_playerctl() {
 	esac
 
 	title=$(playerctl metadata title)
-	[ "${#title}" -gt 20 ] && title="$(echo "$title" | cut -c1-20) ..."
+	[ "${#title}" -gt 20 ] && title="$(cut -c1-20 - <<<"$title") ..."
 
 	echo "$icon $title"
 }

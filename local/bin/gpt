@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-if [ -z "$1" ]; then
-	echo "Usage: gpt <prompt>"
-	exit 1
-fi
+[ -z "$1" ] && { echo "Usage: $(basename $0) <prompt>"; exit 1; }
 
 TASK=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	-H "Content-Type: application/json" \
@@ -17,13 +14,10 @@ TASK=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 )
 
 TASK_ID=$(echo "$TASK" | jq -r '.id')
-if [ -z "$TASK_ID" ] || [ "$TASK_ID" == "null" ]; then
-	echo "No task id in response, exiting"
-	exit 1
-fi
+[[ -z "$TASK_ID" || "$TASK_ID" == "null" ]] && { echo "No task id in response, exiting"; exit 1; }
 
 STATUS="pending"
-while [ "$STATUS" == "pending" ]; do
+while [ "$STATUS" = "pending" ]; do
 	RESPONSE=$(curl -s -X GET "https://nexra.aryahcr.cc/api/chat/task/$TASK_ID" \
 		-H "Content-Type: application/json"
 	)

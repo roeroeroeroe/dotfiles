@@ -1,23 +1,6 @@
 #!/usr/bin/env bash
 
-toggle_mic() {
-	amixer set Capture toggle
-}
+BEFORE=$(amixer get Capture | grep -m 1 '\[on\]\|\[off\]' | awk -F '[][]' '{print $4}')
+amixer set Capture toggle
 
-notify_state() {
-	local state=$1
-	dunstify "$state" -r 11345 -t 2000
-}
-
-current_state=$(
-	amixer get Capture | grep '\[on\]\|\[off\]' | head -n1 | awk -F'[][]' '{print $4}'
-)
-
-if [ "$current_state" == "on" ]; then
-	toggle_mic
-	notify_state "Muted"
-elif [ "$current_state" == "off" ]; then
-	toggle_mic
-	notify_state "Unmuted"
-fi
-
+dunstify -r 11345 -t 2000 "$([ "$BEFORE" = "on" ] && echo Muted || echo Unmuted)"

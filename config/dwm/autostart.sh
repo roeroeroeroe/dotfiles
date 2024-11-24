@@ -1,5 +1,5 @@
 picom --config ~/.config/picom/picom_dwm.conf &
-feh --bg-fill --no-fehbg ~/Pictures/Wallpapers/gruvbox/gruvbox_staircase.jpg &
+feh --bg-fill --no-fehbg ~/Pictures/Wallpapers/gruvbox/landscape.jpg &
 xrandr --output VGA-0 --off --output LVDS-0 --mode 1366x768 --pos 0x312 --rotate normal --output HDMI-0 --primary --mode 1920x1080 --rate 75.00 --pos 1366x0 --rotate normal &
 xsetroot -cursor_name left_ptr &
 xset -dpms s off &

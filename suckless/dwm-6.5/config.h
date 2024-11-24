@@ -72,6 +72,8 @@ static const Key keys[] = {
 	{ Mod1Mask,                     XK_m,      spawn,          SHCMD("toggle_mic_notify") },
 	{ Mod1Mask|ControlMask,         XK_m,      spawn,          SHCMD("powermenu_dmenu") },
 	{ 0,                            XK_Print,  spawn,          SHCMD("screenshot_dmenu") },
+	{ Mod1Mask|ControlMask,         XK_n,      spawn,          SHCMD("notes_dmenu") },
+	{ Mod1Mask|ControlMask,         XK_l,      spawn,          SHCMD("lyrics") },
 	{ Mod1Mask|ControlMask,         XK_s,      spawn,          SHCMD("pavucontrol") },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },

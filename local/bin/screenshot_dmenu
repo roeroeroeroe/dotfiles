@@ -10,7 +10,7 @@ declare -A commands=(
 
 dir="$(xdg-user-dir PICTURES)/Screenshots"
 file="$(date +%Y-%m-%d-%H-%M-%S).png"
-[[ ! -d "$dir" ]] && mkdir -p "$dir"
+[ ! -d "$dir" ] && mkdir -p "$dir"
 
 copy_shot() {
 	tee "$file" | xclip -selection clipboard -t image/png
@@ -37,7 +37,7 @@ shotarea() {
 }
 
 choice=$(printf "%s\n" "${ordered[@]}" | dmenu -l 4 2>/dev/null)
-if [[ -n "${commands[$choice]}" ]]; then
+if [ -n "${commands[$choice]}" ]; then
 	eval "${commands[$choice]}"
 	dunstify -r 5009 -t 2000 "Copied to clipboard."
 	viewnior "${dir}/$file"
