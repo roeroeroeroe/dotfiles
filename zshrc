@@ -6,19 +6,19 @@ ZSH_PATH="$HOME/.config/zsh"
 autoload -U vcs_info select-word-style compinit; compinit -d "$ZSH_PATH/.zcompdump-$HOST"
 
 # lscolors
-[[ -x /usr/bin/dircolors && -r ~/.dircolors ]] && source <(dircolors -b ~/.dircolors) || source <(dircolors -b)
+source <(dircolors -b 2>/dev/null || :)
 
 # prompt
 NEWLINE=$'\n'
 setopt prompt_subst
 zstyle ":vcs_info:*" check-for-changes true
-zstyle ":vcs_info:*" unstagedstr "%F{green}*%f"
-zstyle ":vcs_info:*" stagedstr "%F{green}+%f"
-zstyle ":vcs_info:git:*" formats "%b%u%c"
+zstyle ":vcs_info:*" unstagedstr "%F{yellow}*%f"
+zstyle ":vcs_info:*" stagedstr "%F{yellow}+%f"
+zstyle ":vcs_info:git:*" formats "%b%u%c" # branch, unstaged, staged
 precmd() {
 	vcs_info
 	local git_branch=""
-	[[ -n ${vcs_info_msg_0_} ]] && git_branch="%F{yellow} [git::${vcs_info_msg_0_}%F{yellow}]%f"
+	[[ -n ${vcs_info_msg_0_} ]] && git_branch="%F{white} [${vcs_info_msg_0_}%f%F{white}]%f"
 	PS1="${NEWLINE}%F{white}%~%f${git_branch}%f%F{white} [%n@%M] [%T]%(1j. [%j].)%f%F{yellow}${NEWLINE}>%f "
 	RPROMPT="%(?..%F{white}%?%f) "
 }
@@ -78,6 +78,7 @@ alias diff="diff --color=auto -u"
 alias shred="shred -vzu"
 alias pc="proxychains"
 alias temp="awk '{print \$1/1000 \"°C\"}' /sys/class/thermal/thermal_zone0/temp"
+alias ttvc="ttvu -pp -query 'channel{name chatters{count broadcasters{login}moderators{login}vips{login}viewers{login}}}'"
 
 # func
 ansi() {
@@ -117,7 +118,26 @@ ech() {
 	curl -s "https://dns.google/resolve?name=$1&type=HTTPS" | jq -r ".Answer[0].data" | grep -q "ech=" && echo true || echo false
 }
 
+new() {
+	[ -z "$1" ] && local FILE="test.sh" || local FILE="$1"
+	[[ "$FILE" == */* ]] && { echo "invalid filename"; return; }
+	[ -f "$FILE" ] && { echo "file already exists"; return; }
+	echo '#!/usr/bin/env bash\n\n' > "$FILE"; chmod +x "$FILE"; nvim "$FILE"
+}
+
+ipapi() {
+	[ -z "$1" ] && return
+	echo "$@" | tr " " "\n" | parallel -j 4 'curl -s "ip-api.com/json/{}" | jq'
+}
+
+hex() {
+	[ -z "$1" ] && return
+	local color="${1#\#}"
+	! [[ "$color" =~ ^[A-Fa-f0-9]{6}$ ]] && { echo "invalid hex code"; return; }
+	magick -size 600x600 xc:#"$color" "$color".png
+}
+
 # plugins
 source "$ZSH_PATH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "$ZSH_PATH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-typeset -g ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+ZSH_HIGHLIGHT_HIGHLIGHTERS+=(brackets)
