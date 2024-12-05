@@ -43,3 +43,6 @@ nmap
 ttf-terminus-nerd
 parallel
 picom
+songrec
+tesseract
+tesseract-data-eng

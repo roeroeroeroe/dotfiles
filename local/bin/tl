@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+tl="en"
+
+while getopts "l:" opt; do
+	case $opt in
+		l) tl="$OPTARG" ;;
+		*) echo "Usage: $(basename $0) [-l <language>] [text]"; exit 1 ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+[ -p /dev/stdin ] && input=$(cat /dev/stdin) || input="$@"
+url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q="
+query=$(echo -n "$input" | jq -sRr @uri)
+
+curl -s "${url}${query}" | jq -r '.[0][][0]'

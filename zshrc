@@ -6,7 +6,7 @@ ZSH_PATH="$HOME/.config/zsh"
 autoload -U vcs_info select-word-style compinit; compinit -d "$ZSH_PATH/.zcompdump-$HOST"
 
 # lscolors
-source <(dircolors -b 2>/dev/null || :)
+. <(dircolors -b 2>/dev/null || :)
 
 # prompt
 NEWLINE=$'\n'
@@ -52,11 +52,6 @@ setopt hist_verify
 setopt share_history
 setopt inc_append_history
 
-# env
-export EDITOR="nvim"
-export PAGER="less -igmj .5"
-export CHATTERINO2_RECENT_MESSAGES_URL="https://recent-messages.zneix.eu/api/v2/recent-messages/%1"
-
 # aliases
 alias ls="ls --color=auto"
 alias grep="grep --color=auto"
@@ -67,7 +62,7 @@ alias mv="mv -iv"
 alias cp="cp -iv"
 alias mkdir="mkdir -vp"
 alias less="less -igmj .5"
-alias copy="xclip -selection clipboard"
+alias copy="xclip -se c"
 alias nfzf='selected=$(fzf) && [ -n "$selected" ] && nvim "$selected"'
 alias ru="setxkbmap 'ru'"
 alias у="setxkbmap 'us'"
@@ -101,11 +96,7 @@ streamlink() {
 }
 
 yt() {
-	pc yt-dlp -f 'bestvideo[height=1080][fps=60]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
-}
-
-fzf() {
-	command fzf --prompt "$(pwd) "
+	yt-dlp -f 'bestvideo[height=1080][fps=60]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
 }
 
 http() {
@@ -138,6 +129,6 @@ hex() {
 }
 
 # plugins
-source "$ZSH_PATH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-source "$ZSH_PATH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+. "$ZSH_PATH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+. "$ZSH_PATH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 ZSH_HIGHLIGHT_HIGHLIGHTERS+=(brackets)
