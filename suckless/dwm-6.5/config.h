@@ -75,6 +75,8 @@ static const Key keys[] = {
 	{ Mod1Mask|ControlMask,         XK_n,      spawn,          SHCMD("notes_dmenu") },
 	{ Mod1Mask|ControlMask,         XK_l,      spawn,          SHCMD("lyrics") },
 	{ Mod1Mask|ControlMask,         XK_s,      spawn,          SHCMD("pavucontrol") },
+	{ Mod1Mask|ControlMask,         XK_t,      spawn,          SHCMD("tor-browser") },
+	{ Mod1Mask|ControlMask,         XK_r,      spawn,          SHCMD("simplescreenrecorder --no-systray") },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY|ShiftMask,             XK_j,      rotatestack,    {.i = +1 } },

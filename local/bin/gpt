@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-[ -z "$1" ] && { echo "Usage: $(basename $0) <prompt>"; exit 1; }
+[ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
+prompt="${*:+$*}${stdin:+ ${stdin}}"
+
+[ -z "$prompt" ] && { echo "Usage: $(basename $0) <prompt>"; exit 1; }
 
 TASK=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	-H "Content-Type: application/json" \
-	-d "$(jq -n --arg prompt "$*" \
+	-d "$(jq -n --arg prompt "$prompt" \
 		'{
 			prompt: $prompt,
 			model: "gpt-4",

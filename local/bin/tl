@@ -10,7 +10,12 @@ while getopts "l:" opt; do
 done
 shift $((OPTIND - 1))
 
-[ -p /dev/stdin ] && input=$(cat /dev/stdin) || input="$@"
+
+[ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
+input="${*:+$*}${stdin:+ ${stdin}}"
+
+[ -z "$input" ] && exit
+
 url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q="
 query=$(echo -n "$input" | jq -sRr @uri)
 
