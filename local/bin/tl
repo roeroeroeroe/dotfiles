@@ -5,14 +5,14 @@ tl="en"
 while getopts "l:" opt; do
 	case $opt in
 		l) tl="$OPTARG" ;;
-		*) echo "Usage: $(basename $0) [-l <language>] [text]"; exit 1 ;;
+		*) echo "Usage: $(basename "$0") [-l <language>] [text]"; exit 1 ;;
 	esac
 done
 shift $((OPTIND - 1))
 
 
 [ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
-input="${*:+$*}${stdin:+ ${stdin}}"
+input="${*}${stdin:+${*:+ }${stdin}}"
 
 [ -z "$input" ] && exit
 

@@ -6,22 +6,35 @@ WLAN_IF="wlan0"
 SSID="$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 12)"
 UUIDS=$(nmcli c show | grep "$CONNECTION_NAME" | awk '{print $2}')
 TOR=false
-
-is_wlan_busy() {
-	nmcli d show "$WLAN_IF" | grep -q "(connected)"
-}
+TOR_LOG_FILE="$HOME/tor_hotspot.log"
 
 hotspot_down() {
+	[ -z "$UUIDS" ] && {
+		echo "No connection with name '$CONNECTION_NAME' found";
+		exit 1;
+	}
+
 	sudo iptables -t nat -F
 	sudo killall -q tor
-	if [ -z "$UUIDS" ]; then
-		echo "No connection with name '$CONNECTION_NAME' found"
-		exit 1
-	fi
-
+	[ -f "$TOR_LOG_FILE" ] && rm "$TOR_LOG_FILE"
 	for UUID in $UUIDS; do
 		nmcli c delete uuid "$UUID"
 	done
+}
+
+setup_tor() {
+	# WLAN_GATEWAY="10.42.0.1"
+	WLAN_GATEWAY="$(ip -4 -o addr show "$WLAN_IF" | cut -d ' ' -f7 | cut -d '/' -f1)"
+	sudo setsid tor \
+		--VirtualAddrNetwork 10.192.0.0/10 \
+		--AutomapHostsSuffixes .onion,.exit \
+		--AutomapHostsOnResolve 1 \
+		--TransPort "$WLAN_GATEWAY":9040 \
+		--DNSPort "$WLAN_GATEWAY":53 \
+		--Log "notice stdout" \
+		> "$TOR_LOG_FILE" 2>&1
+	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p udp --dport 53 -j REDIRECT --to-ports 53
+	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p tcp --syn -j REDIRECT --to-ports 9040
 }
 
 for arg in "$@"; do
@@ -36,15 +49,15 @@ for arg in "$@"; do
 	esac
 done
 
-if is_wlan_busy; then
-	echo "Interface $WLAN_IF is currently busy"
-	exit 1
-fi
+nmcli d show "$WLAN_IF" | grep -q "(connected)" && {
+	echo "Interface $WLAN_IF is currently busy";
+	exit 1;
+}
 
-if [ ! -z "$UUIDS" ]; then
-	echo "Connection '$CONNECTION_NAME' already exists, use option -d to delete it"
-	exit 1
-fi
+[ -n "$UUIDS" ] && {
+	echo "Connection '$CONNECTION_NAME' already exists, use option -d to delete it";
+	exit 1;
+}
 
 PASSWORD=$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 8)
 
@@ -64,17 +77,6 @@ nmcli c add \
 sleep 3
 nmcli c up "$CONNECTION_NAME"
 
-if [ "$TOR" = true ]; then
-	# WLAN_GATEWAY="10.42.0.1"
-	WLAN_GATEWAY="$(ip -4 -o addr show "$WLAN_IF" | cut -d ' ' -f7 | cut -d '/' -f1)"
-	sudo setsid tor \
-		--VirtualAddrNetwork 10.192.0.0/10 \
-		--AutomapHostsSuffixes .onion,.exit \
-		--AutomapHostsOnResolve 1 \
-		--TransPort "$WLAN_GATEWAY":9040 \
-		--DNSPort "$WLAN_GATEWAY":53
-	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p udp --dport 53 -j REDIRECT --to-ports 53
-	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p tcp --syn -j REDIRECT --to-ports 9040
-fi
+[ "$TOR" = true ] && setup_tor
 
 nmcli d wifi show

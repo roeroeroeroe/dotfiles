@@ -68,7 +68,6 @@ static const char *dmenucmd[] = {
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ Mod1Mask,                     XK_p,      spawn,          SHCMD("play_pause_notify") },
-	{ Mod1Mask|ControlMask,         XK_p,      spawn,          SHCMD("proxy_check_notify") },
 	{ Mod1Mask,                     XK_m,      spawn,          SHCMD("toggle_mic_notify") },
 	{ Mod1Mask|ControlMask,         XK_m,      spawn,          SHCMD("powermenu_dmenu") },
 	{ 0,                            XK_Print,  spawn,          SHCMD("screenshot_dmenu") },

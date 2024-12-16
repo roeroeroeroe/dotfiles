@@ -18,7 +18,7 @@ zstyle ":vcs_info:git:*" formats "%b%u%c" # branch, unstaged, staged
 precmd() {
 	vcs_info
 	local git_branch=""
-	[[ -n ${vcs_info_msg_0_} ]] && git_branch="%F{white} [${vcs_info_msg_0_}%f%F{white}]%f"
+	[ -n "$vcs_info_msg_0_" ] && git_branch="%F{white} [${vcs_info_msg_0_}%f%F{white}]%f"
 	PS1="${NEWLINE}%F{white}%~%f${git_branch}%f%F{white} [%n@%M] [%T]%(1j. [%j].)%f%F{yellow}${NEWLINE}>%f "
 	RPROMPT="%(?..%F{white}%?%f) "
 }
@@ -63,7 +63,6 @@ alias cp="cp -iv"
 alias mkdir="mkdir -vp"
 alias less="less -igmj .5"
 alias copy="xclip -se c"
-alias nfzf='selected=$(fzf) && [ -n "$selected" ] && nvim "$selected"'
 alias ru="setxkbmap 'ru'"
 alias у="setxkbmap 'us'"
 alias yay="PKGEXT=.pkg.tar yay" # skip compression
@@ -97,7 +96,7 @@ streamlink() {
 }
 
 yt() {
-	yt-dlp -f 'bestvideo[height=1080][fps=60]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
+	pc yt-dlp -f 'bestvideo[height=1080][fps=60]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
 }
 
 http() {
@@ -114,7 +113,7 @@ new() {
 	[ -z "$1" ] && local FILE="test.sh" || local FILE="$1"
 	[[ "$FILE" == */* ]] && { echo "invalid filename"; return; }
 	[ -f "$FILE" ] && { echo "file already exists"; return; }
-	echo '#!/usr/bin/env bash\n\n' > "$FILE"; chmod +x "$FILE"; nvim "$FILE"
+	echo '#!/usr/bin/env bash\n\n' > "$FILE"; chmod +x "$FILE"; ${EDITOR:-vim} "$FILE"
 }
 
 ipapi() {
@@ -127,6 +126,17 @@ hex() {
 	local color="${1#\#}"
 	! [[ "$color" =~ ^[A-Fa-f0-9]{6}$ ]] && { echo "invalid hex code"; return; }
 	magick -size 600x600 xc:#"$color" "$color".png
+}
+
+cropmon() {
+	[ -z "$1" ] && return
+	[ ! -f "$1" ] && { echo "file does not exist"; return; }
+	identify "$1" >/dev/null 2>&1 || { echo "not an image"; return; }
+	local ext="${1##*.}"
+	local new_img="$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 5)"
+	local size="1920x1080"
+	local offset="+1366+0"
+	magick "$1" -crop "$size$offset" +repage "$new_img.$ext"
 }
 
 # plugins

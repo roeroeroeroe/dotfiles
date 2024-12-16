@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 [ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
-prompt="${*:+$*}${stdin:+ ${stdin}}"
+prompt="${*}${stdin:+${*:+ }${stdin}}"
 
-[ -z "$prompt" ] && { echo "Usage: $(basename $0) <prompt>"; exit 1; }
+[ -z "$prompt" ] && { echo "Usage: $(basename "$0") <prompt>"; exit 1; }
 
 TASK=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	-H "Content-Type: application/json" \

@@ -9,6 +9,9 @@ vim.opt.smartindent = true
 
 vim.opt.scrolloff = 5
 
+vim.opt.hlsearch = false
+vim.opt.incsearch = true
+
 vim.opt.cursorline = true
 vim.opt.cursorlineopt = "line,number"
 

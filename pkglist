@@ -20,7 +20,6 @@ playerctl
 proxychains-ng
 streamlink
 tor
-viewnior
 yt-dlp
 zsh
 cmus
@@ -47,3 +46,5 @@ songrec
 tesseract
 tesseract-data-eng
 reflector
+tcpdump
+tealdeer

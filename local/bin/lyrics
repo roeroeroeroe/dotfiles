@@ -17,6 +17,6 @@ LYRICS=$(echo "$RES" | jq -r '.lyrics')
 [ "$LYRICS" = "null" ] && { dunstify -r 29583 -t 2000 "Lyrics not found"; exit 1; }
 
 TEMP=$(mktemp /tmp/lyrics.XXXXX)
-echo "$LYRICS" > $TEMP
-st -e nvim $TEMP
-rm $TEMP
+echo "$LYRICS" > "$TEMP"
+st -e ${EDITOR:-vim} "$TEMP"
+rm "$TEMP"
