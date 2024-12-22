@@ -3,8 +3,7 @@ sudo pacman -S --needed - < pkglist
 yay -S --needed - < aurpkglist
 ```
 ```bash
-sed -i "s/enp3s0/interface/" suckless/slstatus-1.0/config.h zshrc
-sed -i "s/roe/user/" suckless/slock-1.5/config.h
+sed -i "s/enp3s0/interface/" suckless/slstatus-1.0/config.h config/zsh/functions.zsh
 ```
 ## zsh
 ```bash
@@ -14,7 +13,7 @@ git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.config/zsh/plu
 ```
 ## webtunnel
 ```bash
-git clone https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/webtunnel
+proxychains git clone https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/webtunnel
 cd webtunnel/main/client && go build
 sudo cp client /usr/local/bin/webtunnel
 ```

@@ -1,4 +1,4 @@
-set color_cmdline_bg=235
+set color_cmdline_bg=default
 set color_cmdline_fg=208
 set color_error=167
 set color_info=214
@@ -7,7 +7,7 @@ set color_statusline_bg=237
 set color_statusline_fg=208
 set color_titleline_bg=236
 set color_titleline_fg=208
-set color_win_bg=235
+set color_win_bg=default
 set color_win_fg=243
 set color_win_dir=243
 set color_win_cur=208

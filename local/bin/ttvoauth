@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
+SCOPES="channel_read chat:read user_blocks_edit user_blocks_read user_follows_edit user_read"
+
+oauth_request() {
+	local URL="$1"
+	shift
+	local PAYLOAD="$@"
+	echo "$(curl -sX POST "$URL" \
+		-d "$PAYLOAD" \
+		-H "Content-Type: application/x-www-form-urlencoded"
+	)"
+}
+
+DEVICE_CODE_RESPONSE=$(oauth_request \
+	"https://id.twitch.tv/oauth2/device" \
+	"client_id=$CLIENT_ID&scopes=$SCOPES"
+)
+
+[ $? -ne 0 ] && {
+	echo "error getting device code";
+	exit 1;
+}
+
+USER_CODE="$(jq -r '.user_code' <<< "$DEVICE_CODE_RESPONSE")"
+DEVICE_CODE="$(jq -r '.device_code' <<< "$DEVICE_CODE_RESPONSE")"
+EXPIRES_IN="$(jq -r '.expires_in' <<< "$DEVICE_CODE_RESPONSE")"
+INTERVAL="$(jq -r '.interval' <<< "$DEVICE_CODE_RESPONSE")"
+
+[[ -z "$USER_CODE" || -z "$DEVICE_CODE" ]] && {
+	echo "empty response";
+	exit 1;
+}
+
+EXPIRES_AT=$(( $(date +%s) + EXPIRES_IN ))
+
+echo "https://www.twitch.tv/activate"
+echo "code: $USER_CODE (expires in $((EXPIRES_IN / 60)) minutes)"
+
+while :; do
+	sleep "$INTERVAL"
+	[ $(date +%s) -ge $EXPIRES_AT ] && {
+		echo "code expired";
+		exit;
+	}
+
+	TOKEN_RESPONSE=$(oauth_request \
+		"https://id.twitch.tv/oauth2/token" \
+		"client_id=$CLIENT_ID&device_code=$DEVICE_CODE&grant_type=urn:ietf:params:oauth:grant-type:device_code"
+	)
+
+	jq -e '.access_token' <<< "$TOKEN_RESPONSE" &> /dev/null && break
+done
+
+echo "$TOKEN_RESPONSE"

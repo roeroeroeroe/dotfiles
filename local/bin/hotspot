@@ -27,12 +27,11 @@ setup_tor() {
 	WLAN_GATEWAY="$(ip -4 -o addr show "$WLAN_IF" | cut -d ' ' -f7 | cut -d '/' -f1)"
 	sudo setsid tor \
 		--VirtualAddrNetwork 10.192.0.0/10 \
-		--AutomapHostsSuffixes .onion,.exit \
 		--AutomapHostsOnResolve 1 \
 		--TransPort "$WLAN_GATEWAY":9040 \
 		--DNSPort "$WLAN_GATEWAY":53 \
 		--Log "notice stdout" \
-		> "$TOR_LOG_FILE" 2>&1
+		&> "$TOR_LOG_FILE"
 	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p udp --dport 53 -j REDIRECT --to-ports 53
 	sudo iptables -t nat -A PREROUTING -i "$WLAN_IF" -p tcp --syn -j REDIRECT --to-ports 9040
 }

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-tl="en"
+target="en"
 
 while getopts "l:" opt; do
 	case $opt in
-		l) tl="$OPTARG" ;;
+		l) target="$OPTARG" ;;
 		*) echo "Usage: $(basename "$0") [-l <language>] [text]"; exit 1 ;;
 	esac
 done
@@ -16,7 +16,7 @@ input="${*}${stdin:+${*:+ }${stdin}}"
 
 [ -z "$input" ] && exit
 
-url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q="
+url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q="
 query=$(echo -n "$input" | jq -sRr @uri)
 
 curl -s "${url}${query}" | jq -r '.[0][][0]'
