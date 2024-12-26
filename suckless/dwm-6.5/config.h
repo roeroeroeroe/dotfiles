@@ -25,7 +25,7 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_accent,  col_accent },
 };
 
-static const char *tags[] = { ">.<", "^.^", "^=^", "^w^" };
+static const char *tags[] = { ">.<", ":x", "^=^", "^w^", "^o^", "^_^", "^.^", ":w", "c:", ":3" };
 // static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
 
 static const Rule rules[] = {
@@ -76,6 +76,7 @@ static const Key keys[] = {
 	{ Mod1Mask|ControlMask,         XK_s,      spawn,          SHCMD("pavucontrol") },
 	{ Mod1Mask|ControlMask,         XK_t,      spawn,          SHCMD("tor-browser") },
 	{ Mod1Mask|ControlMask,         XK_r,      spawn,          SHCMD("simplescreenrecorder --no-systray") },
+	{ Mod1Mask|ControlMask,         XK_c,      spawn,          SHCMD("cmus_launcher") },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY|ShiftMask,             XK_j,      rotatestack,    {.i = +1 } },
@@ -102,12 +103,12 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
 	TAGKEYS(                        XK_4,                      3)
-	// TAGKEYS(                        XK_5,                      4)
-	// TAGKEYS(                        XK_6,                      5)
-	// TAGKEYS(                        XK_7,                      6)
-	// TAGKEYS(                        XK_8,                      7)
-	// TAGKEYS(                        XK_9,                      8)
-	// TAGKEYS(                        XK_0,                      9)
+	TAGKEYS(                        XK_5,                      4)
+	TAGKEYS(                        XK_6,                      5)
+	TAGKEYS(                        XK_7,                      6)
+	TAGKEYS(                        XK_8,                      7)
+	TAGKEYS(                        XK_9,                      8)
+	TAGKEYS(                        XK_0,                      9)
 	{ MODKEY,                       XK_grave,  view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_grave,  tag,            {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },

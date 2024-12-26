@@ -12,9 +12,8 @@ encode() {
 }
 
 URI="https://api.lyrics.ovh/v1/$(encode "$ARTIST")/$(encode "$TITLE")"
-RES=$(curl -s "$URI")
-LYRICS=$(echo "$RES" | jq -r '.lyrics')
-[ "$LYRICS" = "null" ] && { dunstify -r 29583 -t 2000 "Lyrics not found"; exit 1; }
+LYRICS=$(curl -sm 3 "$URI" | jq -r '.lyrics // empty')
+[ -z "$LYRICS" ] && { dunstify -r 29583 -t 2000 "Lyrics not found"; exit 1; }
 
 TEMP=$(mktemp /tmp/lyrics.XXXXX)
 echo "$LYRICS" > "$TEMP"

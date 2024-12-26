@@ -1,2 +1,2 @@
-set format_title=%a :: %t
-set format_current= %a :: %t
+set format_title=%a%{?l? :: %l} :: %t
+set format_current= %a%{?l? :: %l} :: %t

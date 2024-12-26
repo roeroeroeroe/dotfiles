@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+pidof -q cmus || { st -e cmus & exit; }
+dunstify "cmus is already running"

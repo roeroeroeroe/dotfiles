@@ -23,20 +23,24 @@ DEVICE_CODE_RESPONSE=$(oauth_request \
 	exit 1;
 }
 
-USER_CODE="$(jq -r '.user_code' <<< "$DEVICE_CODE_RESPONSE")"
-DEVICE_CODE="$(jq -r '.device_code' <<< "$DEVICE_CODE_RESPONSE")"
-EXPIRES_IN="$(jq -r '.expires_in' <<< "$DEVICE_CODE_RESPONSE")"
-INTERVAL="$(jq -r '.interval' <<< "$DEVICE_CODE_RESPONSE")"
+USER_CODE="$(jq -r '.user_code // empty' <<< "$DEVICE_CODE_RESPONSE")"
+DEVICE_CODE="$(jq -r '.device_code // empty' <<< "$DEVICE_CODE_RESPONSE")"
 
 [[ -z "$USER_CODE" || -z "$DEVICE_CODE" ]] && {
 	echo "empty response";
 	exit 1;
 }
 
+EXPIRES_IN="$(jq -r '.expires_in // empty' <<< "$DEVICE_CODE_RESPONSE")"
+EXPIRES_IN="${EXPIRES_IN:-1800}"
+
+INTERVAL="$(jq -r '.interval // empty' <<< "$DEVICE_CODE_RESPONSE")"
+INTERVAL="${INTERVAL:-5}"
+
 EXPIRES_AT=$(( $(date +%s) + EXPIRES_IN ))
 
-echo "https://www.twitch.tv/activate"
-echo "code: $USER_CODE (expires in $((EXPIRES_IN / 60)) minutes)"
+echo "https://www.twitch.tv/activate
+code: $USER_CODE (expires in $((EXPIRES_IN / 60)) minutes)"
 
 while :; do
 	sleep "$INTERVAL"
