@@ -4,6 +4,7 @@
 GQL_URL="https://gql.twitch.tv/gql"
 CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
 LOGIN="${1:-8roe}"
+DMENU_LINES=20
 
 fmt_timediff() {
 	[ -z "$1" ] && return 1
@@ -135,10 +136,10 @@ LIVE_CHANNELS=$(get_live_followed_channels)
 	notify-send "none of $LOGIN's followed channels are currently live";
 	exit;
 }
-CHOICE=$(echo "$LIVE_CHANNELS" | dmenu -l 20)
+CHOICE=$(dmenu -l $DMENU_LINES <<< "$LIVE_CHANNELS")
 [ -z "$CHOICE" ] && exit
 
-CHANNEL=$(echo "$CHOICE" | awk '{print $1}' | xargs)
+CHANNEL=$(awk '{print $1}' <<< "$CHOICE")
 [ -z "$CHANNEL" ] && exit
 
 play "$CHANNEL"
