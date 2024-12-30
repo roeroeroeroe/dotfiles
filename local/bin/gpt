@@ -16,8 +16,8 @@ TASK=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	)"
 )
 
-TASK_ID=$(echo "$TASK" | jq -r '.id')
-[[ -z "$TASK_ID" || "$TASK_ID" == "null" ]] && { echo "No task id in response, exiting"; exit 1; }
+TASK_ID=$(jq -r '.id // empty' <<< "$TASK")
+[ -z "$TASK_ID" ] && { echo "No task id in response, exiting"; exit 1; }
 
 STATUS="pending"
 while [ "$STATUS" = "pending" ]; do

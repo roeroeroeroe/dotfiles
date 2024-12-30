@@ -48,3 +48,9 @@ tesseract-data-eng
 reflector
 tcpdump
 tealdeer
+xorg-xinit
+xorg-server
+xorg-xrandr
+xorg-xinput
+xorg-xsetroot
+xorg-setxkbmap

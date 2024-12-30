@@ -8,6 +8,5 @@ xset -dpms s off &
 xinput --set-prop 'pointer:Razer Razer DeathAdder Essential' 'libinput Accel Profile Enabled' 0, 1 &
 setxkbmap -option caps:escape_shifted_capslock &
 xset r rate 250 30 &
-xset m 0 0 &
 slstatus &
 dunst &

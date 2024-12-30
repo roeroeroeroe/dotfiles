@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+
+# usage: ttv_live_follows_dmenu <user>
+GQL_URL="https://gql.twitch.tv/gql"
+CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
+LOGIN="${1:-8roe}"
+
+fmt_timediff() {
+	[ -z "$1" ] && return 1
+	TS=$1
+	NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+	TS_EPOCH=$(date -u -d "$TS" +%s)
+	NOW_EPOCH=$(date -u -d "$NOW" +%s)
+
+	DURATION=$((NOW_EPOCH - TS_EPOCH))
+
+	H=$((DURATION / 3600))
+	M=$(((DURATION % 3600) / 60))
+	S=$((DURATION % 60))
+
+	if [ $H -gt 0 ]; then
+		echo "${H}h ${M}m ${S}s"
+	elif [ $M -gt 0 ]; then
+		echo "${M}m ${S}s"
+	else
+		echo "${S}s"
+	fi
+}
+
+play() {
+	[ -z "$1" ] && return 1
+	streamlink \
+		--twitch-low-latency \
+		--hls-live-edge 1 \
+		--stream-segment-threads 10 \
+		--stream-timeout 20 \
+		--player mpv \
+		"twitch.tv/$1" best &
+}
+
+gql() {
+	[ -z "$1" ] && return 1
+
+	RES=$(curl -m 5 -sX POST "$GQL_URL" \
+		-H "Content-Type: application/json" \
+		-H "Client-ID: $CLIENT_ID" \
+		-d "$(jq -n --arg query "$1" '{query: $query}')"
+	)
+
+	echo "$RES"
+}
+
+get_live_followed_channels() {
+	LIMIT=${1:-1000}
+	CURSOR=""
+	FETCHED=0
+	while [ $FETCHED -lt $LIMIT ]; do
+		QUERY=$(cat <<EOF
+query follows {
+  user(login: "$LOGIN") {
+    follows(first: 100 after: "$CURSOR") {
+      pageInfo { hasNextPage }
+      edges {
+      cursor
+      node {
+        login
+        stream {
+          title
+          createdAt
+          viewersCount
+          height
+          width
+          averageFPS
+          game { displayName }
+          }
+        }
+      }
+    }
+  }
+}
+EOF
+		)
+		RES=$(gql "$QUERY")
+		[[ $? -ne 0 || -z "$RES" ]] && {
+			echo "gql request failed";
+			return 1;
+		}
+		! jq -e '.data.user? // empty' <<< "$RES" > /dev/null && {
+			echo "user $LOGIN does not exist";
+			return 1;
+		}
+		! jq -e '.data.user.follows.edges? // empty | length > 0' <<< "$RES" > /dev/null && {
+			echo "$LOGIN doesn't follow anyone";
+			return 1;
+		}
+
+		jq -c '.data.user.follows.edges[]' <<< "$RES" | while read -r EDGE; do
+			CREATED_AT=$(jq -r '.node.stream.createdAt // empty' <<< "$EDGE")
+			[ -z "$CREATED_AT" ] && continue
+
+			LOGIN=$(jq -r '.node.login' <<< "$EDGE")
+			CATEGORY=$(jq -r '.node.stream.game.displayName // "N/A"' <<< "$EDGE")
+			TITLE=$(jq -r '.node.stream.title // "No Title"' <<< "$EDGE")
+			VIEWERS=$(jq -r '.node.stream.viewersCount // "N/A"' <<< "$EDGE")
+			WIDTH=$(jq -r '.node.stream.width // empty' <<< "$EDGE")
+			HEIGHT=$(jq -r '.node.stream.height // empty' <<< "$EDGE")
+			RESOLUTION=$([[ -z "$WIDTH" || -z "$HEIGHT" ]] && echo "N/A" || echo "${WIDTH}x${HEIGHT}")
+			FPS=$(jq -r '.node.stream.averageFPS // "N/A"' <<< "$EDGE")
+
+			DURATION=$(fmt_timediff "$CREATED_AT")
+
+			[ "${#CATEGORY}" -gt 20 ] && CATEGORY="${CATEGORY:0:20}..."
+			[ "${#TITLE}" -gt 50 ] && TITLE="${TITLE:0:50}..."
+
+			printf "%-15s live for: %-13s viewers: %-6s category: %-23s res: %-9s fps: %-3s title: %s\n" \
+				"$LOGIN" "$DURATION" "$VIEWERS" "$CATEGORY" "$RESOLUTION" "$FPS" "$TITLE"
+		done
+
+		CURSOR=$(jq -r '.data.user.follows.edges[-1].cursor // empty' <<< "$RES")
+		HAS_NEXT_PAGE=$(jq -r '.data.user.follows.pageInfo.hasNextPage' <<< "$RES")
+
+		[[ "$HAS_NEXT_PAGE" != "true" || -z "$CURSOR" ]] && break
+
+		FETCHED=$((FETCHED + 100))
+	done
+}
+
+LIVE_CHANNELS=$(get_live_followed_channels)
+[ $? -ne 0 ] && {
+	notify-send "$LIVE_CHANNELS" # error
+	exit 1;
+}
+[ -z "$LIVE_CHANNELS" ] && {
+	notify-send "none of $LOGIN's followed channels are currently live";
+	exit;
+}
+CHOICE=$(echo "$LIVE_CHANNELS" | dmenu -l 20)
+[ -z "$CHOICE" ] && exit
+
+CHANNEL=$(echo "$CHOICE" | awk '{print $1}' | xargs)
+[ -z "$CHANNEL" ] && exit
+
+play "$CHANNEL"

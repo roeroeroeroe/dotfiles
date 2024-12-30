@@ -20,7 +20,7 @@ handle_cmus() {
 	timestamp="$(fmt_s "$position")/$(fmt_s "$duration")"
 
 	title=$(echo "$output" | grep "^tag title " | cut -d " " -f 3-)
-	[ "${#title}" -gt 20 ] && title="$(cut -c1-20 - <<<"$title") ..."
+	[ "${#title}" -gt 20 ] && title="${title:0:20} ..."
 
 	echo "$icon [$timestamp] $title"
 }
@@ -36,7 +36,7 @@ handle_playerctl() {
 	esac
 
 	title=$(playerctl metadata title)
-	[ "${#title}" -gt 20 ] && title="$(cut -c1-20 - <<<"$title") ..."
+	[ "${#title}" -gt 20 ] && title="${title:0:20} ..."
 
 	echo "$icon $title"
 }
