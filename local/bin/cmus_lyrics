@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+output=$(cmus-remote -Q 2>/dev/null)
+[ -z "$output" ] && exit
+
+TITLE=$(echo "$output" | grep "^tag title " | cut -d " " -f 3-)
+ARTIST=$(echo "$output" | grep "^tag artist " | cut -d " " -f 3-)
+[[ -z "$ARTIST" || -z "$TITLE" ]] && { notify-send "missing metadata"; exit 1; }
+
+encode() {
+	jq -sRr @uri <<< "$@"
+}
+
+slug() {
+	tr '[:upper:]' '[:lower:]' <<< "$@" | sed \
+		-e 's/&/and/g' \
+		-e 's/[[:space:]:]\+/-/g' \
+		-e "s/[^a-z0-9-]//g"
+}
+
+lyrics_api() {
+	URI="https://api.lyrics.ovh/v1/$(encode "$ARTIST")/$(encode "$TITLE")"
+	LYRICS=$(curl -sm 3 "$URI" | jq -r '.lyrics // empty')
+	[ -z "$LYRICS" ] && return 1
+
+	echo "$LYRICS"
+}
+
+dumb() {
+	# https://dm.vern.cc
+	# https://dumb.lunar.icu
+	# https://dumb.privacydev.net
+	# https://dumb.ducks.party
+	# https://dumb.hyperreal.coffee
+	# https://dumb.bloat.cat
+	# https://dumb.gitro.xyz
+	# https://dumb.jeikobu.net
+	INSTANCE="https://dumb.hyperreal.coffee"
+	URI="$INSTANCE/$(slug "$ARTIST")-$(slug "$TITLE")-lyrics"
+	LYRICS=$(curl -sm 5 "$URI" | hxnormalize -x | hxselect 'div#lyrics' | \
+		sed 's/<[^>]*>//g' | \
+		sed 's/&#39;/'"'"'/g' | \
+		sed 's/&#34;/"/g' | \
+		sed 's/^[ \t]*//;s/[ \t]*$//'
+	)
+	[ -z "$LYRICS" ] && return 1
+
+	echo "$LYRICS"
+}
+
+LYRICS=$(lyrics_api || dumb)
+[ $? -ne 0 ] && {
+	notify-send "lyrics not found";
+	exit;
+}
+
+TEMP=$(mktemp /tmp/lyrics.XXXXX)
+echo "$LYRICS" > "$TEMP"
+st -e ${EDITOR:-vim} "$TEMP"
+rm "$TEMP"
