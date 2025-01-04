@@ -7,6 +7,8 @@ TITLE=$(echo "$output" | grep "^tag title " | cut -d " " -f 3-)
 ARTIST=$(echo "$output" | grep "^tag artist " | cut -d " " -f 3-)
 [[ -z "$ARTIST" || -z "$TITLE" ]] && { notify-send "missing metadata"; exit 1; }
 
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lyrics"
+
 encode() {
 	jq -sRr @uri <<< "$@"
 }
@@ -14,13 +16,30 @@ encode() {
 slug() {
 	tr '[:upper:]' '[:lower:]' <<< "$@" | sed \
 		-e 's/&/and/g' \
-		-e 's/[[:space:]:]\+/-/g' \
+		-e 's/[[:space:]:$]\+/-/g' \
 		-e "s/[^a-z0-9-]//g"
 }
 
+ARTIST_TITLE_SLUG="$(slug "$ARTIST")-$(slug "$TITLE")"
+CACHE_FILE="$CACHE_DIR/$ARTIST_TITLE_SLUG"
+
+cache() {
+	[ -z "$1" ] && return 1
+	[ -d "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
+	[ -f "$CACHE_FILE" ] && return
+
+	cp "$1" "$CACHE_FILE"
+}
+
+get_cached() {
+	[ -f "$CACHE_FILE" ] || return 1
+
+	cat "$CACHE_FILE"
+}
+
 lyrics_api() {
-	URI="https://api.lyrics.ovh/v1/$(encode "$ARTIST")/$(encode "$TITLE")"
-	LYRICS=$(curl -sm 3 "$URI" | jq -r '.lyrics // empty')
+	URL="https://api.lyrics.ovh/v1/$(encode "$ARTIST")/$(encode "$TITLE")"
+	LYRICS=$(curl -sm 3 "$URL" | jq -r '.lyrics // empty')
 	[ -z "$LYRICS" ] && return 1
 
 	echo "$LYRICS"
@@ -36,8 +55,8 @@ dumb() {
 	# https://dumb.gitro.xyz
 	# https://dumb.jeikobu.net
 	INSTANCE="https://dumb.hyperreal.coffee"
-	URI="$INSTANCE/$(slug "$ARTIST")-$(slug "$TITLE")-lyrics"
-	LYRICS=$(curl -sm 5 "$URI" | hxnormalize -x | hxselect 'div#lyrics' | \
+	URL="$INSTANCE/$ARTIST_TITLE_SLUG-lyrics"
+	LYRICS=$(curl -sm 10 "$URL" | hxnormalize -x | hxselect 'div#lyrics' | \
 		sed 's/<[^>]*>//g' | \
 		sed 's/&#39;/'"'"'/g' | \
 		sed 's/&#34;/"/g' | \
@@ -48,13 +67,13 @@ dumb() {
 	echo "$LYRICS"
 }
 
-LYRICS=$(lyrics_api || dumb)
-[ $? -ne 0 ] && {
+LYRICS=$(get_cached || lyrics_api || dumb) || {
 	notify-send "lyrics not found";
 	exit;
 }
 
 TEMP=$(mktemp /tmp/lyrics.XXXXX)
 echo "$LYRICS" > "$TEMP"
+cache "$TEMP"
 st -e ${EDITOR:-vim} "$TEMP"
 rm "$TEMP"

@@ -4,9 +4,9 @@ CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
 SCOPES="channel_read chat:read user_blocks_edit user_blocks_read user_follows_edit user_read"
 
 oauth_request() {
-	local URL="$1"
+	URL="$1"
 	shift
-	local PAYLOAD="$@"
+	PAYLOAD="$@"
 	echo "$(curl -sX POST "$URL" \
 		-d "$PAYLOAD" \
 		-H "Content-Type: application/x-www-form-urlencoded"

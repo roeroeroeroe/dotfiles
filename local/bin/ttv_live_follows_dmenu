@@ -31,6 +31,7 @@ fmt_timediff() {
 
 play() {
 	[ -z "$1" ] && return 1
+	# xdg-open "https://player.twitch.tv/?channel=$1&parent=twitch.tv" &
 	streamlink \
 		--twitch-low-latency \
 		--hls-live-edge 1 \
@@ -102,7 +103,7 @@ EOF
 
 			LOGIN=$(jq -r '.node.login' <<< "$EDGE")
 			CATEGORY=$(jq -r '.node.stream.game.displayName // "N/A"' <<< "$EDGE")
-			TITLE=$(jq -r '.node.stream.title // "No Title"' <<< "$EDGE")
+			TITLE=$(jq -r '.node.stream.title // "N/A"' <<< "$EDGE")
 			VIEWERS=$(jq -r '.node.stream.viewersCount // "N/A"' <<< "$EDGE")
 			WIDTH=$(jq -r '.node.stream.width // empty' <<< "$EDGE")
 			HEIGHT=$(jq -r '.node.stream.height // empty' <<< "$EDGE")
@@ -136,10 +137,10 @@ LIVE_CHANNELS=$(get_live_followed_channels)
 	notify-send "none of $LOGIN's followed channels are currently live";
 	exit;
 }
+
 CHOICE=$(dmenu -l $DMENU_LINES <<< "$LIVE_CHANNELS")
 [ -z "$CHOICE" ] && exit
 
 CHANNEL=$(awk '{print $1}' <<< "$CHOICE")
-[ -z "$CHANNEL" ] && exit
 
 play "$CHANNEL"

@@ -18,7 +18,7 @@ streamlink() {
 }
 
 yt() {
-	pc yt-dlp -f 'bestvideo[height=1080][fps=60]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
+	proxychains yt-dlp -f 'bestvideo[height=1080][fps>=48]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
 }
 
 http() {
@@ -27,10 +27,10 @@ http() {
 }
 
 new() {
-	local FILE=${1:-"test.sh"}
-	[[ "$FILE" == */* ]] && { echo "invalid filename"; return; }
-	[ -f "$FILE" ] && { echo "file already exists"; return; }
-	echo '#!/usr/bin/env bash\n\n' > "$FILE"; chmod +x "$FILE"; ${EDITOR:-vim} "$FILE"
+	local file=${1:-"$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z | head -c 5).sh"}
+	[[ "$file" == */* ]] && { echo "invalid filename"; return; }
+	[ -f "$file" ] && { echo "file already exists"; return; }
+	echo '#!/usr/bin/env bash\n\n' > "$file"; chmod +x "$file"; ${EDITOR:-vim} "$file"
 }
 
 ipapi() {
