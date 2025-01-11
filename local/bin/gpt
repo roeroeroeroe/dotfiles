@@ -25,11 +25,15 @@ while [ "$STATUS" = "pending" ]; do
 		-H "Content-Type: application/json"
 	)
 
-	STATUS=$(echo "$RESPONSE" | jq -r '.status')
+	STATUS=$(jq -r '.status' <<< "$RESPONSE")
 	case "$STATUS" in
 		"pending") sleep 0.5 ;;
-		"completed") echo "$RESPONSE" | jq -r '.gpt' ;;
-		"error" | "not_found") echo "Error (status: $STATUS)"; exit 1 ;;
-		*) echo "Unexpected status ($STATUS)"; exit 1 ;;
+		"completed") jq -r '.gpt' <<< "$RESPONSE" ;;
+		"error")
+			MESSAGE=$(jq -r '.message // empty' <<< "$RESPONSE");
+			MESSAGE=${MESSAGE:-"N/A"};
+			echo "Error: $MESSAGE";
+			exit 1 ;;
+		*) echo "Unexpected status: $STATUS"; exit 1 ;;
 	esac
 done

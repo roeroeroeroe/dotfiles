@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
 NOTES_DIR="$HOME/Documents/notes"
-[ ! -d "$NOTES_DIR" ] && { dunstify -t 3000 -r 14094 "Notes directory doesn't exist"; exit 1; }
+[ -d "$NOTES_DIR" ] || mkdir -p "$NOTES_DIR"
 
-NOTES=$(find "$NOTES_DIR" -maxdepth 1 -type f -printf "%f\n")
-CHOICE=$(echo -e "$NOTES" | dmenu)
-[[ -z "$CHOICE" || "$CHOICE" = */* ]] && exit 1
+FILE=$(find "$NOTES_DIR" -maxdepth 1 -type f -printf "%f\n" | dmenu)
+[[ -z "$FILE" || "$FILE" = */* ]] && exit 1
 
-st -e ${EDITOR:-vim} "$NOTES_DIR/$CHOICE"
+st -e ${EDITOR:-vim} "$NOTES_DIR/$FILE"

@@ -8,13 +8,9 @@ declare -A commands=(
 	["shutdown"]="confirm_run 'systemctl poweroff'"
 )
 
-confirm_run () {
-	selected="$(echo -e "yes\nno" | dmenu -l 2 2>/dev/null)"
-	if [[ "$selected" == "yes" ]]; then
-		${1} && ${2} && ${3}
-	else
-		exit
-	fi
+confirm_run() {
+	yn="$(echo -e "yes\nno" | dmenu -l 2 -p "$1" 2>/dev/null)"
+	[ "$yn" = "yes" ] && $1
 }
 
 choice=$(printf "%s\n" "${ordered[@]}" | dmenu -l 4 2>/dev/null)

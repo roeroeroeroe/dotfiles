@@ -50,13 +50,19 @@ gql() {
 		-d "$(jq -n --arg query "$1" '{query: $query}')"
 	)
 
+	ERR=$(jq -r '.error // empty' <<< "$RES"); [ -n "$ERR" ] && {
+		echo "$ERR";
+		return 1;
+	}
+
 	echo "$RES"
+	return
 }
 
 get_live_followed_channels() {
-	LIMIT=${1:-1000}
-	CURSOR=""
+	LIMIT=1000
 	FETCHED=0
+	CURSOR=""
 	while [ $FETCHED -lt $LIMIT ]; do
 		QUERY=$(cat <<EOF
 query follows {
@@ -84,15 +90,19 @@ query follows {
 EOF
 		)
 		RES=$(gql "$QUERY")
-		[[ $? -ne 0 || -z "$RES" ]] && {
-			echo "gql request failed";
+		if [ $? -ne 0 ]; then
+			if [ -n "$RES" ]; then
+				echo "gql request failed: $RES"
+			else
+				echo "gql request failed"
+			fi
 			return 1;
-		}
-		! jq -e '.data.user? // empty' <<< "$RES" > /dev/null && {
+		fi
+		jq -e '.data.user? // empty' <<< "$RES" > /dev/null || {
 			echo "user $LOGIN does not exist";
 			return 1;
 		}
-		! jq -e '.data.user.follows.edges? // empty | length > 0' <<< "$RES" > /dev/null && {
+		jq -e '.data.user.follows.edges? // empty | length > 0' <<< "$RES" > /dev/null || {
 			echo "$LOGIN doesn't follow anyone";
 			return 1;
 		}
@@ -128,18 +138,25 @@ EOF
 	done
 }
 
-LIVE_CHANNELS=$(get_live_followed_channels)
-[ $? -ne 0 ] && {
+LIVE_CHANNELS=$(get_live_followed_channels) || {
 	notify-send "$LIVE_CHANNELS" # error
 	exit 1;
 }
+
 [ -z "$LIVE_CHANNELS" ] && {
 	notify-send "none of $LOGIN's followed channels are currently live";
-	exit;
+	exit 0;
 }
 
-CHOICE=$(dmenu -l $DMENU_LINES <<< "$LIVE_CHANNELS")
-[ -z "$CHOICE" ] && exit
+SORTED_CHANNELS=$(echo "$LIVE_CHANNELS" | awk '
+{
+	match($0, /viewers: [0-9]+/, v_match)
+	v = substr(v_match[0], 9)
+	print v "\t" $0
+}' | sort -nr | cut -f2-)
+
+CHOICE=$(dmenu -l $DMENU_LINES <<< "$SORTED_CHANNELS")
+[ -z "$CHOICE" ] && exit 0
 
 CHANNEL=$(awk '{print $1}' <<< "$CHOICE")
 

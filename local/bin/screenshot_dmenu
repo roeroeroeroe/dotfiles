@@ -11,30 +11,30 @@ declare -A commands=(
 
 dir="$(xdg-user-dir PICTURES)/Screenshots"
 file="$(date +%Y-%m-%d-%H-%M-%S).png"
-[ ! -d "$dir" ] && mkdir -p "$dir"
+[ -d "$dir" ] || mkdir -p "$dir"
 
 copy_shot() {
 	tee "$file" | xclip -se c -t image/png
 }
 
 shotnow() {
-	sleep 0.5; cd "${dir}" && maim -f png -u | copy_shot
+	sleep 0.5; cd "$dir" && maim -f png -u | copy_shot
 }
 
 shot5() {
 	for i in {5..1}; do
-		dunstify -r 5009 -t 1025 "Taking shot in "$i"s"
+		dunstify -r 3 -t 1025 "Taking shot in ${i}s"
 		sleep 1
 	done
-	sleep 1.25; cd "${dir}" && maim -f png -u | copy_shot
+	sleep 1.25; cd "$dir" && maim -f png -u | copy_shot
 }
 
 shotwin() {
-	sleep 0.5; cd "${dir}" && maim -f png -ui "$(xdotool getactivewindow)" | copy_shot
+	sleep 0.5; cd "$dir" && maim -f png -ui "$(xdotool getactivewindow)" | copy_shot
 }
 
 shotarea() {
-	sleep 0.5; cd "${dir}" && maim -f png -souc 0.84,0.37,0.06 | copy_shot
+	sleep 0.5; cd "$dir" && maim -f png -souc 0.84,0.37,0.06 | copy_shot
 }
 
 ocr() {
@@ -47,5 +47,5 @@ ocr() {
 choice=$(printf "%s\n" "${ordered[@]}" | dmenu -l 5 2>/dev/null)
 if [ -n "${commands[$choice]}" ]; then
 	eval "${commands[$choice]}"
-	dunstify -r 5009 -t 2000 "Copied to clipboard"
+	dunstify -r 4 -t 2000 "Copied to clipboard"
 fi
