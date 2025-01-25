@@ -7,10 +7,10 @@ oauth_request() {
 	URL="$1"
 	shift
 	PAYLOAD="$@"
-	echo "$(curl -sX POST "$URL" \
+	curl -sX POST "$URL" \
 		-d "$PAYLOAD" \
 		-H "Content-Type: application/x-www-form-urlencoded"
-	)"
+	return
 }
 
 DEVICE_CODE_RESPONSE=$(oauth_request \
@@ -46,7 +46,7 @@ while :; do
 	sleep "$INTERVAL"
 	[ $(date +%s) -ge $EXPIRES_AT ] && {
 		echo "code expired";
-		exit;
+		exit 1;
 	}
 
 	TOKEN_RESPONSE=$(oauth_request \
