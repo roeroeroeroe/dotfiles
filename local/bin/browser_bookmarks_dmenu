@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+DMENU_LINES=40
+URL_COL_WIDTH=40
+BOOKMARKS_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/bookmarks"
+[ -f "$BOOKMARKS_FILE" ] || echo "https://priv.au searxng" > "$BOOKMARKS_FILE"
+
+URLS=()
+while IFS= read -r LINE; do
+	read -r URL REST <<< "$LINE"
+	URLS+=("$(printf "%-${URL_COL_WIDTH}s %s" "$URL" "$REST")")
+done < "$BOOKMARKS_FILE"
+
+CHOICE=$(printf "%s\n" "${URLS[@]}" | dmenu -l "$DMENU_LINES") || exit 0
+
+for u in "${URLS[@]}"; do
+	[ "$u" = "$CHOICE" ] && {
+		xdg-open "$(awk '{print $1}' <<< "$CHOICE")" & exit 0;
+	}
+done

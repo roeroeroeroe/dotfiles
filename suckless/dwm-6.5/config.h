@@ -69,6 +69,7 @@ static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ Mod1Mask,                     XK_p,      spawn,          SHCMD("play_pause_notify") },
 	{ Mod1Mask,                     XK_m,      spawn,          SHCMD("toggle_mic_notify") },
+	{ Mod1Mask|ControlMask,         XK_b,      spawn,          SHCMD("browser_bookmarks_dmenu") },
 	{ Mod1Mask|ControlMask,         XK_m,      spawn,          SHCMD("powermenu_dmenu") },
 	{ 0,                            XK_Print,  spawn,          SHCMD("screenshot_dmenu") },
 	{ Mod1Mask|ControlMask,         XK_n,      spawn,          SHCMD("notes_dmenu") },

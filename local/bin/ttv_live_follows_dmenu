@@ -70,17 +70,17 @@ query follows {
     follows(first: 100 after: "$CURSOR") {
       pageInfo { hasNextPage }
       edges {
-      cursor
-      node {
-        login
-        stream {
-          title
-          createdAt
-          viewersCount
-          height
-          width
-          averageFPS
-          game { displayName }
+        cursor
+        node {
+          login
+          stream {
+            title
+            createdAt
+            viewersCount
+            height
+            width
+            averageFPS
+            game { displayName }
           }
         }
       }
@@ -158,6 +158,4 @@ SORTED_CHANNELS=$(echo "$LIVE_CHANNELS" | awk '
 CHOICE=$(dmenu -l $DMENU_LINES <<< "$SORTED_CHANNELS")
 [ -z "$CHOICE" ] && exit 0
 
-CHANNEL=$(awk '{print $1}' <<< "$CHOICE")
-
-play "$CHANNEL"
+play "$(awk '{print $1}' <<< "$CHOICE")"

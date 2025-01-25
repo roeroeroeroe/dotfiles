@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-output=$(cmus-remote -Q 2>/dev/null)
-[ -z "$output" ] && exit
+DATA=$(cmus-remote -Q 2>/dev/null)
+[ -z "$DATA" ] && exit
 
-TITLE=$(echo "$output" | grep "^tag title " | cut -d " " -f 3-)
-ARTIST=$(echo "$output" | grep "^tag artist " | cut -d " " -f 3-)
+TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
+ARTIST=$(echo "$DATA" | grep "^tag artist " | cut -d " " -f 3-)
 [[ -z "$ARTIST" || -z "$TITLE" ]] && { notify-send "missing metadata"; exit 1; }
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lyrics"

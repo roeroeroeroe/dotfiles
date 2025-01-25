@@ -5,45 +5,45 @@ fmt_s() {
 }
 
 handle_cmus() {
-	output=$1
-	status=$(echo "$output" | grep -m 1 "^status " | cut -d " " -f 2-)
-	[ "$status" = "stopped" ] && exit
+	DATA=$1
+	STATUS=$(echo "$DATA" | grep -m 1 "^status " | cut -d " " -f 2-)
+	[ "$STATUS" = "stopped" ] && exit 0
 
-	case "$status" in
-		"playing") icon="󰐊" ;;
-		"paused") icon="󰏤" ;;
-		*) icon="" ;;
+	case "$STATUS" in
+		"playing") ICON="󰐊" ;;
+		"paused") ICON="󰏤" ;;
+		*) ICON="" ;;
 	esac
 
-	duration=$(echo "$output" | grep -m 1 "^duration " | cut -d " " -f 2-)
-	position=$(echo "$output" | grep -m 1 "^position " | cut -d " " -f 2-)
-	timestamp="$(fmt_s "$position")/$(fmt_s "$duration")"
+	DURATION=$(echo "$DATA" | grep -m 1 "^duration " | cut -d " " -f 2-)
+	POS=$(echo "$DATA" | grep -m 1 "^position " | cut -d " " -f 2-)
+	TS="$(fmt_s "$POS")/$(fmt_s "$DURATION")"
 
-	title=$(echo "$output" | grep "^tag title " | cut -d " " -f 3-)
-	[ "${#title}" -gt 20 ] && title="${title:0:20} ..."
+	TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
+	[ "${#TITLE}" -gt 20 ] && TITLE="${TITLE:0:20} ..."
 
-	echo "$icon [$timestamp] $title"
+	echo "$ICON [$TS] $TITLE"
 }
 
 handle_playerctl() {
-	status=$1
-	[ -z "$status" ] && exit
+	STATUS=$1
+	[ -z "$STATUS" ] && exit 0
 
-	case "$status" in
-		"Playing") icon="󰐊" ;;
-		"Paused") icon="󰏤" ;;
-		*) icon="" ;;
+	case "$STATUS" in
+		"Playing") ICON="󰐊 " ;;
+		"Paused") ICON="󰏤 " ;;
+		*) ICON="" ;;
 	esac
 
-	title=$(playerctl metadata title)
-	[ "${#title}" -gt 20 ] && title="${title:0:20} ..."
+	TITLE=$(playerctl metadata title)
+	[ "${#TITLE}" -gt 20 ] && TITLE="${TITLE:0:20} ..."
 
-	echo "$icon $title"
+	echo "$ICON$TITLE"
 }
 
-output=$(cmus-remote -Q 2>/dev/null)
-if [ -n "$output" ]; then
-	handle_cmus "$output"
+CMUS_DATA=$(cmus-remote -Q 2>/dev/null)
+if [ -n "$CMUS_DATA" ]; then
+	handle_cmus "$CMUS_DATA"
 else
 	handle_playerctl "$(playerctl status 2>/dev/null)"
 fi

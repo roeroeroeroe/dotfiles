@@ -1,13 +1,10 @@
 ansi() {
-	for COLOR in {1..255}; do
-		echo -en "\033[38;5;${COLOR}m"
-		echo -n "${COLOR} "
-	done
+	for c in {1..255}; do echo -n "\033[38;5;${c}m$c "; done
 }
 
-streamlink() {
+sl() {
 	for arg in "$@"; do
-		command streamlink \
+		streamlink \
 			--twitch-low-latency \
 			--hls-live-edge 1 \
 			--stream-segment-threads 10 \
@@ -34,8 +31,11 @@ new() {
 }
 
 ipapi() {
-	[ -z "$1" ] && return
-	echo "$@" | tr " " "\n" | parallel -j 4 'curl -s "ip-api.com/json/{}" | jq'
+	local stdin=""
+	[ -p /dev/stdin ] && stdin=$(</dev/stdin)
+	local input="${*}${stdin:+${*:+ }${stdin}}"
+	[ -z "$input" ] && return
+	echo "$input" | tr " " "\n" | parallel -j 4 'curl -s "ip-api.com/json/{}" | jq'
 }
 
 hex() {

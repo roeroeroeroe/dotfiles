@@ -2,12 +2,14 @@
   --font: "JetBrainsMonoNL Nerd Font Mono";
   --interactive-normal: #ebdbb2;
   --text-normal: #ebdbb2;
-  --background-primary: #1d2021;
-  --background-secondary: #181b1b;
-  --background-tertiary: #1d2021;
+  --background-primary: #282828;
+  --background-secondary: #282828;
+  --background-secondary-alt: #282828;
+  --background-tertiary: #282828;
   --channels-default: #83a598;
   --deprecated-panel-background: #161818;
   --channeltextarea-background: #32302f;
+  --bg-overlay-2: #282828;
 }
 
 ::placeholder,
@@ -79,7 +81,7 @@ div[style*="color: rgb(114, 137, 218);"],
 .hljs-regexp,
 .hljs-selector-id,
 .hljs-template-variable {
-  color: #fe8019;
+  color: #d65d0e;
 }
 
 .hljs-comment {
