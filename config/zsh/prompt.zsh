@@ -1,4 +1,3 @@
-_yellow=$([[ $TERM == *256color* ]] && echo "208" || echo "yellow")
 _newline=$'\n'
 _rainbow() {
 	str="$*"
@@ -16,17 +15,20 @@ _rainbow() {
 }
 _user=$(_rainbow $USER)
 
+_primary_color="white"
+_accent_color=$([[ $TERM == *256color* ]] && echo "208" || echo "yellow")
+
 setopt prompt_subst
 zstyle ":vcs_info:*" check-for-changes true
-zstyle ":vcs_info:*" unstagedstr "%F{$_yellow}*%f"
-zstyle ":vcs_info:*" stagedstr "%F{$_yellow}+%f"
+zstyle ":vcs_info:*" unstagedstr "%F{$_accent_color}*%f"
+zstyle ":vcs_info:*" stagedstr "%F{$_accent_color}+%f"
 zstyle ":vcs_info:git:*" formats "%b%u%c" # branch, unstaged, staged
 precmd() {
 	vcs_info
 	local git_branch=""
-	[ -n "$vcs_info_msg_0_" ] && git_branch="%F{white} [$vcs_info_msg_0_%f%F{white}]%f"
-	PS1="$_newline%F{white}%~%f$git_branch%f%F{white} [$_user%F{white}@%M] [%T]%(1j. [%j].)%f%F{$_yellow}$_newline>%f "
-	RPROMPT="%(?..%F{white}%?%f) "
+	[ -n "$vcs_info_msg_0_" ] && git_branch="%F{$_primary_color} [$vcs_info_msg_0_%f%F{$_primary_color}]%f"
+	PS1="$_newline%F{$_primary_color}%~%f$git_branch%f%F{$_primary_color} [$_user%F{$_primary_color}@%M] [%T]%(1j. [%j].)%f%F{$_accent_color}$_newline>%f "
+	RPROMPT="%(?..%F{$_primary_color}%?%f) "
 }
-PS2="%F{white}>%f "
-PS3="%F{white}?>%f "
+PS2="%F{$_primary_color}>%f "
+PS3="%F{$_primary_color}?>%f "

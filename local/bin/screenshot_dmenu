@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
-ordered=("desktop" "area" "window" "capture in 5s" "ocr")
 declare -A commands=(
 	["desktop"]="shotnow"
 	["area"]="shotarea"
 	["window"]="shotwin"
-	["capture in 5s"]="shot5"
+	["monitor"]="shotmon"
 	["ocr"]="ocr"
 )
 
@@ -18,23 +17,35 @@ copy_shot() {
 }
 
 shotnow() {
-	sleep 0.5; cd "$dir" && maim -f png -u | copy_shot
-}
-
-shot5() {
-	for i in {5..1}; do
-		dunstify -r 3 -t 1025 "Taking shot in ${i}s"
-		sleep 1
-	done
-	sleep 1.25; cd "$dir" && maim -f png -u | copy_shot
+	cd "$dir" && maim -f png -d 0.5 -qu | copy_shot
 }
 
 shotwin() {
-	sleep 0.5; cd "$dir" && maim -f png -ui "$(xdotool getactivewindow)" | copy_shot
+	cd "$dir" && maim -f png -d 0.5 -qui "$(xdotool getactivewindow)" | copy_shot
 }
 
 shotarea() {
-	sleep 0.5; cd "$dir" && maim -f png -souc 0.84,0.37,0.06 | copy_shot
+	cd "$dir" && maim -f png -d 0.5 -qsouc 0.84,0.37,0.06 | copy_shot
+}
+
+shotmon() {
+	declare -A monitors
+	_monitors=$(
+		xrandr --listactivemonitors |
+		awk '/+/ {print $4, $3}' |
+		awk -F'[x/+* ]' '{print $1,$2"x"$4"+"$6"+"$7}'
+	)
+
+	IFS=$'\n'
+	declare -A geometries
+	for i in $_monitors; do
+		monitors[${#monitors[@]}]="${i%% *}"
+		geometries[${i%% *}]="${i##* }"
+	done
+	unset IFS
+
+	target=$(printf "%s\n" "${monitors[@]}" | dmenu -l 4) || exit 1
+	cd "$dir" && maim -f png -d 0.5 -g ${geometries[${target}]} -qu | copy_shot
 }
 
 ocr() {
@@ -44,8 +55,13 @@ ocr() {
 	rm "$TEMP"
 }
 
-choice=$(printf "%s\n" "${ordered[@]}" | dmenu -l 5 2>/dev/null)
+choice=$(printf "%s\n" "${!commands[@]}" | dmenu -l 5 2>/dev/null)
 if [ -n "${commands[$choice]}" ]; then
+	delay=$(dmenu -p "delay in seconds (0-60)" <&-) && {
+		if [[ "$delay" =~ ^[0-9]+$ && "$delay" -gt 0 && "$delay" -lt 60 ]]; then
+			sleep "$delay"
+		fi
+	}
 	eval "${commands[$choice]}"
 	dunstify -r 4 -t 2000 "Copied to clipboard"
 fi

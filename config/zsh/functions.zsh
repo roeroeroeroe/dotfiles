@@ -45,17 +45,6 @@ hex() {
 	magick -size 600x600 xc:#"$color" "$color".png
 }
 
-cropmon() {
-	[ -z "$1" ] && return
-	[ ! -f "$1" ] && { echo "file does not exist"; return; }
-	identify "$1" &> /dev/null || { echo "not an image"; return; }
-	local ext="${1##*.}"
-	local new_img="$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 5)"
-	local size="1920x1080"
-	local offset="+1366+0"
-	magick "$1" -crop "$size$offset" +repage "$new_img.$ext"
-}
-
 undocc() {
 	local cmd="shred -zu"
 	[ "$1" = "--dry-run" ] && cmd="echo"

@@ -73,7 +73,8 @@ LYRICS=$(get_cached || lyrics_api || dumb) || {
 }
 
 TEMP=$(mktemp /tmp/lyrics.XXXXX)
+trap 'rm -f "$TEMP"' EXIT
+
 echo "$LYRICS" > "$TEMP"
 cache "$TEMP"
 st -e ${EDITOR:-vim} "$TEMP"
-rm "$TEMP"

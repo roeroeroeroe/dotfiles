@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+TITLE_MAX_LEN=20
+
 fmt_s() {
 	printf "%02d:%02d" "$(( $1 / 60 ))" "$(( $1 % 60 ))"
 }
@@ -10,8 +12,8 @@ handle_cmus() {
 	[ "$STATUS" = "stopped" ] && exit 0
 
 	case "$STATUS" in
-		"playing") ICON="󰐊" ;;
-		"paused") ICON="󰏤" ;;
+		"playing") ICON="󰐊 " ;;
+		"paused") ICON="󰏤 " ;;
 		*) ICON="" ;;
 	esac
 
@@ -20,9 +22,9 @@ handle_cmus() {
 	TS="$(fmt_s "$POS")/$(fmt_s "$DURATION")"
 
 	TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
-	[ "${#TITLE}" -gt 20 ] && TITLE="${TITLE:0:20} ..."
+	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN} ..."
 
-	echo "$ICON [$TS] $TITLE"
+	echo "$ICON[$TS] $TITLE"
 }
 
 handle_playerctl() {
@@ -36,7 +38,7 @@ handle_playerctl() {
 	esac
 
 	TITLE=$(playerctl metadata title)
-	[ "${#TITLE}" -gt 20 ] && TITLE="${TITLE:0:20} ..."
+	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN} ..."
 
 	echo "$ICON$TITLE"
 }
