@@ -4,4 +4,4 @@ BEFORE=$(playerctl status 2>/dev/null)
 [ -z "$BEFORE" ] && exit 0 # no players found
 
 playerctl play-pause
-dunstify -r 2 -t 2000 "$([ "$BEFORE" = "Playing" ] && echo Paused || echo Playing)"
+notify-send -r 2 -t 2000 "$([ "$BEFORE" = "Playing" ] && echo Paused || echo Playing)"

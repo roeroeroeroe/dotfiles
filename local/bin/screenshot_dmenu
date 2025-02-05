@@ -63,5 +63,5 @@ if [ -n "${commands[$choice]}" ]; then
 		fi
 	}
 	eval "${commands[$choice]}"
-	dunstify -r 4 -t 2000 "Copied to clipboard"
+	notify-send -r 4 -t 2000 "Copied to clipboard"
 fi

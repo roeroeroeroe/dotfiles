@@ -40,7 +40,7 @@ libnotify
 gnu-netcat
 mtr
 nmap
-ttf-terminus-nerd
+terminus-font
 parallel
 picom
 songrec
@@ -56,3 +56,10 @@ xorg-xinput
 xorg-xsetroot
 xorg-setxkbmap
 html-xml-utils
+ldns
+less
+pavucontrol
+tree
+whois
+xdg-user-dirs
+zip

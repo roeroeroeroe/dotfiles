@@ -1,7 +1,7 @@
 static int topbar = 1;
 static const char *fonts[] = {
 	"JetBrainsMono NFP:style=SemiBold:pixelsize=16",
-	// "Terminess Nerd Font:pixelsize=16",
+	// "Terminus:pixelsize=16",
 };
 static const char *prompt = NULL;
 static const char *colors[SchemeLast][2] = {

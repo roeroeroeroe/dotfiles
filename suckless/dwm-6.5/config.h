@@ -10,7 +10,7 @@ static const int showbar            = 1;
 static const int topbar             = 1;
 static const char *fonts[]          = {
 	"JetBrainsMono NFP:style=SemiBold:pixelsize=16",
-	// "Terminess Nerd Font:pixelsize=16",
+	// "Terminus:pixelsize=16",
 	"Noto Color Emoji:size=12"
 };
 
