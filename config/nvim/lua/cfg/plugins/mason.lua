@@ -13,7 +13,6 @@ return {
 				"ts_ls",
 				"gopls",
 				"bashls",
-				"clangd",
 			},
 		})
 
@@ -21,7 +20,6 @@ return {
 			ensure_installed = {
 				"prettier",
 				"stylua",
-				"clang-format",
 			},
 		})
 	end,

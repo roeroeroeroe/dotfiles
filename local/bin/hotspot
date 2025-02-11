@@ -3,7 +3,7 @@
 # deps: networkmanager, dnsmasq, nftables, tor, iptables
 CONNECTION_NAME="Hotspot"
 WLAN_IF="wlan0"
-SSID="$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 12)"
+SSID="$(LC_ALL=C tr -dc A-Za-z0-9 < /dev/urandom | head -c 12)"
 UUIDS=$(nmcli c show | grep "$CONNECTION_NAME" | awk '{print $2}')
 TOR=false
 TOR_LOG_FILE="$HOME/tor_hotspot.log"
@@ -58,7 +58,7 @@ nmcli d show "$WLAN_IF" | grep -q "(connected)" && {
 	exit 1;
 }
 
-PASSWORD=$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 8)
+PASSWORD="$(LC_ALL=C tr -dc A-Za-z0-9 < /dev/urandom | head -c 8)"
 
 nmcli c add \
 	type wifi \

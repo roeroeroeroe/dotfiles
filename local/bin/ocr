@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 TEMP=$(mktemp /tmp/ocr.XXXXX.png)
-maim -souc 0.84,0.37,0.06 > "$TEMP" || { rm "$TEMP"; exit; }
+trap 'rm -f "$TEMP"' EXIT
+
+maim -souc 0.84,0.37,0.06 > "$TEMP" || exit
 tesseract "$TEMP" - -l eng 2>/dev/null
-rm "$TEMP"

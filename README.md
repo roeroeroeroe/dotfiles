@@ -16,6 +16,7 @@ git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.config/zsh/plu
 proxychains git clone https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/webtunnel
 cd webtunnel/main/client && go build
 sudo cp client /usr/local/bin/webtunnel
+[ -f /etc/tor/torrc ] && sudo sh -c 'echo "ClientTransportPlugin webtunnel exec /usr/local/bin/webtunnel" >> /etc/tor/torrc'
 ```
 - [GTK theme](https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme)
 - [GTK icons](https://github.com/jmattheis/gruvbox-dark-icons-gtk)

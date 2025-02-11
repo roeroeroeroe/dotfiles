@@ -5,4 +5,4 @@ proxies="${*}${stdin:+${*:+ }${stdin}}"
 
 [ -z "$proxies" ] && exit
 
-tr " " "\n" <<< "$proxies" | parallel -j 32 '[ -n "$(curl -sm 3 -x {} api.ipify.org)" ] && echo {}'
+tr " " "\n" <<< "$proxies" | parallel -j 32 '[ -n "$(curl -sm 3 -x {} https://api.ipify.org)" ] && echo {}'

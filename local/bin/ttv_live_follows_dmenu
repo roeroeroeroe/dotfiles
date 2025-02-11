@@ -3,7 +3,7 @@
 # usage: ttv_live_follows_dmenu <user>
 GQL_URL="https://gql.twitch.tv/gql"
 CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
-LOGIN="${1:-8roe}"
+LOGIN="${1:-fyow}"
 DMENU_LINES=20
 
 fmt_timediff() {
@@ -90,7 +90,7 @@ query follows {
 EOF
 		)
 		RES=$(gql "$QUERY")
-		if [ $? -ne 0 ]; then
+		if [[ $? -ne 0 || -z "$RES" ]]; then
 			if [ -n "$RES" ]; then
 				echo "gql request failed: $RES"
 			else

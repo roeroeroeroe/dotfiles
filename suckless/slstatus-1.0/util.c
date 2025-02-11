@@ -117,11 +117,8 @@ fmt_human(uintmax_t num, int base)
 	scaled = num;
 	for (i = 0; i < prefixlen && scaled >= base; i++)
 		scaled /= base;
-	if (i > 0) {
-		return bprintf("%.1f %s", scaled, prefix[i]);
-	} else {
-		return bprintf("%.1f%s", scaled, prefix[i]);
-	}
+	return i > 0 ? bprintf("%.1f %s", scaled, prefix[i])
+	             : bprintf("%.1f", scaled);
 }
 
 int

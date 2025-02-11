@@ -14,6 +14,13 @@ sl() {
 	done
 }
 
+slrec() {
+	[ -z "$1" ] && return 1
+	streamlink \
+		--output "${1}_{time:%Y%m%d%H%M%S}.ts" \
+		"twitch.tv/$1" best
+}
+
 yt() {
 	proxychains yt-dlp -f 'bestvideo[height=1080][fps>=48]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
 }
@@ -24,15 +31,14 @@ http() {
 }
 
 new() {
-	local file=${1:-"$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z | head -c 5).sh"}
+	local file=${1:-"$(LC_ALL=C tr -dc A-Za-z < /dev/urandom | head -c 5).sh"}
 	[[ "$file" == */* ]] && { echo "invalid filename"; return; }
 	[ -f "$file" ] && { echo "file already exists"; return; }
 	echo '#!/usr/bin/env bash\n\n' > "$file"; chmod +x "$file"; ${EDITOR:-vim} "$file"
 }
 
 ipapi() {
-	local stdin=""
-	[ -p /dev/stdin ] && stdin=$(</dev/stdin)
+	local stdin=""; [ -p /dev/stdin ] && stdin=$(</dev/stdin)
 	local input="${*}${stdin:+${*:+ }${stdin}}"
 	[ -z "$input" ] && return
 	echo "$input" | tr " " "\n" | parallel -j 4 'curl -s "ip-api.com/json/{}" | jq'
@@ -55,12 +61,4 @@ undocc() {
 			[ ! -e "$target" ] && $cmd "$f"
 		done
 	' sh "$cmd" {} +
-}
-
-lower() {
-	local stdin=""
-	[ -p /dev/stdin ] && stdin=$(</dev/stdin)
-	input="${*}${stdin:+${*:+ }${stdin}}"
-	[ -z "$input" ] && return
-	echo "$input" | tr "[:upper:]" "[:lower:]" | tr " " "_"
 }
