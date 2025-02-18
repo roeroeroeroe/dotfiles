@@ -66,54 +66,55 @@ static const char *dmenucmd[] = {
 };
 
 static const Key keys[] = {
-	/* modifier                     key        function        argument */
-	{ Mod1Mask,                     XK_p,      spawn,          SHCMD("play_pause_notify") },
-	{ Mod1Mask,                     XK_m,      spawn,          SHCMD("toggle_mic_notify") },
-	{ Mod1Mask|ControlMask,         XK_b,      spawn,          SHCMD("browser_bookmarks_dmenu") },
-	{ Mod1Mask|ControlMask,         XK_m,      spawn,          SHCMD("powermenu_dmenu") },
-	{ 0,                            XK_Print,  spawn,          SHCMD("screenshot_dmenu") },
-	{ Mod1Mask|ControlMask,         XK_n,      spawn,          SHCMD("notes_dmenu") },
-	{ Mod1Mask|ControlMask,         XK_p,      spawn,          SHCMD("ttv_live_follows_dmenu") },
-	{ Mod1Mask|ControlMask,         XK_l,      spawn,          SHCMD("cmus_lyrics") },
-	{ Mod1Mask|ControlMask,         XK_s,      spawn,          SHCMD("pavucontrol") },
-	{ Mod1Mask|ControlMask,         XK_t,      spawn,          SHCMD("tor-browser") },
-	{ Mod1Mask|ControlMask,         XK_r,      spawn,          SHCMD("simplescreenrecorder --no-systray") },
-	{ Mod1Mask|ControlMask,         XK_c,      spawn,          SHCMD("cmus_launcher") },
-	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
-	{ MODKEY|ShiftMask,             XK_j,      rotatestack,    {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_k,      rotatestack,    {.i = -1 } },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
-	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_w,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_space,  spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_s,      togglefloating, {0} },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY,                       XK_minus,  setgaps,        {.i = -6 } },
-	{ MODKEY,                       XK_equal,  setgaps,        {.i = +6 } },
-	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0 } },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
-	TAGKEYS(                        XK_0,                      9)
-	{ MODKEY,                       XK_grave,  view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_grave,  tag,            {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	/* modifier                     keycode function         argument */
+	{ Mod1Mask,             /* p */ 33,    spawn,            SHCMD("play_pause_notify") },
+	{ Mod1Mask,             /* m */ 58,    spawn,            SHCMD("toggle_mic_notify") },
+	{ Mod1Mask|ControlMask, /* b */ 56,    spawn,            SHCMD("browser_bookmarks_dmenu") },
+	{ Mod1Mask|ControlMask, /* m */ 58,    spawn,            SHCMD("powermenu_dmenu") },
+	{ 0,                /* Print */ 107,   spawn,            SHCMD("screenshot_dmenu") },
+	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            SHCMD("notes_dmenu") },
+	{ Mod1Mask|ControlMask, /* p */ 33,    spawn,            SHCMD("ttv_live_follows_dmenu") },
+	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            SHCMD("cmus_lyrics") },
+	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            SHCMD("pavucontrol") },
+	{ Mod1Mask|ControlMask, /* t */ 28,    spawn,            SHCMD("tor-browser") },
+	{ Mod1Mask|ControlMask, /* r */ 27,    spawn,            SHCMD("simplescreenrecorder --no-systray") },
+	{ Mod1Mask|ControlMask, /* c */ 54,    spawn,            SHCMD("cmus_launcher") },
+	{ MODKEY,          /* Return */ 36,    spawn,            {.v = termcmd } },
+	{ MODKEY,               /* b */ 56,    togglebar,        {0} },
+	{ MODKEY|ShiftMask,     /* b */ 56,    toggletopbar,     {0} },
+	{ MODKEY|ShiftMask,     /* j */ 44,    rotatestack,      {.i = +1 } },
+	{ MODKEY|ShiftMask,     /* k */ 45,    rotatestack,      {.i = -1 } },
+	{ MODKEY,               /* j */ 44,    focusstack,       {.i = +1 } },
+	{ MODKEY,               /* k */ 45,    focusstack,       {.i = -1 } },
+	{ MODKEY,               /* h */ 43,    setmfact,         {.f = -0.05} },
+	{ MODKEY,               /* l */ 46,    setmfact,         {.f = +0.05} },
+	{ MODKEY|ShiftMask,/* Return */ 36,    zoom,             {0} },
+	{ MODKEY,             /* Tab */ 23,    view,             {0} },
+	{ MODKEY,               /* w */ 25,    killclient,       {0} },
+	{ MODKEY,               /* t */ 28,    setlayout,        {.v = &layouts[0]} },
+	{ MODKEY,               /* m */ 58,    setlayout,        {.v = &layouts[2]} },
+	{ MODKEY,           /* space */ 65,    spawn,            {.v = dmenucmd } },
+	{ MODKEY,               /* s */ 39,    togglefloating,   {0} },
+	{ MODKEY,           /* comma */ 59,    focusmon,         {.i = -1 } },
+	{ MODKEY,          /* period */ 60,    focusmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask, /* comma */ 59,    tagmon,           {.i = -1 } },
+	{ MODKEY|ShiftMask,/* period */ 60,    tagmon,           {.i = +1 } },
+	{ MODKEY,           /* minus */ 20,    setgaps,          {.i = -6 } },
+	{ MODKEY,           /* equal */ 21,    setgaps,          {.i = +6 } },
+	{ MODKEY|ShiftMask, /* equal */ 21,    setgaps,          {.i = 0 } },
+	{ MODKEY,           /* grave */ 49,    view,             {.ui = ~0 } },
+	{ MODKEY|ShiftMask, /* grave */ 49,    tag,              {.ui = ~0 } },
+	{ MODKEY|ShiftMask,     /* q */ 24,    quit,             {0} },
+	TAGKEYS(                /* 1 */ 10,                      0)
+	TAGKEYS(                /* 2 */ 11,                      1)
+	TAGKEYS(                /* 3 */ 12,                      2)
+	TAGKEYS(                /* 4 */ 13,                      3)
+	TAGKEYS(                /* 5 */ 14,                      4)
+	TAGKEYS(                /* 6 */ 15,                      5)
+	TAGKEYS(                /* 7 */ 16,                      6)
+	TAGKEYS(                /* 8 */ 17,                      7)
+	TAGKEYS(                /* 9 */ 18,                      8)
+	TAGKEYS(                /* 0 */ 19,                      9)
 };
 
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */

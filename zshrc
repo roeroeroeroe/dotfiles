@@ -6,7 +6,7 @@ autoload -U vcs_info select-word-style compinit; compinit -d "$ZSH_PATH/zcompdum
 . <(dircolors -b 2>/dev/null || :)
 
 if [ -d "$ZSH_PATH" ]; then
-	for f in $ZSH_PATH/*.zsh; do [ -r "$f" ] && . "$f"; done
+	for f in "$ZSH_PATH"/*.zsh(N); do [ -r "$f" ] && . "$f"; done
 	unset f
 fi
 

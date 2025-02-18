@@ -55,6 +55,7 @@ xorg-xrandr
 xorg-xinput
 xorg-xsetroot
 xorg-setxkbmap
+xorg-xev
 html-xml-utils
 ldns
 less

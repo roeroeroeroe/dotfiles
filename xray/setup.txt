@@ -1,11 +1,21 @@
 Create a new subdomain (here "XXX") and disable cloudflare proxying for it
 Enable cloudflare grpc proxying for the root domain
 
+Disable ECH for root domain:
+curl -X PATCH "https://api.cloudflare.com/client/v4/zones/ZONE_ID/settings/ech" \
+	-H "X-Auth-Key: KEY" \
+	-H "X-Auth-Email: EMAIL" \
+	-H "Content-Type: application/json" \
+	-d '{"id":"ech","value":"off"}'
+curl -s "https://dns.google/resolve?name=example.com&type=HTTPS" |
+	jq -r '.Answer[0].data' |
+	grep -q ech= || echo ech disabled
+
 tcp_tls:
-vless://$CLIENT_ID@XXX.example.com:443/?encryption=none&type=tcp&fp=chrome&security=tls&flow=xtls-rprx-vision&packetEncoding=xudp
+vless://CLIENT_ID@XXX.example.com:443/?encryption=none&type=tcp&fp=chrome&security=tls&flow=xtls-rprx-vision&packetEncoding=xudp
 
 grpc_tls (via cloudflare):
-vless://$CLIENT_ID@example.com:443/?encryption=none&type=grpc&fp=chrome&security=tls&packetEncoding=xudp&serviceName=$GRPC_PATH
+vless://CLIENT_ID@example.com:443/?encryption=none&type=grpc&fp=chrome&security=tls&packetEncoding=xudp&serviceName=GRPC_PATH
 
 shadowsocks:
-ss://2022-blake3-aes-128-gcm:$SS_PASS@$SS_IP:40404
+ss://2022-blake3-aes-128-gcm:SS_PASS@SERVER_IP:40404

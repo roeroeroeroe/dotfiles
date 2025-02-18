@@ -8,25 +8,18 @@ DMENU_LINES=20
 
 fmt_timediff() {
 	[ -z "$1" ] && return 1
-	TS=$1
-	NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-	TS_EPOCH=$(date -u -d "$TS" +%s)
-	NOW_EPOCH=$(date -u -d "$NOW" +%s)
-
+	TS_EPOCH=$(date -u -d "$1" +%s) || return 1
+	NOW_EPOCH=$(date -u +%s)
 	DURATION=$((NOW_EPOCH - TS_EPOCH))
 
 	H=$((DURATION / 3600))
-	M=$(((DURATION % 3600) / 60))
+	M=$((DURATION % 3600 / 60))
 	S=$((DURATION % 60))
 
-	if [ $H -gt 0 ]; then
-		echo "${H}h ${M}m ${S}s"
-	elif [ $M -gt 0 ]; then
-		echo "${M}m ${S}s"
-	else
-		echo "${S}s"
-	fi
+	[ $H -gt 0 ] && printf "%dh " "$H"
+	[ $M -gt 0 ] && printf "%dm " "$M"
+	printf "%ds\n" "$S"
 }
 
 play() {

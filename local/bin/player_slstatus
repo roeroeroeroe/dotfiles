@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 TITLE_MAX_LEN=20
+PLAYING_ICON="󰐊"
+PAUSED_ICON="󰏤"
 
 fmt_s() {
 	printf "%02d:%02d" "$(( $1 / 60 ))" "$(( $1 % 60 ))"
@@ -12,8 +14,8 @@ handle_cmus() {
 	[ "$STATUS" = "stopped" ] && exit 0
 
 	case "$STATUS" in
-		"playing") ICON="󰐊 " ;;
-		"paused") ICON="󰏤 " ;;
+		"playing") ICON="$PLAYING_ICON " ;;
+		"paused") ICON="$PAUSED_ICON " ;;
 		*) ICON="" ;;
 	esac
 
@@ -32,8 +34,8 @@ handle_playerctl() {
 	[ -z "$STATUS" ] && exit 0
 
 	case "$STATUS" in
-		"Playing") ICON="󰐊 " ;;
-		"Paused") ICON="󰏤 " ;;
+		"Playing") ICON="$PLAYING_ICON " ;;
+		"Paused") ICON="$PAUSED_ICON " ;;
 		*) ICON="" ;;
 	esac
 

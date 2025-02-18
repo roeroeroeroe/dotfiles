@@ -31,7 +31,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <X11/cursorfont.h>
-#include <X11/keysym.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
@@ -117,7 +116,7 @@ struct Client {
 
 typedef struct {
 	unsigned int mod;
-	KeySym keysym;
+	KeyCode keycode;
 	void (*func)(const Arg *);
 	const Arg arg;
 } Key;
@@ -247,6 +246,7 @@ static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *m);
 static void togglebar(const Arg *arg);
+static void toggletopbar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -1141,26 +1141,15 @@ grabkeys(void)
 {
 	updatenumlockmask();
 	{
-		unsigned int i, j, k;
+		unsigned int i, j;
 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
-		int start, end, skip;
-		KeySym *syms;
 
 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
-		XDisplayKeycodes(dpy, &start, &end);
-		syms = XGetKeyboardMapping(dpy, start, end - start + 1, &skip);
-		if (!syms)
-			return;
-		for (k = start; k <= end; k++)
-			for (i = 0; i < LENGTH(keys); i++)
-				/* skip modifier codes, we do that ourselves */
-				if (keys[i].keysym == syms[(k - start) * skip])
-					for (j = 0; j < LENGTH(modifiers); j++)
-						XGrabKey(dpy, k,
-							 keys[i].mod | modifiers[j],
-							 root, True,
-							 GrabModeAsync, GrabModeAsync);
-		XFree(syms);
+		for (i = 0; i < LENGTH(keys); i++)
+			for (j = 0; j < LENGTH(modifiers); j++)
+				XGrabKey(dpy, keys[i].keycode,
+				         keys[i].mod | modifiers[j], root,
+				         True, GrabModeAsync, GrabModeAsync);
 	}
 }
 
@@ -1187,13 +1176,11 @@ void
 keypress(XEvent *e)
 {
 	unsigned int i;
-	KeySym keysym;
 	XKeyEvent *ev;
 
 	ev = &e->xkey;
-	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
 	for (i = 0; i < LENGTH(keys); i++)
-		if (keysym == keys[i].keysym
+		if (ev->keycode == keys[i].keycode
 		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
 		&& keys[i].func)
 			keys[i].func(&(keys[i].arg));
@@ -1824,6 +1811,15 @@ setgaps(const Arg *arg)
 		selmon->gappx = 0;
 	else
 		selmon->gappx += arg->i;
+	arrange(selmon);
+}
+
+void
+toggletopbar(const Arg *arg)
+{
+    selmon->topbar = !selmon->topbar;
+	updatebarpos(selmon);
+	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
 	arrange(selmon);
 }
 
