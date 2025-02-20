@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+UNDO_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/nvim/undo"
+
+[ ! -d "$UNDO_DIR" ] && { echo "$UNDO_DIR is not a directory"; exit 1; }
+
+[ "$1" = "--dry-run" ] && CMD=("echo") || CMD=("rm" "-v")
+
+shopt -s nullglob
+for f in "$UNDO_DIR"/*; do
+	[[ ! -e "$(basename "$f" | sed "s/%/\\//g")" ]] && "${CMD[@]}" "$f"
+done

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+MUSIC_DIR="$HOME/Music"
+LYRICS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lyrics"
+
+[ ! -d "$MUSIC_DIR" ] && { echo "$MUSIC_DIR is not a directory"; exit 1; }
+[ ! -d "$LYRICS_DIR" ] && { echo "$LYRICS_DIR is not a directory"; exit 1; }
+
+[ "$1" = "--dry-run" ] && CMD=("echo") || CMD=("rm" "-v")
+
+slug() {
+	echo "$@" | iconv -t ascii//TRANSLIT | tr "[:upper:]" "[:lower:]" | sed \
+		-e "s/&/and/g" \
+		-e "s/[[:space:]:$]\+/-/g" \
+		-e "s/[^a-z0-9-]//g"
+}
+
+shopt -s nullglob
+
+declare -A e_map
+for f in "$MUSIC_DIR"/*; do
+	IFS=$'\n' read -d "" -r TITLE ARTIST < <(ffprobe \
+		-v quiet -show_entries format_tags=title,artist \
+		-of default=noprint_wrappers=1:nokey=1 "$f")
+
+	[[ -n "$TITLE" && -n "$ARTIST" ]] && e_map["$(slug "$ARTIST")-$(slug "$TITLE")"]=1
+done
+
+for f in "$LYRICS_DIR"/*; do
+	[[ ! ${e_map["$(basename "$f")"]} ]] && "${CMD[@]}" "$f"
+done

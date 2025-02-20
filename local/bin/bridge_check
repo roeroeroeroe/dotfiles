@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+[ ! -p /dev/stdin ] && {
+	echo "Usage: cat <bridges_file> | $(basename "$0")";
+	exit 1;
+}
+
+TIMEOUT=10
+TOR_LOG_FILE="/tmp/tor.log"
+TORRC="/tmp/torrc"
+TOR="$(command -v tor)"
+OBFS4PROXY="$(command -v obfs4proxy)"
+WEBTUNNEL="$(command -v webtunnel)"
+
+[ -z "$TOR" ] && {
+	echo "tor is not installed";
+	exit 1;
+}
+
+[ -z "$OBFS4PROXY" ] && echo "obfs4proxy is not installed, skipping obfs4 bridges"
+[ -z "$WEBTUNNEL" ] && echo "webtunnel is not installed, skipping webtunnel bridges"
+
+trap 'rm -f "$TOR_LOG_FILE" "$TORRC"' EXIT
+killall -q tor
+
+while IFS= read -r bridge; do
+	if [[ "$bridge" = obfs4* ]]; then
+		[ -z "$OBFS4PROXY" ] && continue
+	elif [[ "$bridge" = webtunnel* ]]; then
+		[ -z "$WEBTUNNEL" ] && continue
+	else
+		echo "skipping unknown transport: $bridge"
+		continue
+	fi
+
+	echo "UseBridges 1
+ClientTransportPlugin obfs4 exec $OBFS4PROXY
+ClientTransportPlugin webtunnel exec $WEBTUNNEL
+Bridge $bridge
+Log notice file $TOR_LOG_FILE" > "$TORRC"
+
+	"$TOR" -f "$TORRC" &> /dev/null &
+	TOR_PID=$!
+
+	SECONDS=0
+	while (( SECONDS < TIMEOUT )); do
+		if grep -q "Bootstrapped 100% (done): Done" "$TOR_LOG_FILE" 2> /dev/null; then
+			echo "$bridge"
+			break
+		fi
+		sleep 1
+	done
+
+	kill "$TOR_PID" 2> /dev/null
+	rm -f "$TOR_LOG_FILE" "$TORRC"
+	sleep 1
+done
