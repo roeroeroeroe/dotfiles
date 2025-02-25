@@ -26,7 +26,7 @@ handle_cmus() {
 	TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
 	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN} ..."
 
-	echo "$ICON[$TS] $TITLE"
+	echo "$ICON$TS $TITLE"
 }
 
 handle_playerctl() {
