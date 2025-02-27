@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
 
 target="en"
-
-while getopts "l:" opt; do
-	case $opt in
-		l) target="$OPTARG" ;;
-		*) echo "Usage: $(basename "$0") [-l <language>] [text]"; exit 1 ;;
-	esac
-done
-shift $((OPTIND - 1))
-
+[[ "$1" = "-l" && -n "$2" ]] && { target="$2"; shift 2; }
 
 [ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
 input="${*}${stdin:+${*:+ }${stdin}}"

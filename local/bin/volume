@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+[ -z "$1" ] && {
+	wpctl get-volume @DEFAULT_SINK@ | awk '{
+		if ($3) {
+			gsub(/\[|\]/, "", $3)
+			print $3
+		} else print $2 * 100 "%"}'
+	exit 0
+}
+
+step="0.05"
+
+case "$1" in
+	-) wpctl set-volume @DEFAULT_SINK@ $step- ;;
+	+) wpctl set-volume @DEFAULT_SINK@ $step+ ;;
+	mute) wpctl set-mute @DEFAULT_SINK@ toggle ;;
+	*) exit 1 ;;
+esac
+
+kill -36 $(pidof slstatus) # sb volume

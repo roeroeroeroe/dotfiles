@@ -1,6 +1,6 @@
 static int topbar = 1;
 static const char *fonts[] = {
-	"JetBrainsMono NFP:style=SemiBold:pixelsize=16",
+	"JetBrainsMono NFP:style=SemiBold:pixelsize=14",
 	// "Terminus:pixelsize=16",
 };
 static const char *prompt = NULL;

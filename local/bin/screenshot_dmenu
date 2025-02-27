@@ -1,34 +1,40 @@
 #!/usr/bin/env bash
 
-declare -A commands=(
-	["desktop"]="shotnow"
-	["area"]="shotarea"
-	["window"]="shotwin"
-	["monitor"]="shotmon"
-	["ocr"]="ocr"
-)
+functions=("desktop" "area" "window" "monitor" "ocr")
 
 dir="$(xdg-user-dir PICTURES)/Screenshots"
 file="$(date +%Y-%m-%d-%H-%M-%S).png"
 [ -d "$dir" ] || mkdir -p "$dir"
 
-copy_shot() {
+delay=0
+input=$(dmenu -p "delay in seconds (0-60)" <&-) && {
+	if [[ "$input" =~ ^[0-9]+$ && "$input" -gt 0 && "$input" -lt 60 ]]; then
+		delay=$input
+	fi
+}
+
+save() {
 	tee "$file" | xclip -se c -t image/png
 }
 
-shotnow() {
-	cd "$dir" && maim -f png -d 0.5 -qu | copy_shot
+capture() {
+	sleep $delay
+	cd "$dir" && maim -f png "$@" | save
 }
 
-shotwin() {
-	cd "$dir" && maim -f png -d 0.5 -qui "$(xdotool getactivewindow)" | copy_shot
+desktop() {
+	capture -d 0.5 -qu
 }
 
-shotarea() {
-	cd "$dir" && maim -f png -d 0.5 -qsouc 0.84,0.37,0.06 | copy_shot
+area() {
+	capture -d 0.5 -qsouc 0.84,0.37,0.06
 }
 
-shotmon() {
+window() {
+	capture -d 0.5 -qui "$(xdotool getactivewindow)"
+}
+
+monitor() {
 	declare -A monitors
 	_monitors=$(
 		xrandr --listactivemonitors |
@@ -45,23 +51,27 @@ shotmon() {
 	unset IFS
 
 	target=$(printf "%s\n" "${monitors[@]}" | dmenu -l 4) || exit 1
-	cd "$dir" && maim -f png -d 0.5 -g ${geometries[${target}]} -qu | copy_shot
+	for m in "${monitors[@]}"; do
+		[ "$m" = "$target" ] && {
+			capture -d 0.5 -g ${geometries[${target}]} -qu
+			return
+		}
+	done
+	exit
 }
 
 ocr() {
 	TEMP=$(mktemp /tmp/ocr.XXXXX.png)
-	maim -souc 0.84,0.37,0.06 > "$TEMP" || { rm "$TEMP"; exit; }
+	trap 'rm -f "$TEMP"' EXIT
+	maim -souc 0.84,0.37,0.06 > "$TEMP" || exit
 	tesseract "$TEMP" - -l eng 2>/dev/null | xclip -se c
-	rm "$TEMP"
 }
 
-choice=$(printf "%s\n" "${!commands[@]}" | dmenu -l 5 2>/dev/null)
-if [ -n "${commands[$choice]}" ]; then
-	delay=$(dmenu -p "delay in seconds (0-60)" <&-) && {
-		if [[ "$delay" =~ ^[0-9]+$ && "$delay" -gt 0 && "$delay" -lt 60 ]]; then
-			sleep "$delay"
-		fi
+choice=$(printf "%s\n" "${functions[@]}" | dmenu -l 5 2>/dev/null) || exit
+for f in "${functions[@]}"; do
+	[ "$f" = "$choice" ] && {
+		eval "$f"
+		notify-send -r 4 -t 2000 "Copied to clipboard"
+		exit 0
 	}
-	eval "${commands[$choice]}"
-	notify-send -r 4 -t 2000 "Copied to clipboard"
-fi
+done

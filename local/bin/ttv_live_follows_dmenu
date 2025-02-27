@@ -44,8 +44,8 @@ gql() {
 	)
 
 	ERR=$(jq -r '.error // empty' <<< "$RES"); [ -n "$ERR" ] && {
-		echo "$ERR";
-		return 1;
+		echo "$ERR"
+		return 1
 	}
 
 	echo "$RES"
@@ -92,12 +92,12 @@ EOF
 			return 1;
 		fi
 		jq -e '.data.user? // empty' <<< "$RES" > /dev/null || {
-			echo "user $LOGIN does not exist";
-			return 1;
+			echo "user $LOGIN does not exist"
+			return 1
 		}
 		jq -e '.data.user.follows.edges? // empty | length > 0' <<< "$RES" > /dev/null || {
-			echo "$LOGIN doesn't follow anyone";
-			return 1;
+			echo "$LOGIN doesn't follow anyone"
+			return 1
 		}
 
 		jq -c '.data.user.follows.edges[]' <<< "$RES" | while read -r EDGE; do
@@ -133,12 +133,12 @@ EOF
 
 LIVE_CHANNELS=$(get_live_followed_channels) || {
 	notify-send "$LIVE_CHANNELS" # error
-	exit 1;
+	exit 1
 }
 
 [ -z "$LIVE_CHANNELS" ] && {
-	notify-send "none of $LOGIN's followed channels are currently live";
-	exit 0;
+	notify-send "none of $LOGIN's followed channels are currently live"
+	exit 0
 }
 
 SORTED_CHANNELS=$(echo "$LIVE_CHANNELS" | awk '

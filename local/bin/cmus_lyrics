@@ -67,9 +67,9 @@ dumb() {
 	echo "$LYRICS"
 }
 
-LYRICS=$(get_cached || lyrics_api || dumb) || {
-	notify-send "lyrics not found";
-	exit;
+LYRICS=$(get_cached || dumb || lyrics_api) || {
+	notify-send "lyrics not found"
+	exit
 }
 
 TEMP=$(mktemp /tmp/lyrics.XXXXX)

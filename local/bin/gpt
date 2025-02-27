@@ -30,9 +30,9 @@ while [ "$STATUS" = "pending" ]; do
 		"pending") sleep 0.5 ;;
 		"completed") jq -r '.gpt' <<< "$RESPONSE" ;;
 		"error")
-			MESSAGE=$(jq -r '.message // empty' <<< "$RESPONSE");
-			MESSAGE=${MESSAGE:-"N/A"};
-			echo "Error: $MESSAGE";
+			MESSAGE=$(jq -r '.message // empty' <<< "$RESPONSE")
+			MESSAGE=${MESSAGE:-"N/A"}
+			echo "Error: $MESSAGE"
 			exit 1 ;;
 		*) echo "Unexpected status: $STATUS"; exit 1 ;;
 	esac

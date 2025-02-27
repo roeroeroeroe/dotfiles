@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-[ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
-proxies="${*}${stdin:+${*:+ }${stdin}}"
-
-[ -z "$proxies" ] && exit
-
-tr " " "\n" <<< "$proxies" | parallel -j 32 '[ -n "$(curl -sm 3 -x {} https://api.ipify.org)" ] && echo {}'

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 [ ! -p /dev/stdin ] && {
-	echo "Usage: cat <bridges_file> | $(basename "$0")";
-	exit 1;
+	echo "Usage: cat <bridges_file> | $(basename "$0")"
+	exit 1
 }
 
 TIMEOUT=10
@@ -12,11 +12,7 @@ TOR="$(command -v tor)"
 OBFS4PROXY="$(command -v obfs4proxy)"
 WEBTUNNEL="$(command -v webtunnel)"
 
-[ -z "$TOR" ] && {
-	echo "tor is not installed";
-	exit 1;
-}
-
+[ -z "$TOR" ] && { echo "tor is not installed"; exit 1; }
 [ -z "$OBFS4PROXY" ] && echo "obfs4proxy is not installed, skipping obfs4 bridges"
 [ -z "$WEBTUNNEL" ] && echo "webtunnel is not installed, skipping webtunnel bridges"
 

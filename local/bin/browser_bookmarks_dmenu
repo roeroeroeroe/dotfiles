@@ -15,6 +15,6 @@ CHOICE=$(printf "%s\n" "${URLS[@]}" | dmenu -l "$DMENU_LINES") || exit 0
 
 for u in "${URLS[@]}"; do
 	[ "$u" = "$CHOICE" ] && {
-		xdg-open "$(awk '{print $1}' <<< "$CHOICE")" & exit 0;
+		xdg-open "$(awk '{print $1}' <<< "$CHOICE")" & exit 0
 	}
 done

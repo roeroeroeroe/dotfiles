@@ -10,13 +10,17 @@ TOR_LOG_FILE="$HOME/tor_hotspot.log"
 
 hotspot_down() {
 	[ -z "$UUIDS" ] && {
-		echo "No connection with name '$CONNECTION_NAME' found";
-		exit 1;
+		echo "No connection with name '$CONNECTION_NAME' found"
+		exit 1
 	}
 
-	sudo iptables -t nat -F
+	sudo iptables -t nat -C PREROUTING -i "$WLAN_IF" -p udp --dport 53 -j REDIRECT --to-ports 53 && \
+		sudo iptables -t nat -D PREROUTING -i "$WLAN_IF" -p udp --dport 53 -j REDIRECT --to-ports 53
+	sudo iptables -t nat -C PREROUTING -i "$WLAN_IF" -p tcp --syn -j REDIRECT --to-ports 9040 && \
+		sudo iptables -t nat -D PREROUTING -i "$WLAN_IF" -p tcp --syn -j REDIRECT --to-ports 9040
 	sudo killall -q tor
 	[ -f "$TOR_LOG_FILE" ] && rm "$TOR_LOG_FILE"
+
 	for UUID in $UUIDS; do
 		nmcli c delete uuid "$UUID"
 	done
@@ -38,24 +42,19 @@ setup_tor() {
 
 for arg in "$@"; do
 	case $arg in
-		-d|--down)
-			hotspot_down
-			exit
-			;;
-		-t|--tor)
-			TOR=true
-			;;
+		-d|--down) hotspot_down; exit ;;
+		-t|--tor) TOR=true ;;
 	esac
 done
 
 nmcli d show "$WLAN_IF" | grep -q "(connected)" && {
-	echo "Interface $WLAN_IF is currently busy";
-	exit 1;
+	echo "Interface $WLAN_IF is currently busy"
+	exit 1
 }
 
 [ -n "$UUIDS" ] && {
-	echo "Connection '$CONNECTION_NAME' already exists, use option -d to delete it";
-	exit 1;
+	echo "Connection '$CONNECTION_NAME' already exists, use option -d to delete it"
+	exit 1
 }
 
 PASSWORD="$(LC_ALL=C tr -dc A-Za-z0-9 < /dev/urandom | head -c 8)"

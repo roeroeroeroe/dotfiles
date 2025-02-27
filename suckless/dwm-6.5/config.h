@@ -9,7 +9,7 @@ static const int showsystray        = 1;
 static const int showbar            = 1;
 static const int topbar             = 1;
 static const char *fonts[]          = {
-	"JetBrainsMono NFP:style=SemiBold:pixelsize=16",
+	"JetBrainsMono NFP:style=SemiBold:pixelsize=14",
 	// "Terminus:pixelsize=16",
 	"Noto Color Emoji:size=12"
 };
@@ -67,6 +67,9 @@ static const char *dmenucmd[] = {
 
 static const Key keys[] = {
 	/* modifier                     keycode function         argument */
+	{ 0,        /* XF86AudioMute */ 121,   spawn,            SHCMD("volume mute") },
+	{ 0, /* XF86AudioLowerVolume */ 122,   spawn,            SHCMD("volume -") },
+	{ 0, /* XF86AudioRaiseVolume */ 123,   spawn,            SHCMD("volume +") },
 	{ Mod1Mask,             /* p */ 33,    spawn,            SHCMD("play_pause_notify") },
 	{ Mod1Mask,             /* m */ 58,    spawn,            SHCMD("toggle_mic_notify") },
 	{ Mod1Mask|ControlMask, /* b */ 56,    spawn,            SHCMD("browser_bookmarks_dmenu") },

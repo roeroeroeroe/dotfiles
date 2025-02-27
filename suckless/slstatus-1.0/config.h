@@ -1,9 +1,9 @@
 /* interval between updates (in ms) */
-const unsigned int interval = 2000;
+const unsigned int interval = 1000;
 /* text to show if no value can be retrieved */
 static const char unknown_str[] = "n/a";
-/* maximum output string length */
-#define MAXLEN 2048
+/* maximum command output length */
+#define CMDLEN 128
 
 /*
  * function            description                     argument (example)
@@ -63,13 +63,19 @@ static const char unknown_str[] = "n/a";
  * wifi_perc           WiFi signal in percent          interface name (wlan0)
  */
 static const struct arg args[] = {
-/* function       format            argument */
- { run_command,   "%s ",            "player_slstatus" },
- { netspeed_tx,   "[ tx:%s ",       "enp3s0"          },
- { io_perc,       "io:%s%% ",       NULL              },
- { disk_used,     "du:%s ",         "/"               },
- { ram_used,      "mem:%s ",        NULL              },
- { cpu_perc,      "cpu:%s% ]   ",   NULL              },
- { datetime,      "[ %s ",          "%a %m/%d %H:%M"  },
- { uptime,        "up:%s ]",        NULL              },
+/*                                                  every X seconds
+ * function       format             argument             turn signal */
+ { run_command,   "[ %s ",           "player_slstatus",   1,   1 },
+ { run_command,   "vol:%s ]   ",     "volume",            3,   2 },
+ { netspeed_tx,   "[ tx:%s ",        "enp3s0",            1,   -1 },
+ { netspeed_rx,   "rx:%s ",          "enp3s0",            1,   -1 },
+ { io_perc,       "io_wait:%s%% ",   NULL,                1,   -1 },
+ { disk_used,     "du:%s ",          "/",                 3,   -1 },
+ { ram_used,      "mem:%s ",         NULL,                2,   -1 },
+ { cpu_perc,      "cpu:%s% ]   ",    NULL,                2,   -1 },
+ { datetime,      "[ %s ",           "%a %m/%d %H:%M",    5,   -1 },
+ { uptime,        "up:%s ]",         NULL,                5,   -1 },
 };
+
+/* maximum output string length */
+#define MAXLEN CMDLEN * LEN(args)

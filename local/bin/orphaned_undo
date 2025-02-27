@@ -8,5 +8,5 @@ UNDO_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/nvim/undo"
 
 shopt -s nullglob
 for f in "$UNDO_DIR"/*; do
-	[[ ! -e "$(basename "$f" | sed "s/%/\//g")" ]] && "${CMD[@]}" "$f"
+	[ ! -e "$(basename "$f" | sed "s/%/\//g")" ] && "${CMD[@]}" "$f"
 done

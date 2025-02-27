@@ -19,16 +19,16 @@ DEVICE_CODE_RESPONSE=$(oauth_request \
 )
 
 [ $? -ne 0 ] && {
-	echo "error getting device code";
-	exit 1;
+	echo "error getting device code"
+	exit 1
 }
 
 USER_CODE="$(jq -r '.user_code // empty' <<< "$DEVICE_CODE_RESPONSE")"
 DEVICE_CODE="$(jq -r '.device_code // empty' <<< "$DEVICE_CODE_RESPONSE")"
 
 [[ -z "$USER_CODE" || -z "$DEVICE_CODE" ]] && {
-	echo "empty response";
-	exit 1;
+	echo "empty response"
+	exit 1
 }
 
 EXPIRES_IN="$(jq -r '.expires_in // empty' <<< "$DEVICE_CODE_RESPONSE")"
@@ -45,8 +45,8 @@ code: $USER_CODE (expires in $((EXPIRES_IN / 60)) minutes)"
 while :; do
 	sleep "$INTERVAL"
 	[ $(date +%s) -ge $EXPIRES_AT ] && {
-		echo "code expired";
-		exit 1;
+		echo "code expired"
+		exit 1
 	}
 
 	TOKEN_RESPONSE=$(oauth_request \
