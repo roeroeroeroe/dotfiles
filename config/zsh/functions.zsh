@@ -45,3 +45,7 @@ hex() {
 	! [[ "$color" =~ ^[A-Fa-f0-9]{6}$ ]] && { echo "invalid hex code"; return; }
 	magick -size 600x600 xc:#"$color" "$color".png
 }
+
+dict() {
+	[ -n "$1" ] && curl "dict://dict.org/d:$1"
+}

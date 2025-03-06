@@ -11,7 +11,7 @@ static const int topbar             = 1;
 static const char *fonts[]          = {
 	"JetBrainsMono NFP:style=SemiBold:pixelsize=14",
 	// "Terminus:pixelsize=16",
-	"Noto Color Emoji:size=12"
+	"Noto Color Emoji:size=10"
 };
 
 static const char col_gray1[]       = "#282828";

@@ -8,4 +8,7 @@
   .search-inner-wrapper {
     display: none !important;
   }
+  .personalize-button {
+    display: none !important;
+  }
 }

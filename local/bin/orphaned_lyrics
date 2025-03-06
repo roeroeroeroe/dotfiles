@@ -17,15 +17,15 @@ slug() {
 
 shopt -s nullglob
 
-declare -A e_map
+declare -A e_set
 for f in "$MUSIC_DIR"/*; do
 	IFS=$'\n' read -d "" -r TITLE ARTIST < <(ffprobe \
 		-v quiet -show_entries format_tags=title,artist \
 		-of default=noprint_wrappers=1:nokey=1 "$f")
 
-	[[ -n "$TITLE" && -n "$ARTIST" ]] && e_map["$(slug "$ARTIST")-$(slug "$TITLE")"]=1
+	[[ -n "$TITLE" && -n "$ARTIST" ]] && e_set["$(slug "$ARTIST")-$(slug "$TITLE")"]=1
 done
 
 for f in "$LYRICS_DIR"/*; do
-	[[ ! ${e_map["$(basename "$f")"]} ]] && "${CMD[@]}" "$f"
+	[[ ! ${e_set["$(basename "$f")"]} ]] && "${CMD[@]}" "$f"
 done

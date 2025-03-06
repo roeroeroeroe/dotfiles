@@ -5,7 +5,6 @@ gvfs
 htop
 imagemagick
 jq
-jre-openjdk-headless
 keepassxc
 leafpad
 lf
@@ -16,7 +15,6 @@ ncdu
 neovim
 noto-fonts-cjk
 noto-fonts-emoji
-pcmanfm
 playerctl
 proxychains-ng
 streamlink
