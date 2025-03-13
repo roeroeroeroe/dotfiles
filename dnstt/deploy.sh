@@ -14,7 +14,9 @@ fi
 $SUDO apt update
 $SUDO apt install -y git golang iptables netfilter-persistent
 
-sudo -u $DNSTT_USER git clone https://www.bamsoftware.com/git/dnstt.git "$DNSTT_USER_HOME/dnstt"
+[ ! -d "$DNSTT_USER_HOME/dnstt" ] && \
+	sudo -u $DNSTT_USER git clone https://www.bamsoftware.com/git/dnstt.git "$DNSTT_USER_HOME/dnstt"
+
 cd "$DNSTT_USER_HOME/dnstt/dnstt-server" || exit
 sudo -u $DNSTT_USER go build
 
@@ -35,7 +37,7 @@ $SUDO ip6tables -I INPUT -p udp --dport 5300 -j ACCEPT
 $SUDO ip6tables -t nat -I PREROUTING -i "$INTERFACE" -p udp --dport 53 -j REDIRECT --to-port 5300
 $SUDO netfilter-persistent save
 
-read -rp "domain (e.g., X.EXAMPLE.COM): " DOMAIN
+read -rp "nameserver domain (e.g., x.example.com): " DOMAIN
 
 SSH_PORT=$(awk '/^Port / {print $2}' /etc/ssh/sshd_config | head -n 1)
 SSH_PORT=${SSH_PORT:-22}

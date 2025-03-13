@@ -5,4 +5,3 @@ BEFORE=$(playerctl status 2>/dev/null)
 
 playerctl play-pause
 kill -35 $(pidof slstatus) # sb player
-notify-send -r 2 -t 2000 "$([ "$BEFORE" = "Playing" ] && echo Paused || echo Playing)"

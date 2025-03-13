@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+ip -4 -o a | awk '
+	$2 !~ /(lo|virbr|veth|docker|br-|tun|tap|wg)/ {
+		iface = $2;
+		ip = $4;
+		sub(/\/.*/, "", ip);
+		if (system("[[ -d /sys/class/net/" iface " && -L /sys/class/net/" iface "/device ]]") == 0) {
+			print iface, ip;
+		}
+	}' | while read -r IFACE IP
+do
+	printf "$IFACE: $IP -> "
+	printf "$(curl -sm 10 --interface "$IFACE" https://api.ipify.org)\n"
+done

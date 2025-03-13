@@ -71,7 +71,7 @@ choice=$(printf "%s\n" "${functions[@]}" | dmenu -l 5 2>/dev/null) || exit
 for f in "${functions[@]}"; do
 	[ "$f" = "$choice" ] && {
 		eval "$f"
-		notify-send -r 4 -t 2000 "Copied to clipboard"
+		notify-send -r 2 -t 2000 "Copied to clipboard"
 		exit 0
 	}
 done
