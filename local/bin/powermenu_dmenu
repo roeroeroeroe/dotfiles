@@ -13,5 +13,5 @@ confirm_run() {
 	[ "$yn" = "yes" ] && $1
 }
 
-choice=$(printf "%s\n" "${ordered[@]}" | dmenu -l 4 2>/dev/null)
+choice=$(printf "%s\n" "${ordered[@]}" | dmenu -l 4 2>/dev/null) || exit
 [[ -n "${commands[$choice]}" ]] && eval "${commands[$choice]}"

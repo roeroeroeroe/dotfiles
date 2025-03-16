@@ -31,7 +31,6 @@ handle_cmus() {
 
 handle_playerctl() {
 	STATUS=$1
-	[ -z "$STATUS" ] && exit 0
 
 	case "$STATUS" in
 		"Playing") ICON="$PLAYING_ICON " ;;
@@ -45,9 +44,12 @@ handle_playerctl() {
 	echo "$ICON$TITLE"
 }
 
-CMUS_DATA=$(cmus-remote -Q 2>/dev/null)
+CMUS_DATA="$(cmus-remote -Q 2>/dev/null)"
 if [ -n "$CMUS_DATA" ]; then
 	handle_cmus "$CMUS_DATA"
 else
-	handle_playerctl "$(playerctl status 2>/dev/null)"
+	PLAYERCTL_STATUS="$(playerctl status 2>/dev/null)"
+	if [ -n "$PLAYERCTL_STATUS" ]; then
+		handle_playerctl "$PLAYERCTL_STATUS"
+	fi
 fi

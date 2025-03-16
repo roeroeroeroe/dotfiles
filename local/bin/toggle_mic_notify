@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 BEFORE=$(amixer get Capture | grep -m 1 '\[on\]\|\[off\]' | awk -F '[][]' '{print $4}')
-amixer set Capture toggle
+amixer set Capture toggle &> /dev/null
 
 notify-send -r 1 -t 2000 "$([ "$BEFORE" = "on" ] && echo Muted || echo Unmuted)"

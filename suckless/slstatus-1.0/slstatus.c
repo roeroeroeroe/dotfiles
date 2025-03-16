@@ -130,6 +130,7 @@ main(int argc, char *argv[])
 			die("clock_gettime:");
 
 		printstatus(iter++);
+		upsigno = 0;
 
 		if (!done) {
 			if (clock_gettime(CLOCK_MONOTONIC, &current) < 0)

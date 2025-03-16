@@ -1,4 +1,4 @@
-static char *font = "JetBrainsMono Nerd Font:style=SemiBold:pixelsize=15";
+static char *font = "JetBrainsMono Nerd Font:weight=180:pixelsize=15"; // semibold
 // static char *font = "Terminus:pixelsize=16";
 static int borderpx = 6;
 
