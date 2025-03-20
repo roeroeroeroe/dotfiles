@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 [ -z "$1" ] && {
-	wpctl get-volume @DEFAULT_SINK@ 2> /dev/null | awk '{
+	wpctl get-volume @DEFAULT_SINK@ 2> /dev/null | awk '
+	{
 		if ($3) {
 			gsub(/\[|\]/, "", $3)
 			print $3
-		} else print $2 * 100 "%"}'
+		}
+		else
+			print $2 * 100 "%"
+	}'
 	exit 0
 }
 

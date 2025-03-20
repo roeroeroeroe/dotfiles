@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
 DMENU_LINES=40
-URL_COL_WIDTH=50
 BOOKMARKS_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/bookmarks"
 [ -f "$BOOKMARKS_FILE" ] || echo "https://priv.au searxng" > "$BOOKMARKS_FILE"
+
+URL_COL_WIDTH=$(awk '
+{
+	if (length($1) > max)
+		max = length($1)
+}
+END {
+	print max
+}' "$BOOKMARKS_FILE")
 
 URLS=()
 while IFS= read -r LINE; do

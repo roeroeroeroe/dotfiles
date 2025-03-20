@@ -1,7 +1,7 @@
 _newline=$'\n'
 _rainbow() {
 	str="$*"
-	[[ "$TERM" != *256color* ]] && { print "$str"; return; }
+	[ $(tput colors) -lt 256 ] && { print "$str"; return; }
 
 	len=${#str}
 	start=$(( (RANDOM % (256 - len)) + 1 ))
@@ -16,7 +16,7 @@ _rainbow() {
 _user=$(_rainbow $USER)
 
 _primary_color="white"
-_accent_color=$([[ $TERM == *256color* ]] && echo "208" || echo "yellow")
+_accent_color=$([ $(tput colors) -ge 256 ] && echo "208" || echo "yellow")
 
 setopt prompt_subst
 zstyle ":vcs_info:*" check-for-changes true

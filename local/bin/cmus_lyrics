@@ -54,7 +54,7 @@ dumb() {
 	# https://dumb.bloat.cat
 	# https://dumb.gitro.xyz
 	# https://dumb.jeikobu.net
-	INSTANCE="https://dumb.hyperreal.coffee"
+	INSTANCE="https://dm.vern.cc"
 	URL="$INSTANCE/$ARTIST_TITLE_SLUG-lyrics"
 	LYRICS=$(curl -sm 10 "$URL" | hxnormalize -x | hxselect 'div#lyrics' | \
 		sed 's/<[^>]*>//g' | \

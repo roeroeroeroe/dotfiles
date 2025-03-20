@@ -227,7 +227,6 @@ static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
 static void rotatestack(const Arg *arg);
 static void run(void);
-static void runAutostart(void);
 static void scan(void);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void sendmon(Client *c, Monitor *m);
@@ -1668,14 +1667,6 @@ run(void)
 			handler[ev.type](&ev); /* call handler */
 }
 
-void runAutostart(void) {
- char *home_dir = getenv("HOME");
- char autostart_path[256];
- sprintf(autostart_path, "%s/.config/dwm/autostart.sh", home_dir);
- chdir(home_dir);
- system(autostart_path);
-}
-
 void
 scan(void)
 {
@@ -2701,7 +2692,6 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
-	runAutostart();
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
