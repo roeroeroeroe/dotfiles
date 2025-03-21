@@ -18,6 +18,3 @@ cd webtunnel/main/client && go build
 sudo cp client /usr/local/bin/webtunnel
 [ -f /etc/tor/torrc ] && sudo sh -c 'echo "ClientTransportPlugin webtunnel exec /usr/local/bin/webtunnel" >> /etc/tor/torrc'
 ```
-- [GTK theme](https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme)
-- [GTK icons](https://github.com/jmattheis/gruvbox-dark-icons-gtk)
-- [firefox theme](https://addons.mozilla.org/en-US/firefox/addon/gruvboxgruvboxgruvboxgruvboxgr)

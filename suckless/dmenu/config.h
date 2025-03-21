@@ -6,8 +6,8 @@ static const char *fonts[] = {
 static const char *prompt = NULL;
 static const char *colors[SchemeLast][2] = {
 	/*               fg         bg       */
-	[SchemeNorm] = { "#ebdbb2", "#282828" },
-	[SchemeSel]  = { "#fbf1c7", "#d65d0e" },
+	[SchemeNorm] = { "#525252", "#040404" },
+	[SchemeSel]  = { "#ffa0ff", "#000000" },
 	[SchemeOut]  = { "#000000", "#00ffff" },
 };
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */

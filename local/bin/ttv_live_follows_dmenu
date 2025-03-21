@@ -37,19 +37,24 @@ play() {
 gql() {
 	[ -z "$1" ] && return 1
 
-	RES=$(curl -m 5 -sX POST "$GQL_URL" \
+	RES=$(curl -m 5 -sX POST -w "\n%{http_code}" "$GQL_URL" \
 		-H "Content-Type: application/json" \
 		-H "Client-ID: $CLIENT_ID" \
-		-d "$(jq -n --arg query "$1" '{query: $query}')"
-	)
+		-d "$(jq -n --arg query "$1" '{query: $query}')")
 
-	ERR=$(jq -r '.error // empty' <<< "$RES"); [ -n "$ERR" ] && {
+	STATUS=$(echo "$RES" | tail -n 1); [ "$STATUS" -ne 200 ] && {
+		echo "status code $STATUS"
+		return 1
+	}
+
+	BODY=$(echo "$RES" | head -n -1)
+	ERR=$(jq -r '.errors // empty' <<< "$BODY"); [ -n "$ERR" ] && {
 		echo "$ERR"
 		return 1
 	}
 
-	echo "$RES"
-	return
+	echo "$BODY"
+	return 0
 }
 
 get_live_followed_channels() {
@@ -57,10 +62,9 @@ get_live_followed_channels() {
 	FETCHED=0
 	CURSOR=""
 	while [ $FETCHED -lt $LIMIT ]; do
-		QUERY=$(cat <<EOF
-query follows {
-  user(login: "$LOGIN") {
-    follows(first: 100 after: "$CURSOR") {
+		RES=$(gql "query follows {
+  user(login: \"$LOGIN\") {
+    follows(first: 100 after: \"$CURSOR\") {
       pageInfo { hasNextPage }
       edges {
         cursor
@@ -79,10 +83,7 @@ query follows {
       }
     }
   }
-}
-EOF
-		)
-		RES=$(gql "$QUERY")
+}"		)
 		if [[ $? -ne 0 || -z "$RES" ]]; then
 			if [ -n "$RES" ]; then
 				echo "gql request failed: $RES"

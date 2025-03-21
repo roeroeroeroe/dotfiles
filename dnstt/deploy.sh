@@ -110,7 +110,7 @@ add your SSH pubkey to $DNSTT_USER_HOME/.ssh/authorized_keys and run:
 
 (client)
 # udp
-./dnstt-client -udp 1.1.1.1:53 -pubkey-file server.pub $DOMAIN 127.0.0.1:8000
+./dnstt-client -udp 8.8.8.8:53 -pubkey-file server.pub $DOMAIN 127.0.0.1:8000
 # doh
 ./dnstt-client -doh https://cloudflare-dns.com/dns-query -pubkey-file server.pub $DOMAIN 127.0.0.1:8000
 ssh -ND 127.0.0.1:1080 -o HostKeyAlias=SERVER_IP -p 8000 $DNSTT_USER@127.0.0.1

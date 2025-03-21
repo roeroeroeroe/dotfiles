@@ -18,11 +18,12 @@ vim.opt.cursorlineopt = "line,number"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
+vim.opt.statusline = "%F %h%m%r %=%l,%c/%L — %p%% %y"
 vim.opt.undofile = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.shortmess = "I"
-vim.opt.showmode = false
+vim.opt.showmode = true
 vim.opt.whichwrap:append("<>[]hl")
 vim.opt.colorcolumn = "80"
 vim.opt.clipboard = "unnamedplus"

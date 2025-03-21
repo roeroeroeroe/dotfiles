@@ -1,9 +1,9 @@
 @-moz-document url("about:home"), url("about:newtab"), url("about:privatebrowsing") {
   * {
-    color: #ebdbb2 !important;
+    color: #525252  !important;
   }
   body {
-    background-color: #282828 !important;
+    background-color: #000000 !important;
   }
   .search-inner-wrapper {
     display: none !important;

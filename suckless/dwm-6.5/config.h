@@ -14,15 +14,16 @@ static const char *fonts[]          = {
 	"Noto Color Emoji:size=10"
 };
 
-static const char col_gray1[]       = "#282828";
-static const char col_gray2[]       = "#3c3836";
-static const char col_gray3[]       = "#ebdbb2";
-static const char col_gray4[]       = "#fbf1c7";
-static const char col_accent[]      = "#d65d0e";
+static const char col_norm_fg[]     = "#525252";
+static const char col_norm_bg[]     = "#000000";
+static const char col_norm_bd[]     = "#525252";
+static const char col_sel_fg[]      = "#ffa0ff";
+static const char col_sel_bg[]      = "#000000";
+static const char col_sel_bd[]      = "#ffa0ff";
 static const char *colors[][3]      = {
-	/*               fg         bg           border   */
-	[SchemeNorm] = { col_gray3, col_gray1,   col_gray2 },
-	[SchemeSel]  = { col_gray4, col_accent,  col_accent },
+	/*               fg           bg           border   */
+	[SchemeNorm] = { col_norm_fg, col_norm_bg, col_norm_bd },
+	[SchemeSel]  = { col_sel_fg,  col_sel_bg,  col_sel_bd },
 };
 
 static const char *tags[] = { ">.<", ":x", "^=^", "^w^", "^o^", "^_^", "^.^", ":w", "c:", ":3" };

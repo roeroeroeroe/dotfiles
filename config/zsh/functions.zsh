@@ -1,5 +1,5 @@
 ansi() {
-	for c in {1..255}; do echo -n "\033[38;5;${c}m$c "; done
+	for c in {1..${1:-255}}; do echo -n "\033[38;5;${c}m$c "; done
 }
 
 sl() {

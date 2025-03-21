@@ -1,15 +1,15 @@
 :root {
   --font: "JetBrainsMonoNL Nerd Font Mono";
-  --interactive-normal: #ebdbb2;
-  --text-normal: #ebdbb2;
-  --background-primary: #282828;
-  --background-secondary: #282828;
-  --background-secondary-alt: #282828;
-  --background-tertiary: #282828;
-  --channels-default: #83a598;
+  --interactive-normal: #ffa0ff;
+  --text-normal: #525252;
+  --background-primary: #000000;
+  --background-secondary: #000000;
+  --background-secondary-alt: #000000;
+  --background-tertiary: #000000;
+  --channels-default: #ffa0ff;
   --deprecated-panel-background: #161818;
-  --channeltextarea-background: #32302f;
-  --bg-overlay-2: #282828;
+  --channeltextarea-background: #000000;
+  --bg-overlay-2: #000000;
 }
 
 ::placeholder,
@@ -81,7 +81,7 @@ div[style*="color: rgb(114, 137, 218);"],
 .hljs-regexp,
 .hljs-selector-id,
 .hljs-template-variable {
-  color: #d65d0e;
+  color: #ffa0ff;
 }
 
 .hljs-comment {
