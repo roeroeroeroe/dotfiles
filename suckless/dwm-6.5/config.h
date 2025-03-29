@@ -59,12 +59,8 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 static char dmenumon[2] = "0";
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, NULL };
 static const char *termcmd[]  = { "st", NULL };
-static const char *dmenucmd[] = {
-	"dmenu_run",
-	"-m", dmenumon,
-	NULL
-};
 
 static const Key keys[] = {
 	/* modifier                     keycode function         argument */
@@ -78,6 +74,7 @@ static const Key keys[] = {
 	{ 0,                /* Print */ 107,   spawn,            SHCMD("screenshot_dmenu") },
 	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            SHCMD("notes_dmenu") },
 	{ Mod1Mask|ControlMask, /* p */ 33,    spawn,            SHCMD("ttv_live_follows_dmenu") },
+	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            SHCMD("st -e nvimf") },
 	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            SHCMD("cmus_lyrics") },
 	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            SHCMD("pavucontrol") },
 	{ Mod1Mask|ControlMask, /* t */ 28,    spawn,            SHCMD("torbrowser-launcher") },
