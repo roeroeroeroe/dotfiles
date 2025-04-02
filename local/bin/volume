@@ -17,8 +17,8 @@ step="0.05"
 
 case "$1" in
 	-) wpctl set-volume @DEFAULT_SINK@ $step- 2> /dev/null ;;
-	+) wpctl set-volume @DEFAULT_SINK@ $step+ 2> /dev/null;;
-	mute) wpctl set-mute @DEFAULT_SINK@ toggle 2> /dev/null;;
+	+) wpctl set-volume @DEFAULT_SINK@ $step+ 2> /dev/null ;;
+	mute) wpctl set-mute @DEFAULT_SINK@ toggle 2> /dev/null ;;
 	*) exit 1 ;;
 esac
 

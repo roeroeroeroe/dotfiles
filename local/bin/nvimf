@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 DIRS=(
-    "$HOME/Projects"
-    "$HOME/suckless"
+	"$HOME/Projects"
+	"$HOME/suckless"
 )
 
 DEST=$(find "${DIRS[@]}" -type d -maxdepth 1 -mindepth 1 2> /dev/null |
@@ -10,6 +10,6 @@ DEST=$(find "${DIRS[@]}" -type d -maxdepth 1 -mindepth 1 2> /dev/null |
 		--bind "ctrl-j:down,ctrl-k:up,alt-j:preview-down,alt-k:preview-up")
 
 if [ -n "$DEST" ]; then
-    cd "$DEST" || exit
-    nvim
+	cd "$DEST" || exit
+	${EDITOR:-vim}
 fi
