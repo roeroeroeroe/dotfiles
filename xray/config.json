@@ -38,14 +38,15 @@
       "listen": "127.0.0.1",
       "port": 10101,
       "protocol": "vless",
+      "sniffing": { "enabled": true, "destOverride": ["http", "tls"] },
       "settings": {
         "decryption": "none",
         "clients": [{ "id": "$(xray uuid || uuidgen)" }]
       },
       "streamSettings": {
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "grpcpath"
+        "network": "ws",
+        "wsSettings": {
+          "path": "wspath"
         }
       }
     },

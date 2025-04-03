@@ -7,7 +7,7 @@ TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
 ARTIST=$(echo "$DATA" | grep "^tag artist " | cut -d " " -f 3-)
 [[ -z "$ARTIST" || -z "$TITLE" ]] && { notify-send "missing metadata"; exit 1; }
 
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lyrics"
+LYRICS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lyrics"
 
 encode() {
 	jq -sRr @uri <<< "$@"
@@ -21,60 +21,40 @@ slug() {
 }
 
 ARTIST_TITLE_SLUG="$(slug "$ARTIST")-$(slug "$TITLE")"
-CACHE_FILE="$CACHE_DIR/$ARTIST_TITLE_SLUG"
+LYRICS_FILE="$LYRICS_DIR/$ARTIST_TITLE_SLUG"
 
-cache() {
+write_lyrics() {
 	[ -z "$1" ] && return 1
-	[ -d "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
-	[ -f "$CACHE_FILE" ] && return
+	[ -d "$LYRICS_DIR" ] || mkdir -p "$LYRICS_DIR"
+	[ -f "$LYRICS_FILE" ] && return 0
 
-	cp "$1" "$CACHE_FILE"
-}
-
-get_cached() {
-	[ -f "$CACHE_FILE" ] || return 1
-
-	cat "$CACHE_FILE"
+	echo "$1" > "$LYRICS_FILE"
+	return 0
 }
 
 lyrics_api() {
 	URL="https://api.lyrics.ovh/v1/$(encode "$ARTIST")/$(encode "$TITLE")"
-	LYRICS=$(curl -sm 3 "$URL" | jq -r '.lyrics // empty')
-	[ -z "$LYRICS" ] && return 1
+	LYRICS=$(curl -sLm 3 "$URL" | jq -r '.lyrics // empty')
 
-	echo "$LYRICS"
+	write_lyrics "$LYRICS"
+	return
 }
 
-dumb() {
-	# https://dm.vern.cc
-	# https://dumb.lunar.icu
-	# https://dumb.privacydev.net
-	# https://dumb.ducks.party
-	# https://dumb.hyperreal.coffee
-	# https://dumb.bloat.cat
-	# https://dumb.gitro.xyz
-	# https://dumb.jeikobu.net
-	INSTANCE="https://dm.vern.cc"
-	URL="$INSTANCE/$ARTIST_TITLE_SLUG-lyrics"
-	LYRICS=$(curl -sm 10 "$URL" | hxnormalize -x | hxselect 'div#lyrics' | \
-		sed 's/<[^>]*>//g' | \
-		sed 's/&#39;/'"'"'/g' | \
-		sed 's/&#34;/"/g' | \
-		sed 's/^[ \t]*//;s/[ \t]*$//'
-	)
-	[ -z "$LYRICS" ] && return 1
+genius() {
+	URL="https://genius.com/$ARTIST_TITLE_SLUG-lyrics"
+	LYRICS=$(curl -sLm 10 "$URL" | pup 'div[data-lyrics-container="true"] text{}' | sed \
+		-e 's/<[^>]*>//g' \
+		-e 's/&#39;/'"'"'/g' \
+		-e 's/&#34;/"/g' \
+		-e 's/^[ \t]*//;s/[ \t]*$//')
 
-	echo "$LYRICS"
+	write_lyrics "$LYRICS"
+	return
 }
 
-LYRICS=$(get_cached || dumb || lyrics_api) || {
+[ -f "$LYRICS_FILE" ] || lyrics_api || genius || {
 	notify-send "lyrics not found"
 	exit
 }
 
-TEMP=$(mktemp /tmp/lyrics.XXXXX)
-trap 'rm -f "$TEMP"' EXIT
-
-echo "$LYRICS" > "$TEMP"
-cache "$TEMP"
-st -e ${EDITOR:-vim} "$TEMP"
+st -e ${EDITOR:-vim} "$LYRICS_FILE"

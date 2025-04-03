@@ -74,7 +74,7 @@ static const Key keys[] = {
 	{ 0,                /* Print */ 107,   spawn,            SHCMD("screenshot_dmenu") },
 	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            SHCMD("notes_dmenu") },
 	{ Mod1Mask|ControlMask, /* p */ 33,    spawn,            SHCMD("ttv_live_follows_dmenu") },
-	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            SHCMD("st -e nvimf") },
+	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            SHCMD("st -e nvimf -i") },
 	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            SHCMD("cmus_lyrics") },
 	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            SHCMD("pavucontrol") },
 	{ Mod1Mask|ControlMask, /* t */ 28,    spawn,            SHCMD("torbrowser-launcher") },
