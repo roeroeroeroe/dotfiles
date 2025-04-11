@@ -19,6 +19,13 @@ case "$1" in
 	-) wpctl set-volume @DEFAULT_SINK@ $step- 2> /dev/null ;;
 	+) wpctl set-volume @DEFAULT_SINK@ $step+ 2> /dev/null ;;
 	mute) wpctl set-mute @DEFAULT_SINK@ toggle 2> /dev/null ;;
+	-h)
+		echo "Usage: $(basename "$0") [-] [+] [mute]
+  -      lower volume by $step
+  +      increase volume by $step
+  mute   toggle mute"
+		exit 0
+		;;
 	*) exit 1 ;;
 esac
 

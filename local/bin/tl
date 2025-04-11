@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+[ "$1" = "-h" ] && {
+	echo "Usage: $(basename "$0") [-l]
+  -l destination language"
+	exit 0
+}
+
 target="en"
 [[ "$1" = "-l" && -n "$2" ]] && { target="$2"; shift 2; }
 

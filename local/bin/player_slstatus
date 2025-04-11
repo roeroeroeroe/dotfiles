@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TITLE_MAX_LEN=20
+TITLE_MAX_LEN=25
 PLAYING_ICON="󰐊"
 PAUSED_ICON="󰏤"
 
@@ -24,7 +24,7 @@ handle_cmus() {
 	TS="$(fmt_s "$POS")/$(fmt_s "$DURATION")"
 
 	TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
-	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN} ..."
+	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN}..."
 
 	echo "$ICON$TS $TITLE"
 }
@@ -39,7 +39,7 @@ handle_playerctl() {
 	esac
 
 	TITLE=$(playerctl metadata title)
-	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN} ..."
+	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN}..."
 
 	echo "$ICON$TITLE"
 }

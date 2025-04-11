@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+[ "$1" = "-h" ] && {
+	echo "Usage: $(basename "$0") [--dry-run]
+  --dry-run   \`echo\` the filenames"
+	exit 0
+}
+
 UNDO_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/nvim/undo"
 
 [ ! -d "$UNDO_DIR" ] && { echo "$UNDO_DIR is not a directory"; exit 1; }

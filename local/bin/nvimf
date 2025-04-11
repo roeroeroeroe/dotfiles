@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+[ "$1" = "-h" ] && {
+	echo "Usage: $(basename "$0") [-i]
+  -i   launch interactive shell after exiting ${EDITOR:-vim}"
+	exit 0
+}
+
 DIRS=(
 	"$HOME/Projects"
 	"$HOME/suckless"

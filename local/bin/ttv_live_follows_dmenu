@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-# usage: ttv_live_follows_dmenu <user>
+[ "$1" = "-h" ] && {
+	echo "Usage: $(basename "$0") <user>"
+	exit 0
+}
+
 GQL_URL="https://gql.twitch.tv/gql"
 CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
 LOGIN="${1:-fyow}"

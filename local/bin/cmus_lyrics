@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+[ "$1" = "-h" ] && {
+	echo "Usage: $(basename "$0") [-s]
+  -s   print artist-title slug and exit"
+	exit 0
+}
+
 DATA=$(cmus-remote -Q 2>/dev/null)
 [ -z "$DATA" ] && exit
 
@@ -22,6 +28,11 @@ slug() {
 
 ARTIST_TITLE_SLUG="$(slug "$ARTIST")-$(slug "$TITLE")"
 LYRICS_FILE="$LYRICS_DIR/$ARTIST_TITLE_SLUG"
+
+[ "$1" = "-s" ] && {
+	echo "$ARTIST_TITLE_SLUG"
+	exit 0
+}
 
 write_lyrics() {
 	[ -z "$1" ] && return 1
@@ -52,7 +63,7 @@ genius() {
 	return
 }
 
-[ -f "$LYRICS_FILE" ] || lyrics_api || genius || {
+[ -f "$LYRICS_FILE" ] || genius || lyrics_api || {
 	notify-send "lyrics not found"
 	exit
 }

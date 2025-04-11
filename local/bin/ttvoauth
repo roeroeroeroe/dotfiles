@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
+[ "$1" = "-a" ] && CLIENT_ID="kd1unb4b3q4t58fwlpcbzcbnm76a8fp"
+
 SCOPES="analytics:read:extensions analytics:read:games bits:read channel:bot \
 channel:edit:commercial channel:manage:ads channel:manage:broadcast \
 channel:manage:extensions channel:manage:guest_star channel:manage:moderators \
@@ -44,7 +46,7 @@ DEVICE_CODE_RESPONSE=$(oauth_request \
 )
 
 [ $? -ne 0 ] && {
-	echo "error getting device code"
+	echo "error getting device code" >&2
 	exit 1
 }
 
@@ -52,25 +54,20 @@ USER_CODE="$(jq -r '.user_code // empty' <<< "$DEVICE_CODE_RESPONSE")"
 DEVICE_CODE="$(jq -r '.device_code // empty' <<< "$DEVICE_CODE_RESPONSE")"
 
 [[ -z "$USER_CODE" || -z "$DEVICE_CODE" ]] && {
-	echo "empty response"
+	echo "empty response" >&2
 	exit 1
 }
 
 EXPIRES_IN="$(jq -r '.expires_in // empty' <<< "$DEVICE_CODE_RESPONSE")"
 EXPIRES_IN="${EXPIRES_IN:-1800}"
-
-INTERVAL="$(jq -r '.interval // empty' <<< "$DEVICE_CODE_RESPONSE")"
-INTERVAL="${INTERVAL:-5}"
-
 EXPIRES_AT=$(( $(date +%s) + EXPIRES_IN ))
 
 echo "https://www.twitch.tv/activate
 code: $USER_CODE (expires in $((EXPIRES_IN / 60)) minutes)"
 
 while :; do
-	sleep "$INTERVAL"
 	[ $(date +%s) -ge $EXPIRES_AT ] && {
-		echo "code expired"
+		echo "code expired" >&2
 		exit 1
 	}
 
@@ -80,6 +77,7 @@ while :; do
 	)
 
 	jq -e '.access_token' <<< "$TOKEN_RESPONSE" &> /dev/null && break
+	sleep 1
 done
 
 echo "$TOKEN_RESPONSE"

@@ -5,7 +5,7 @@ prompt="${*}${stdin:+${*:+ }${stdin}}"
 
 [ -z "$prompt" ] && { echo "Usage: $(basename "$0") <prompt>"; exit 1; }
 
-TASK=$(curl -s -X POST https://nexra.aryahcr.cc/api/chat/gpt \
+TASK=$(curl -sm 10 -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	-H "Content-Type: application/json" \
 	-d "$(jq -n --arg prompt "$prompt" \
 		'{
@@ -21,7 +21,7 @@ TASK_ID=$(jq -r '.id // empty' <<< "$TASK")
 
 STATUS="pending"
 while [ "$STATUS" = "pending" ]; do
-	RESPONSE=$(curl -s -X GET "https://nexra.aryahcr.cc/api/chat/task/$TASK_ID" \
+	RESPONSE=$(curl -sm 10 "https://nexra.aryahcr.cc/api/chat/task/$TASK_ID" \
 		-H "Content-Type: application/json"
 	)
 
