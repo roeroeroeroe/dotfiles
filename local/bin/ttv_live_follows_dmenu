@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-[ "$1" = "-h" ] && {
+[[ -z "$1" || "$1" = "-h" ]] && {
 	echo "Usage: $(basename "$0") <user>"
 	exit 0
 }
 
 GQL_URL="https://gql.twitch.tv/gql"
 CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
-LOGIN="${1:-fyow}"
+LOGIN="$1"
 DMENU_LINES=20
 
 fmt_timediff() {

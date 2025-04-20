@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
-CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
-[ "$1" = "-a" ] && CLIENT_ID="kd1unb4b3q4t58fwlpcbzcbnm76a8fp"
+[ "$1" = "-h" ] && {
+	echo "Usage: $(basename "$0") [-a]
+  -a   use android app client id"
+	exit 0
+}
+
+if [ "$1" = "-a" ]; then
+	CLIENT_ID="kd1unb4b3q4t58fwlpcbzcbnm76a8fp"
+else
+	CLIENT_ID="ue6666qo983tsx6so1t0vnawi233wa"
+fi
 
 SCOPES="analytics:read:extensions analytics:read:games bits:read channel:bot \
 channel:edit:commercial channel:manage:ads channel:manage:broadcast \

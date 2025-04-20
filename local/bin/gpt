@@ -3,40 +3,32 @@
 [ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
 prompt="${*}${stdin:+${*:+ }${stdin}}"
 
-[ -z "$prompt" ] && { echo "Usage: $(basename "$0") <prompt>"; exit 1; }
+[ -z "$prompt" ] && { echo "Usage: $(basename "$0") <prompt>"; exit 0; }
 
 TASK=$(curl -sm 10 -X POST https://nexra.aryahcr.cc/api/chat/gpt \
 	-H "Content-Type: application/json" \
 	-d "$(jq -n --arg prompt "$prompt" \
-		'{
-			prompt: $prompt,
-			model: "gpt-4",
-			markdown: false
-		}'
-	)"
-)
+		'{ prompt: $prompt, model: "gpt-4", markdown: false }')")
 
 TASK_ID=$(jq -r '.id // empty' <<< "$TASK")
-[ -z "$TASK_ID" ] && { echo "No task id in response, exiting"; exit 1; }
+[ -z "$TASK_ID" ] && { echo "no task id in response" >&2; exit 1; }
 
 STATUS="pending"
 while [ "$STATUS" = "pending" ]; do
 	RESPONSE=$(curl -sm 10 "https://nexra.aryahcr.cc/api/chat/task/$TASK_ID" \
-		-H "Content-Type: application/json"
-	)
+		-H "Content-Type: application/json")
 
 	STATUS=$(jq -r '.status' <<< "$RESPONSE")
 	case "$STATUS" in
-		"pending")
-			sleep 0.5 ;;
-		"completed")
-			jq -r '.gpt' <<< "$RESPONSE" ;;
+		"pending") sleep .5 ;;
+		"completed") jq -r '.gpt' <<< "$RESPONSE" ;;
 		"error")
-			MESSAGE=$(jq -r '.message // empty' <<< "$RESPONSE")
-			MESSAGE=${MESSAGE:-"N/A"}
-			echo "Error: $MESSAGE"
+			echo "error: $(jq -r '.message // "N/A"' <<< "$RESPONSE")" >&2
 			exit 1
 			;;
-		*) echo "Unexpected status: $STATUS"; exit 1 ;;
+		*)
+			echo "unexpected status: $STATUS" >&2
+			exit 1
+			;;
 	esac
 done

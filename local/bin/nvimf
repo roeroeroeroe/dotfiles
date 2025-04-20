@@ -9,6 +9,7 @@
 DIRS=(
 	"$HOME/Projects"
 	"$HOME/suckless"
+	"$HOME/Downloads/git"
 )
 
 DEST=$(find "${DIRS[@]}" -type d -maxdepth 1 -mindepth 1 2> /dev/null |

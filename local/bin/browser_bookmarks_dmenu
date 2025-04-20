@@ -2,7 +2,8 @@
 
 DMENU_LINES=40
 BOOKMARKS_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/bookmarks"
-[ -f "$BOOKMARKS_FILE" ] || echo "https://priv.au searxng" > "$BOOKMARKS_FILE"
+[ ! -f "$BOOKMARKS_FILE" ] && \
+	echo "https://search.yonderly.org 4get" > "$BOOKMARKS_FILE"
 
 URL_COL_WIDTH=$(awk '
 {
