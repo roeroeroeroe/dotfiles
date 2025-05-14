@@ -22,7 +22,7 @@ vim.opt.statusline = "%F %h%m%r %=%l,%c/%L — %p%% %y"
 vim.opt.undofile = true
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.shortmess = "I"
+vim.opt.shortmess:append("IF")
 vim.opt.showmode = true
 vim.opt.whichwrap:append("<>[]hl")
 vim.opt.colorcolumn = "80"

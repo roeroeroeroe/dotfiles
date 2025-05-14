@@ -23,7 +23,6 @@ setxkbmap -option caps:escape_shifted_capslock &
 xset r rate 250 30 &
 dunst &
 respawn slstatus &
-respawn st -e ssh reverse_tun_sweden &
 nekoray &
 
 csum=""

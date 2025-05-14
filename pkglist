@@ -39,7 +39,6 @@ playerctl
 postgresql
 proxychains-ng
 qbittorrent
-redis
 reflector
 ripgrep
 songrec
@@ -54,6 +53,7 @@ torbrowser-launcher
 tree
 ttf-jetbrains-mono-nerd
 unzip
+valkey
 vim
 whois
 xclip

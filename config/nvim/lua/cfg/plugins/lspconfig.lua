@@ -1,13 +1,8 @@
 return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
-	dependencies = {
-		"hrsh7th/cmp-nvim-lsp",
-	},
-
+	dependencies = { "hrsh7th/cmp-nvim-lsp" },
 	config = function()
-		local nvim_lsp = require("lspconfig")
-		local mason_lspconfig = require("mason-lspconfig")
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 		local register_remaps = function()
@@ -55,13 +50,13 @@ return {
 			})
 		end
 
-		mason_lspconfig.setup_handlers({
-			function(server)
-				nvim_lsp[server].setup({
-					capabilities = capabilities,
-					on_attach = register_remaps,
-				})
-			end,
+		vim.lsp.config("*", {
+			capabilities = capabilities,
+			on_attach = register_remaps,
+		})
+		vim.lsp.config("ts_ls", {
+			capabilities = capabilities,
+			on_attach = register_remaps,
 		})
 
 		vim.diagnostic.config({

@@ -73,7 +73,7 @@ static const struct arg args[] = {
  { disk_used,     "du:%s ",          "/",                 3,   -1 },
  { ram_used,      "mem:%s ",         NULL,                2,   -1 },
  { cpu_perc,      "cpu:%s% ]   ",    NULL,                2,   -1 },
- { datetime,      "[ %s ",           "%a %m/%d %H:%M",    5,   -1 },
+ { datetime,      "[ %s ",           "%a %m/%d %H:%M:%S", 1,   -1 },
  { uptime,        "up:%s ]",         NULL,                5,   -1 },
 };
 

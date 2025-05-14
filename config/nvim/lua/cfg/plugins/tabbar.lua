@@ -12,4 +12,3 @@ return {
 		auto_hide = 1,
 	},
 }
-
