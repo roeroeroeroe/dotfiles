@@ -63,18 +63,19 @@ static const char unknown_str[] = "n/a";
  * wifi_perc           WiFi signal in percent          interface name (wlan0)
  */
 static const struct arg args[] = {
-/*                                                  every X seconds
- * function       format             argument             turn signal */
- { run_command,   "[ %s ",           "player_slstatus",   1,   1 },
- { run_command,   "vol:%s ]   ",     "volume",            3,   2 },
- { netspeed_tx,   "[ tx:%s ",        "enp3s0",            1,   -1 },
- { netspeed_rx,   "rx:%s ",          "enp3s0",            1,   -1 },
- { io_perc,       "io_wait:%s%% ",   NULL,                1,   -1 },
- { disk_used,     "du:%s ",          "/",                 3,   -1 },
- { ram_used,      "mem:%s ",         NULL,                2,   -1 },
- { cpu_perc,      "cpu:%s% ]   ",    NULL,                2,   -1 },
- { datetime,      "[ %s ",           "%a %m/%d %H:%M:%S", 1,   -1 },
- { uptime,        "up:%s ]",         NULL,                5,   -1 },
+/*                                                     every X seconds
+ * function       format                argument             turn signal */
+ { run_command,   "[ %s ",              "player_slstatus",   1,   1 },
+ { run_command,   "vol:%s ]   ",        "volume",            3,   2 },
+ { netspeed_tx,   "[ tx:%s ",           "enp3s0",            1,   -1 },
+ { netspeed_rx,   "rx:%s ",             "enp3s0",            1,   -1 },
+ { run_command,   "tcp_estab(%s) ",     "sockets_slstatus",  1,   -1 },
+ { io_perc,       "disk(io_wait:%s%% ", NULL,                1,   -1 },
+ { disk_used,     "u:%s) ",             "/",                 3,   -1 },
+ { ram_used,      "mem:%s ",            NULL,                2,   -1 },
+ { cpu_perc,      "cpu:%s% ]   ",       NULL,                2,   -1 },
+ { datetime,      "[ %s ",              "%a %m/%d %H:%M:%S", 1,   -1 },
+ { uptime,        "up:%s ]",            NULL,                5,   -1 },
 };
 
 /* maximum output string length */

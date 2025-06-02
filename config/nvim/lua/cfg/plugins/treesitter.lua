@@ -23,6 +23,7 @@ return {
 				"nginx",
 				"python",
 				"sql",
+				"typescript",
 				"xml",
 			},
 			incremental_selection = {

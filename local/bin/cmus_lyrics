@@ -22,7 +22,7 @@ encode() {
 slug() {
 	echo "$@" | iconv -t ascii//TRANSLIT | tr "[:upper:]" "[:lower:]" | sed \
 		-e "s/&/and/g" \
-		-e "s/[[:space:]:$]\+/-/g" \
+		-e "s/[[:space:]:$/]\+/-/g" \
 		-e "s/[^a-z0-9-]//g"
 }
 

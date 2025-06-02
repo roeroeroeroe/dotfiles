@@ -43,7 +43,7 @@ hex() {
 	[ -z "$1" ] && return
 	local color="${1#\#}"
 	! [[ "$color" =~ ^[A-Fa-f0-9]{6}$ ]] && { echo "invalid hex code"; return; }
-	magick -size 600x600 xc:#"$color" "$color".png
+	magick -size 600x600 xc:#"$color" -strip "$color".png
 }
 
 dict() {
