@@ -20,7 +20,7 @@ while IFS= read -r LINE; do
 	URLS+=("$(printf "%-${URL_COL_WIDTH}s %s" "$URL" "$REST")")
 done < "$BOOKMARKS_FILE"
 
-CHOICE=$(printf "%s\n" "${URLS[@]}" | dmenu -l "$DMENU_LINES") || exit 0
+CHOICE=$(printf "%s\n" "${URLS[@]}" | dmenu -l "$DMENU_LINES") || exit 2
 
 for u in "${URLS[@]}"; do
 	[ "$u" = "$CHOICE" ] && {

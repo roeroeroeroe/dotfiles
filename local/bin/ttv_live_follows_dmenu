@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 
-[[ -z "$1" || "$1" = "-h" ]] && {
-	echo "Usage: $(basename "$0") <user>"
+USAGE="Usage: $(basename "$0") <user>"
+
+[ -z "$1" ] && {
+	echo "$USAGE"
+	exit 2
+}
+[ "$1" = "-h" ] && {
+	echo "$USAGE"
 	exit 0
 }
 
@@ -154,6 +160,6 @@ SORTED_CHANNELS=$(echo "$LIVE_CHANNELS" | awk '
 }' | sort -nr | cut -f2-)
 
 CHOICE=$(dmenu -l $DMENU_LINES <<< "$SORTED_CHANNELS")
-[ -z "$CHOICE" ] && exit 0
+[ -z "$CHOICE" ] && exit 2
 
 play "$(awk '{print $1}' <<< "$CHOICE")"

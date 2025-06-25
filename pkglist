@@ -4,6 +4,7 @@ cmus
 dunst
 feh
 fzf
+gimp
 gnu-netcat
 go
 gvfs
@@ -19,6 +20,7 @@ libnotify
 lxappearance
 maim
 man-pages
+mat2
 mpv
 mpv-mpris
 mtr
@@ -28,6 +30,7 @@ nginx
 nicotine+
 nmap
 nodejs
+noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 npm

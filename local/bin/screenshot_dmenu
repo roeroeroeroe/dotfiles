@@ -50,7 +50,7 @@ monitor() {
 	done
 	unset IFS
 
-	target=$(printf "%s\n" "${monitors[@]}" | dmenu -l 4) || exit 1
+	target=$(printf "%s\n" "${monitors[@]}" | dmenu -l 4) || exit 2
 	for m in "${monitors[@]}"; do
 		[ "$m" = "$target" ] && {
 			capture -d 0.5 -g ${geometries[${target}]} -qu

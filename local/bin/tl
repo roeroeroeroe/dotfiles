@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ "$1" = "-h" ] && {
-	echo "Usage: $(basename "$0") [-l]
+	echo "Usage: $(basename "$0") [-l] <text>
   -l   destination language"
 	exit 0
 }
@@ -12,7 +12,7 @@ target="en"
 [ -p /dev/stdin ] && stdin=$(</dev/stdin) || stdin=""
 input="${*}${stdin:+${*:+ }${stdin}}"
 
-[ -z "$input" ] && exit
+[ -z "$input" ] && exit 2
 
 url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q="
 query=$(echo -n "$input" | jq -sRr @uri)

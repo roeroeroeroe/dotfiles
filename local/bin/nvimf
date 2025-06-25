@@ -16,8 +16,8 @@ DEST=$(find "${DIRS[@]}" -type d -maxdepth 1 -mindepth 1 2> /dev/null |
 	fzf --preview "tree -C {}" \
 		--bind "ctrl-j:down,ctrl-k:up,alt-j:preview-down,alt-k:preview-up")
 
-[ -z "$DEST" ] && exit 1
+[ -z "$DEST" ] && exit 2
 
-cd "$DEST" || exit
+cd "$DEST" || exit 2
 ${EDITOR:-vim}
 [ "$1" = "-i" ] && $SHELL

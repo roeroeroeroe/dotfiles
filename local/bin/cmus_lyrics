@@ -7,7 +7,10 @@
 }
 
 DATA=$(cmus-remote -Q 2>/dev/null)
-[ -z "$DATA" ] && exit
+[ -z "$DATA" ] && {
+	notify-send "cmus is not running"
+	exit 1
+}
 
 TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
 ARTIST=$(echo "$DATA" | grep "^tag artist " | cut -d " " -f 3-)
