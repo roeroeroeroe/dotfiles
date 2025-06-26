@@ -1,0 +1,14 @@
+cmd open ${{
+	case $(file --mime-type -Lb "$f") in
+		text/*) ${EDITOR:-vim} "$f" ;;
+		image/*) setsid -f feh "$f" ;;
+		audio/*) mpv "$f" ;;
+		*) setsid -f xdg-open "$f" ;;
+	esac
+}}
+
+cmd follow-link %{{
+	lf -remote "send $id select \"$(readlink -- "$f" | sed 's/\\/\\\\/g;s/"/\\"/g')\""
+}}
+
+map gL follow-link
