@@ -10,8 +10,8 @@
         "regular": "#000000"
       },
       "disabled": "#4d000000",
-      "highlightAnimationEnd": "#525252",
-      "highlightAnimationStart": "#525252",
+      "highlightAnimationEnd": "#00525252",
+      "highlightAnimationStart": "#80525252",
       "selection": "#4dffa0ff",
       "textColors": {
         "caret": "#525252",

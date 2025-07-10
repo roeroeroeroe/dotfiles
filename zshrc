@@ -1,7 +1,9 @@
 export PATH=$HOME/.local/bin:$PATH
 ZSH_PATH="$HOME/.config/zsh"
 
-autoload -U vcs_info select-word-style compinit; compinit -d "$ZSH_PATH/zcompdump"
+autoload -U vcs_info select-word-style edit-command-line compinit
+zle -N edit-command-line
+compinit -d "$ZSH_PATH/zcompdump"
 
 . <(dircolors -b 2>/dev/null || :)
 
