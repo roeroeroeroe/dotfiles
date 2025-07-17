@@ -22,7 +22,7 @@ vim.opt.incsearch = true
 vim.opt.smartcase = true
 
 vim.opt.scrolloff = 5
-vim.opt.whichwrap:append("<>[]hl")
+vim.opt.whichwrap:append("hl")
 
 vim.opt.clipboard = "unnamedplus"
 vim.opt.syntax = "on"
