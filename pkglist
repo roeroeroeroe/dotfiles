@@ -39,11 +39,9 @@ pavucontrol
 picom
 playerctl
 postgresql
-proxychains-ng
 qbittorrent
 reflector
 ripgrep
-signal-desktop
 songrec
 streamlink
 tcpdump
@@ -51,9 +49,6 @@ tealdeer
 terminus-font
 tesseract
 tesseract-data-eng
-tor
-torbrowser-launcher
-torsocks
 tree
 ttf-jetbrains-mono-nerd
 unzip
