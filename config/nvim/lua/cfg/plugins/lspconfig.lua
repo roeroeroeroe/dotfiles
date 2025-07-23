@@ -5,23 +5,9 @@ return {
 	config = function()
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-		local register_remaps = function()
+		local remap_references = function()
 			local wk = require("which-key")
 			wk.add({
-				{
-					"<leader>lgd",
-					function()
-						vim.lsp.buf.definition()
-					end,
-					desc = "Go to definition",
-				},
-				{
-					"<leader>lh",
-					function()
-						vim.lsp.buf.hover()
-					end,
-					desc = "Hover",
-				},
 				{
 					"<leader>lfr",
 					function()
@@ -29,34 +15,24 @@ return {
 							initial_mode = "normal",
 							layout_strategy = "vertical",
 						})
-						-- vim.lsp.buf.references()
 					end,
 					desc = "Find references",
 				},
-				{
-					"<leader>lrn",
-					function()
-						vim.lsp.buf.rename()
-					end,
-					desc = "Rename",
-				},
-				{
-					"<leader>lca",
-					function()
-						vim.lsp.buf.code_action()
-					end,
-					desc = "Code actions",
-				},
+				-- code actions: gra
+				-- implementation: gri
+				-- references: grr
+				-- rename: grn
+				-- signature help: K | ^s in insert
 			})
 		end
 
 		vim.lsp.config("*", {
 			capabilities = capabilities,
-			on_attach = register_remaps,
+			on_attach = remap_references,
 		})
 		vim.lsp.config("ts_ls", {
 			capabilities = capabilities,
-			on_attach = register_remaps,
+			on_attach = remap_references,
 		})
 
 		vim.diagnostic.config({

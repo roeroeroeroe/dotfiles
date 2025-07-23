@@ -43,6 +43,7 @@ proxychains-ng
 qbittorrent
 reflector
 ripgrep
+signal-desktop
 songrec
 streamlink
 tcpdump
@@ -52,6 +53,7 @@ tesseract
 tesseract-data-eng
 tor
 torbrowser-launcher
+torsocks
 tree
 ttf-jetbrains-mono-nerd
 unzip
