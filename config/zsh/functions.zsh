@@ -21,10 +21,6 @@ slrec() {
 		"twitch.tv/$1" best
 }
 
-yt() {
-	proxychains yt-dlp -f 'bestvideo[height=1080][fps>=48]+bestaudio/bestvideo[height<=1440][fps<=30]+bestaudio/best' "$@"
-}
-
 new() {
 	local file=${1:-"$(LC_ALL=C tr -dc A-Za-z < /dev/urandom | head -c 5).sh"}
 	[[ "$file" == */* ]] && { echo "invalid filename"; return; }

@@ -33,8 +33,6 @@ static const char *tags[] = { "*", "*", "*", "*", "*" };
 
 static const Rule rules[] = {
 	/* class          instance    title       tags mask     isfloating   monitor */
-	{ "nekoray",      NULL,       NULL,       1 << 0,       0,           1 },
-	{ "Tor Browser",  NULL,       NULL,       0,            1,           -1 },
 	{ "vesktop",      NULL,       NULL,       1 << 3,       0,           1 },
 };
 
@@ -60,29 +58,30 @@ static const Layout layouts[] = {
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
+#define CMD(...) ((const char*[]){ __VA_ARGS__, NULL })
+
 static char dmenumon[2] = "0";
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
 static const Key keys[] = {
 	/* modifier                     keycode function         argument */
-	{ 0,        /* XF86AudioMute */ 121,   spawn,            SHCMD("volume mute") },
-	{ 0, /* XF86AudioLowerVolume */ 122,   spawn,            SHCMD("volume -") },
-	{ 0, /* XF86AudioRaiseVolume */ 123,   spawn,            SHCMD("volume +") },
-	{ 0,        /* XF86AudioPlay */ 172,   spawn,            SHCMD("play_pause") },
-	{ 0,        /* XF86AudioPrev */ 173,   spawn,            SHCMD("playerctl previous") },
-	{ 0,        /* XF86AudioNext */ 171,   spawn,            SHCMD("playerctl next") },
-	{ Mod1Mask,             /* m */ 58,    spawn,            SHCMD("toggle_mic_notify") },
-	{ Mod1Mask|ControlMask, /* b */ 56,    spawn,            SHCMD("browser_bookmarks_dmenu") },
-	{ Mod1Mask|ControlMask, /* m */ 58,    spawn,            SHCMD("powermenu_dmenu") },
-	{ 0,                /* Print */ 107,   spawn,            SHCMD("screenshot_dmenu") },
-	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            SHCMD("notes_dmenu") },
-	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            SHCMD("st -e nvimf -i") },
-	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            SHCMD("cmus_lyrics") },
-	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            SHCMD("pavucontrol") },
-	{ Mod1Mask|ControlMask, /* t */ 28,    spawn,            SHCMD("torbrowser-launcher") },
-	{ Mod1Mask|ControlMask, /* r */ 27,    spawn,            SHCMD("simplescreenrecorder --no-systray") },
-	{ Mod1Mask|ControlMask, /* c */ 54,    spawn,            SHCMD("cmus_launcher") },
+	{ 0,        /* XF86AudioMute */ 121,   spawn,            {.v = CMD("volume", "mute") } },
+	{ 0, /* XF86AudioLowerVolume */ 122,   spawn,            {.v = CMD("volume", "-") } },
+	{ 0, /* XF86AudioRaiseVolume */ 123,   spawn,            {.v = CMD("volume", "+") } },
+	{ 0,        /* XF86AudioPlay */ 172,   spawn,            {.v = CMD("play_pause") } },
+	{ 0,        /* XF86AudioPrev */ 173,   spawn,            {.v = CMD("playerctl", "previous") } },
+	{ 0,        /* XF86AudioNext */ 171,   spawn,            {.v = CMD("playerctl", "next") } },
+	{ Mod1Mask,             /* m */ 58,    spawn,            {.v = CMD("toggle_mic_notify") } },
+	{ Mod1Mask|ControlMask, /* b */ 56,    spawn,            {.v = CMD("browser_bookmarks_dmenu") } },
+	{ Mod1Mask|ControlMask, /* m */ 58,    spawn,            {.v = CMD("powermenu_dmenu") } },
+	{ 0,                /* Print */ 107,   spawn,            {.v = CMD("screenshot_dmenu") } },
+	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            {.v = CMD("notes_dmenu") } },
+	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            {.v = CMD("st", "-e", "nvimf", "-i") } },
+	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            {.v = CMD("cmus_lyrics") } },
+	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            {.v = CMD("pavucontrol") } },
+	{ Mod1Mask|ControlMask, /* r */ 27,    spawn,            {.v = CMD("simplescreenrecorder", "--no-systray") } },
+	{ Mod1Mask|ControlMask, /* c */ 54,    spawn,            {.v = CMD("cmus_launcher") } },
 	{ MODKEY,          /* Return */ 36,    spawn,            {.v = termcmd } },
 	{ MODKEY,               /* b */ 56,    togglebar,        {0} },
 	{ MODKEY|ShiftMask,     /* b */ 56,    toggletopbar,     {0} },
