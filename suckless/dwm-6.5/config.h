@@ -1,26 +1,26 @@
-static const unsigned int borderpx  = 2;
-static const unsigned int gappx     = 6;
-static const unsigned int snap      = 6;
+static const unsigned int borderpx = 2;
+static const unsigned int gappx    = 6;
+static const unsigned int snap     = 6;
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
-static const unsigned int systrayonleft = 0;    /* 0: systray in the right corner, >0: systray on left of status text */
+static const unsigned int systrayonleft  = 0;   /* 0: systray in the right corner, >0: systray on left of status text */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-static const int showsystray        = 1;
-static const int showbar            = 1;
-static const int topbar             = 1;
-static const char *fonts[]          = {
+static const int showsystray = 1;
+static const int showbar     = 1;
+static const int topbar      = 1;
+static const char *fonts[]   = {
 	"JetBrainsMono NFP:style=SemiBold:pixelsize=14",
 	// "Terminus:size=10",
 	"Noto Color Emoji:size=10"
 };
 
-static const char col_norm_fg[]     = "#525252";
-static const char col_norm_bg[]     = "#000000";
-static const char col_norm_bd[]     = "#525252";
-static const char col_sel_fg[]      = "#ffa0ff";
-static const char col_sel_bg[]      = "#000000";
-static const char col_sel_bd[]      = "#ffa0ff";
-static const char *colors[][3]      = {
+static const char col_norm_fg[] = "#525252";
+static const char col_norm_bg[] = "#000000";
+static const char col_norm_bd[] = "#525252";
+static const char col_sel_fg[]  = "#ffa0ff";
+static const char col_sel_bg[]  = "#000000";
+static const char col_sel_bd[]  = "#ffa0ff";
+static const char *colors[][3]  = {
 	/*               fg           bg           border   */
 	[SchemeNorm] = { col_norm_fg, col_norm_bg, col_norm_bd },
 	[SchemeSel]  = { col_sel_fg,  col_sel_bg,  col_sel_bd },
@@ -36,10 +36,13 @@ static const Rule rules[] = {
 	{ "vesktop",      NULL,       NULL,       1 << 3,       0,           1 },
 };
 
-static const float mfact     = 0.50; /* factor of master area size [0.05..0.95] */
-static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
-static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
+static const float mfact        = 0.50; /* factor of master area size [0.05..0.95] */
+static const int nmaster        = 1;    /* number of clients in master area */
+static const int resizehints    = 0;    /* 1 means respect size hints in tiled resizals */
+static const int lockfullscreen = 1;    /* 1 will force focus on the fullscreen window */
+
+static const float mfactdelta = 0.05;
+static const int gapdelta     = 6;
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
@@ -58,7 +61,7 @@ static const Layout layouts[] = {
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
-#define CMD(...) ((const char*[]){ __VA_ARGS__, NULL })
+#define CMD(...) { .v = ((const char*[]){ __VA_ARGS__, NULL }) }
 
 static char dmenumon[2] = "0";
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, NULL };
@@ -66,22 +69,23 @@ static const char *termcmd[]  = { "st", NULL };
 
 static const Key keys[] = {
 	/* modifier                     keycode function         argument */
-	{ 0,        /* XF86AudioMute */ 121,   spawn,            {.v = CMD("volume", "mute") } },
-	{ 0, /* XF86AudioLowerVolume */ 122,   spawn,            {.v = CMD("volume", "-") } },
-	{ 0, /* XF86AudioRaiseVolume */ 123,   spawn,            {.v = CMD("volume", "+") } },
-	{ 0,        /* XF86AudioPlay */ 172,   spawn,            {.v = CMD("play_pause") } },
-	{ 0,        /* XF86AudioPrev */ 173,   spawn,            {.v = CMD("playerctl", "previous") } },
-	{ 0,        /* XF86AudioNext */ 171,   spawn,            {.v = CMD("playerctl", "next") } },
-	{ Mod1Mask,             /* m */ 58,    spawn,            {.v = CMD("toggle_mic_notify") } },
-	{ Mod1Mask|ControlMask, /* b */ 56,    spawn,            {.v = CMD("browser_bookmarks_dmenu") } },
-	{ Mod1Mask|ControlMask, /* m */ 58,    spawn,            {.v = CMD("powermenu_dmenu") } },
-	{ 0,                /* Print */ 107,   spawn,            {.v = CMD("screenshot_dmenu") } },
-	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            {.v = CMD("notes_dmenu") } },
-	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            {.v = CMD("st", "-e", "nvimf", "-i") } },
-	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            {.v = CMD("cmus_lyrics") } },
-	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            {.v = CMD("pavucontrol") } },
-	{ Mod1Mask|ControlMask, /* r */ 27,    spawn,            {.v = CMD("simplescreenrecorder", "--no-systray") } },
-	{ Mod1Mask|ControlMask, /* c */ 54,    spawn,            {.v = CMD("cmus_launcher") } },
+	{ 0,        /* XF86AudioMute */ 121,   spawn,            CMD("volume", "mute") },
+	{ 0, /* XF86AudioLowerVolume */ 122,   spawn,            CMD("volume", "-") },
+	{ 0, /* XF86AudioRaiseVolume */ 123,   spawn,            CMD("volume", "+") },
+	{ 0,        /* XF86AudioPlay */ 172,   spawn,            CMD("play_pause") },
+	{ 0,        /* XF86AudioPrev */ 173,   spawn,            CMD("playerctl", "previous") },
+	{ 0,        /* XF86AudioNext */ 171,   spawn,            CMD("playerctl", "next") },
+	{ Mod1Mask,             /* m */ 58,    spawn,            CMD("toggle_mic_notify") },
+	{ Mod1Mask|ControlMask, /* b */ 56,    spawn,            CMD("browser_bookmarks_dmenu") },
+	{ Mod1Mask|ControlMask, /* m */ 58,    spawn,            CMD("powermenu_dmenu") },
+	{ 0,                /* Print */ 107,   spawn,            CMD("screenshot_dmenu") },
+	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            CMD("notes_dmenu") },
+	{ Mod1Mask,             /* u */ 30,    spawn,            CMD("unicode_dmenu") },
+	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            CMD("st", "-e", "nvimf", "-i") },
+	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            CMD("cmus_lyrics") },
+	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            CMD("pavucontrol") },
+	{ Mod1Mask|ControlMask, /* r */ 27,    spawn,            CMD("simplescreenrecorder", "--no-systray") },
+	{ Mod1Mask|ControlMask, /* c */ 54,    spawn,            CMD("cmus_launcher") },
 	{ MODKEY,          /* Return */ 36,    spawn,            {.v = termcmd } },
 	{ MODKEY,               /* b */ 56,    togglebar,        {0} },
 	{ MODKEY|ShiftMask,     /* b */ 56,    toggletopbar,     {0} },
@@ -89,8 +93,8 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,     /* k */ 45,    rotatestack,      {.i = -1 } },
 	{ MODKEY,               /* j */ 44,    focusstack,       {.i = +1 } },
 	{ MODKEY,               /* k */ 45,    focusstack,       {.i = -1 } },
-	{ MODKEY,               /* h */ 43,    setmfact,         {.f = -0.05} },
-	{ MODKEY,               /* l */ 46,    setmfact,         {.f = +0.05} },
+	{ MODKEY,               /* h */ 43,    setmfact,         {.f = -mfactdelta} },
+	{ MODKEY,               /* l */ 46,    setmfact,         {.f = +mfactdelta} },
 	{ MODKEY|ShiftMask,/* Return */ 36,    zoom,             {0} },
 	{ MODKEY,             /* Tab */ 23,    view,             {0} },
 	{ MODKEY,               /* w */ 25,    killclient,       {0} },
@@ -102,8 +106,8 @@ static const Key keys[] = {
 	{ MODKEY,          /* period */ 60,    focusmon,         {.i = +1 } },
 	{ MODKEY|ShiftMask, /* comma */ 59,    tagmon,           {.i = -1 } },
 	{ MODKEY|ShiftMask,/* period */ 60,    tagmon,           {.i = +1 } },
-	{ MODKEY,           /* minus */ 20,    setgaps,          {.i = -6 } },
-	{ MODKEY,           /* equal */ 21,    setgaps,          {.i = +6 } },
+	{ MODKEY,           /* minus */ 20,    setgaps,          {.i = -gapdelta } },
+	{ MODKEY,           /* equal */ 21,    setgaps,          {.i = +gapdelta } },
 	{ MODKEY|ShiftMask, /* equal */ 21,    setgaps,          {.i = 0 } },
 	{ MODKEY,           /* grave */ 49,    view,             {.ui = ~0 } },
 	{ MODKEY|ShiftMask, /* grave */ 49,    tag,              {.ui = ~0 } },
@@ -135,4 +139,3 @@ static const Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-

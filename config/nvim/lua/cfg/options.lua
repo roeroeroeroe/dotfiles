@@ -9,6 +9,7 @@ vim.opt.relativenumber = true
 vim.opt.signcolumn = "yes"
 vim.opt.statusline = "%F %h%m%r %=%l,%c/%L — %p%% %y"
 vim.opt.termguicolors = true
+vim.opt.winborder = "single"
 
 vim.opt.expandtab = false
 vim.opt.shiftwidth = indent
@@ -41,5 +42,6 @@ vim.opt.ttimeoutlen = 0
 
 vim.opt.hidden = true
 vim.opt.undofile = true
+vim.opt.swapfile = false
 
 vim.g.netrw_banner = 0
