@@ -5,10 +5,10 @@
 	{
 		if ($3) {
 			gsub(/\[|\]/, "", $3)
-			print $3
+			printf "%s", $3
 		}
 		else
-			print $2 * 100 "%"
+			printf "%d%%", $2 * 100
 	}'
 	exit 0
 }

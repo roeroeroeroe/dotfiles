@@ -26,14 +26,11 @@ static const char *colors[][3]  = {
 	[SchemeSel]  = { col_sel_fg,  col_sel_bg,  col_sel_bd },
 };
 
-// static const char *tags[] = { ">.<", ":x", "^=^", "^w^", "^o^",
-//                               "^_^", "^.^", ":w", "c:", ":3" };
-// static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-static const char *tags[] = { "*", "*", "*", "*", "*" };
+static const char *tags[] = { "*", "*", "*", "*", "*", "*", "*", "*", "*", "*" };
 
 static const Rule rules[] = {
-	/* class          instance    title       tags mask     isfloating   monitor */
-	{ "vesktop",      NULL,       NULL,       1 << 3,       0,           1 },
+	/* class     instance     title     tags mask     isfloating     monitor */
+	{ "Gimp",    NULL,        NULL,     0,            1,             -1 },
 };
 
 static const float mfact        = 0.50; /* factor of master area size [0.05..0.95] */
@@ -117,11 +114,11 @@ static const Key keys[] = {
 	TAGKEYS(                /* 3 */ 12,                      2)
 	TAGKEYS(                /* 4 */ 13,                      3)
 	TAGKEYS(                /* 5 */ 14,                      4)
-	// TAGKEYS(                /* 6 */ 15,                      5)
-	// TAGKEYS(                /* 7 */ 16,                      6)
-	// TAGKEYS(                /* 8 */ 17,                      7)
-	// TAGKEYS(                /* 9 */ 18,                      8)
-	// TAGKEYS(                /* 0 */ 19,                      9)
+	TAGKEYS(                /* 6 */ 15,                      5)
+	TAGKEYS(                /* 7 */ 16,                      6)
+	TAGKEYS(                /* 8 */ 17,                      7)
+	TAGKEYS(                /* 9 */ 18,                      8)
+	TAGKEYS(                /* 0 */ 19,                      9)
 };
 
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */

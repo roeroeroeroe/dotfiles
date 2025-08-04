@@ -69,7 +69,7 @@ static const struct arg args[] = {
  { run_command,   "vol:%s ]   ",        "volume",            3,   2 },
  { netspeed_tx,   "[ tx:%s ",           "enp3s0",            1,   -1 },
  { netspeed_rx,   "rx:%s ",             "enp3s0",            1,   -1 },
- { run_command,   "tcp_estab(%s) ",     "sockets_slstatus",  1,   -1 },
+ { run_command,   "tcp_01(%s) ",        "sockets_slstatus",  1,   -1 },
  { io_perc,       "disk(io_wait:%s%% ", NULL,                1,   -1 },
  { disk_used,     "u:%s) ",             "/",                 3,   -1 },
  { ram_used,      "mem:%s ",            NULL,                2,   -1 },

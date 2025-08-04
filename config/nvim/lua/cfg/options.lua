@@ -7,7 +7,7 @@ vim.opt.cursorlineopt = "line,number"
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.signcolumn = "yes"
-vim.opt.statusline = "%F %h%m%r %=%l,%c/%L — %p%% %y"
+vim.opt.statusline = "%F %h%m%r %=%l,%c/%L %p%% %y"
 vim.opt.termguicolors = true
 vim.opt.winborder = "single"
 

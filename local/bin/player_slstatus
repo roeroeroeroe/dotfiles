@@ -26,7 +26,8 @@ handle_cmus() {
 	TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
 	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN}..."
 
-	echo "$ICON$TS $TITLE"
+	printf "%s%s %s" \
+		"$ICON" "$TS" "$TITLE"
 }
 
 handle_playerctl() {
@@ -41,7 +42,8 @@ handle_playerctl() {
 	TITLE=$(playerctl metadata title)
 	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN}..."
 
-	echo "$ICON$TITLE"
+	printf "%s%s" \
+		"$ICON" "$TITLE"
 }
 
 CMUS_DATA="$(cmus-remote -Q 2>/dev/null)"

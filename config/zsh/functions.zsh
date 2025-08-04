@@ -21,7 +21,7 @@ slrec() {
 		"twitch.tv/$1" best
 }
 
-new() {
+newsh() {
 	local file=${1:-"$(LC_ALL=C tr -dc A-Za-z < /dev/urandom | head -c 5).sh"}
 	[[ "$file" == */* ]] && { echo "invalid filename"; return; }
 	[ -f "$file" ] && { echo "file already exists"; return; }
@@ -40,8 +40,4 @@ hex() {
 	local color="${1#\#}"
 	! [[ "$color" =~ ^[A-Fa-f0-9]{6}$ ]] && { echo "invalid hex code"; return; }
 	magick -size 600x600 xc:#"$color" -strip "$color".png
-}
-
-dict() {
-	[ -n "$1" ] && curl "dict://dict.org/d:$1"
 }
