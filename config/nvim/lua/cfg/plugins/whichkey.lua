@@ -35,7 +35,9 @@ return {
 		},
 		{
 			"<leader>fb",
-			"<cmd>Telescope buffers<cr>",
+			function()
+				require("telescope.builtin").buffers({ initial_mode = "normal" })
+			end,
 			desc = "Telescope buffers",
 		},
 		{

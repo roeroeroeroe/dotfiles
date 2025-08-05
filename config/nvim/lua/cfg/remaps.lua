@@ -13,5 +13,5 @@ map("n", "<C-u>", "<C-u>zz")
 map("n", "n", "nzz")
 map("n", "N", "Nzz")
 
-map("n", "<Tab>", "<Cmd>BufferNext<CR>")
-map("n", "<S-Tab>", "<Cmd>BufferPrevious<CR>")
+map("n", "<Tab>", "<Cmd>bnext<CR>")
+map("n", "<S-Tab>", "<Cmd>bprevious<CR>")
