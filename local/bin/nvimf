@@ -7,9 +7,10 @@
 }
 
 DIRS=(
+	"$HOME/Downloads/git"
 	"$HOME/Projects"
 	"$HOME/suckless"
-	"$HOME/Downloads/git"
+	"$XDG_CONFIG_HOME"
 )
 
 DEST=$(find "${DIRS[@]}" -type d -maxdepth 1 -mindepth 1 2> /dev/null |

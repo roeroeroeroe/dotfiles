@@ -3,6 +3,7 @@ return {
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-buffer",
+		"hrsh7th/cmp-cmdline",
 		"hrsh7th/cmp-path",
 		{
 			"L3MON4D3/LuaSnip",
@@ -17,7 +18,6 @@ return {
 		local cmp = require("cmp")
 		local lspkind = require("lspkind")
 		local luasnip = require("luasnip")
-		local cmp_select_opts = { behavior = cmp.SelectBehavior.Select }
 		require("luasnip.loaders.from_vscode").lazy_load()
 		require("luasnip.config").set_config({
 			history = true,
@@ -25,11 +25,9 @@ return {
 		})
 		vim.api.nvim_create_autocmd("InsertLeave", {
 			callback = function()
-				if
-					require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
-					and not require("luasnip").session.jump_active
-				then
-					require("luasnip").unlink_current()
+				local ls = require("luasnip")
+				if ls.session.current_nodes[vim.api.nvim_get_current_buf()] and not ls.session.jump_active then
+					ls.unlink_current()
 				end
 			end,
 		})
@@ -99,10 +97,14 @@ return {
 				{ name = "buffer" },
 			},
 		})
-		cmp.setup.cmdline({ ":" }, {
-			sources = {
-				{ name = "cmdline" },
-			},
+		cmp.setup.cmdline(":", {
+			mapping = cmp.mapping.preset.cmdline(),
+			sources = cmp.config.sources({ { name = "path" } }, {
+				{
+					name = "cmdline",
+					option = { ignore_cmds = { "Man", "!" } },
+				},
+			}),
 		})
 	end,
 }
