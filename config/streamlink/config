@@ -1,0 +1,6 @@
+default-stream=best
+hls-live-edge=1
+player=mpv
+stream-segment-threads=10
+stream-timeout=20
+twitch-low-latency

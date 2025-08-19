@@ -2,30 +2,11 @@ ansi() {
 	for c in {1..${1:-255}}; do echo -n "\033[38;5;${c}m$c "; done
 }
 
-sl() {
-	for arg in "$@"; do
-		streamlink \
-			--twitch-low-latency \
-			--hls-live-edge 1 \
-			--stream-segment-threads 10 \
-			--stream-timeout 20 \
-			--player mpv \
-			"twitch.tv/$arg" best &
-	done
-}
-
-slrec() {
-	[ -z "$1" ] && return 1
-	streamlink \
-		--output "${1}_{time:%Y%m%d%H%M%S}.ts" \
-		"twitch.tv/$1" best
-}
-
 newsh() {
 	local file=${1:-"$(LC_ALL=C tr -dc A-Za-z < /dev/urandom | head -c 5).sh"}
 	[[ "$file" == */* ]] && { echo "invalid filename"; return; }
 	[ -f "$file" ] && { echo "file already exists"; return; }
-	echo '#!/usr/bin/env bash\n\n' > "$file"; chmod +x "$file"; ${EDITOR:-vim} "$file"
+	echo "#!/usr/bin/env bash\n\n" > "$file"; chmod +x "$file"; ${EDITOR:-vim} "$file"
 }
 
 ipapi() {
