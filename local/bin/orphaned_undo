@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ "$1" = "-h" ] && {
-	echo "Usage: $(basename "$0") [--dry-run]
+	echo "Usage: ${0##*/} [--dry-run]
   --dry-run   \`echo\` the filenames"
 	exit 0
 }

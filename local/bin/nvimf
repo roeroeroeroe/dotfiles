@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ "$1" = "-h" ] && {
-	echo "Usage: $(basename "$0") [-i]
+	echo "Usage: ${0##*/} [-i]
   -i   launch interactive shell after exiting ${EDITOR:-vim}"
 	exit 0
 }

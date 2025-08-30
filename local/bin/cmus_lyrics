@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ "$1" = "-h" ] && {
-	echo "Usage: $(basename "$0") [-s]
+	echo "Usage: ${0##*/} [-s]
   -s   print artist-title slug and exit"
 	exit 0
 }

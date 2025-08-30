@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ "$1" = "-h" ] && {
-	echo "Usage: $(basename "$0") [-l] <text>
+	echo "Usage: ${0##*/} [-l] <text>
   -l   destination language"
 	exit 0
 }
