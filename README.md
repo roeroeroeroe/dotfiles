@@ -3,7 +3,7 @@ sudo pacman -S --needed - < pkglist
 yay -S --needed - < aurpkglist
 ```
 ```bash
-sed -i "s/enp3s0/interface/" suckless/slstatus-1.0/config.h
+sed -i "s/enp3s0/interface/" suckless/slstatus/config.h
 ```
 ## zsh
 ```bash

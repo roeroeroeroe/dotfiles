@@ -55,6 +55,7 @@ static const char unknown_str[] = "n/a";
  *                                                     thermal zone on FreeBSD
  *                                                     (tz0, tz1, etc.)
  * uid                 UID of current user             NULL
+ * up                  interface is running            interface name (eth0)
  * uptime              system uptime                   NULL
  * username            username of current user        NULL
  * vol_perc            OSS/ALSA volume in percent      mixer file (/dev/mixer)
@@ -77,6 +78,3 @@ static const struct arg args[] = {
  { datetime,      "[ %s ",              "%a %m/%d %H:%M:%S", 1,   -1 },
  { uptime,        "up:%s ]",            NULL,                5,   -1 },
 };
-
-/* maximum output string length */
-#define MAXLEN CMDLEN * LEN(args)

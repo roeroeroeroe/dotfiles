@@ -19,7 +19,7 @@ Features
 - Username/GID/UID
 - Hostname
 - Disk IO (read, write and percentage) (Linux only)
-- IP address (IPv4 and IPv6)
+- IP address (IPv4 and IPv6), interface status
 - Kernel version
 - Keyboard indicators
 - Keymap

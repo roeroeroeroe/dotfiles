@@ -66,7 +66,6 @@ printstatus(unsigned int iter)
 	status[0] = '\0';
 	for (i = 0; i < LEN(args); i++)
 		strcat(status, statuses[i]);
-	status[strlen(status)] = '\0';
 
 	if (sflag) {
 		puts(status);
@@ -101,6 +100,7 @@ main(int argc, char *argv[])
 	ARGBEGIN {
 	case 'v':
 		die("slstatus-"VERSION);
+		break;
 	case '1':
 		done = 1;
 		/* FALLTHROUGH */
@@ -145,6 +145,10 @@ main(int argc, char *argv[])
 					if (errno == EINTR) {
 						printstatus(0);
 						errno = upsigno = 0;
+					}
+					if (wait.tv_sec < 0) {
+						warn("update overrun");
+						wait.tv_sec = wait.tv_nsec = 0;
 					}
 					ret = nanosleep(&wait, &wait);
 			} while (wait.tv_sec >= 0 && ret < 0 && !done);

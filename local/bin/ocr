@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-LANG="eng"
-[ -n "$1" ] && LANG="$1"
-
 TEMP=$(mktemp /tmp/ocr.XXXXX.png)
 trap 'rm -f "$TEMP"' EXIT
 
 maim -souc 0.84,0.37,0.06 > "$TEMP" || exit
-tesseract "$TEMP" - -l "$LANG" 2>/dev/null
+tesseract "$TEMP" - -l "${1:-eng}" 2>/dev/null

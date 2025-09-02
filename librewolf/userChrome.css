@@ -4,13 +4,15 @@
   display: none !important;
 }
 
+#PersonalToolbar {
+  max-height: none !important;
+}
+#PersonalToolbar toolbarbutton {
+  padding: 0 10px !important;
+}
+
 #PlacesToolbarItems {
   display: flex !important;
   justify-content: center !important;
   flex-wrap: wrap !important;
-  overflow: hidden !important;
-}
-
-#PersonalToolbar toolbarbutton {
-  padding: 0 10px !important;
 }

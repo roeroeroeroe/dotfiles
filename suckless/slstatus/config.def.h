@@ -59,6 +59,7 @@ static const char unknown_str[] = "n/a";
  *                                                     thermal zone on FreeBSD
  *                                                     (tz0, tz1, etc.)
  * uid                 UID of current user             NULL
+ * up                  interface is running            interface name (eth0)
  * uptime              system uptime                   NULL
  * username            username of current user        NULL
  * vol_perc            OSS/ALSA volume in percent      mixer file (/dev/mixer)
@@ -70,6 +71,3 @@ static const struct arg args[] = {
 	/* function format          argument turn signal */
 	{ datetime, "%s",           "%F %T", 1,   -1 },
 };
-
-/* maximum output string length */
-#define MAXLEN CMDLEN * LEN(args)

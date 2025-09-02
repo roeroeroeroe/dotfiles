@@ -1,6 +1,6 @@
 @-moz-document url("about:home"), url("about:newtab"), url("about:privatebrowsing") {
   * {
-    color: #525252  !important;
+    color: #525252 !important;
   }
   body {
     background-color: #000000 !important;
