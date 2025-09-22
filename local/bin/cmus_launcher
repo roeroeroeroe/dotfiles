@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-pidof -q cmus || { st -e cmus & exit; }
+pidof -q cmus || { ${TERMINAL:-st} -e cmus & exit; }
 notify-send "cmus is already running"

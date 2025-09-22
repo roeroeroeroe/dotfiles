@@ -14,7 +14,7 @@ alias у="setxkbmap 'us'"
 alias yay="PKGEXT=.pkg.tar yay" # skip compression
 alias whois="whois -H"
 alias history="history 1"
-alias diff="diff --color=auto -u"
+alias diff="diff --color=auto"
 alias shred="shred -vzu"
 alias temp="awk '{print \$1/1000 \"°C\"}' /sys/class/thermal/thermal_zone0/temp"
 alias mirrors="sudo reflector --verbose --country DE,GB,US --protocol https --sort rate --latest 20 --save /etc/pacman.d/mirrorlist"

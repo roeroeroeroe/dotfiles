@@ -10,6 +10,7 @@ export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
 # export RXVT_SOCKET="$XDG_RUNTIME_DIR"/urxvtd
 export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 
+export TERMINAL="st"
 export EDITOR="nvim"
 export PAGER="less -igmj .5"
 export CHATTERINO2_RECENT_MESSAGES_URL="https://recent-messages.zneix.eu/api/v2/recent-messages/%1"

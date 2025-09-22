@@ -10,4 +10,4 @@ fi
 FILE=$(find "$NOTES_DIR" -maxdepth 1 -type f -printf "%f\n" | dmenu)
 [[ -z "$FILE" || "$FILE" = */* ]] && exit 2
 
-st -e ${EDITOR:-vim} "$NOTES_DIR/$FILE"
+${TERMINAL:-st} -e ${EDITOR:-vim} "$NOTES_DIR/$FILE"

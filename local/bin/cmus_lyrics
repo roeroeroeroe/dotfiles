@@ -1,25 +1,19 @@
 #!/usr/bin/env bash
 
-[ "$1" = "-h" ] && {
-	echo "Usage: ${0##*/} [-s]
-  -s   print artist-title slug and exit"
-	exit 0
-}
+DATA=$(cmus-remote -Q 2> /dev/null)
+[ -z "$DATA" ] && { notify-send "cmus is not running"; exit 1; }
 
-DATA=$(cmus-remote -Q 2>/dev/null)
-[ -z "$DATA" ] && {
-	notify-send "cmus is not running"
-	exit 1
-}
-
-TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
-ARTIST=$(echo "$DATA" | grep "^tag artist " | cut -d " " -f 3-)
-[[ -z "$ARTIST" || -z "$TITLE" ]] && { notify-send "missing metadata"; exit 1; }
+TITLE=$(echo "$DATA" | grep -m 1 "^tag title " | cut -d " " -f 3-)
+ARTIST=$(echo "$DATA" | grep -m 1 "^tag artist " | cut -d " " -f 3-)
+ALBUMARTIST=$(echo "$DATA" | grep -m 1 "^tag albumartist " | cut -d " " -f 3-)
+[[ -z "$TITLE" || (-z "$ARTIST" && -z "$ALBUMARTIST") ]] && \
+	{ notify-send "missing metadata"; exit 1; }
 
 LYRICS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lyrics"
+[ -d "$LYRICS_DIR" ] || mkdir -vp "$LYRICS_DIR"
 
 encode() {
-	jq -sRr @uri <<< "$@"
+	jq -sRr @uri <<< "$1"
 }
 
 slug() {
@@ -29,46 +23,64 @@ slug() {
 		-e "s/[^a-z0-9-]//g"
 }
 
-ARTIST_TITLE_SLUG="$(slug "$ARTIST")-$(slug "$TITLE")"
-LYRICS_FILE="$LYRICS_DIR/$ARTIST_TITLE_SLUG"
-
-[ "$1" = "-s" ] && {
-	echo "$ARTIST_TITLE_SLUG"
-	exit 0
-}
-
 write_lyrics() {
 	[ -z "$1" ] && return 1
-	[ -d "$LYRICS_DIR" ] || mkdir -p "$LYRICS_DIR"
-	[ -f "$LYRICS_FILE" ] && return 0
-
 	echo "$1" > "$LYRICS_FILE"
 	return 0
 }
 
-lyrics_api() {
-	URL="https://api.lyrics.ovh/v1/$(encode "$ARTIST")/$(encode "$TITLE")"
-	LYRICS=$(curl -sLm 3 "$URL" | jq -r '.lyrics // empty')
+TITLE_SLUG="$(slug "$TITLE")"
+TITLE_ENC="$(encode "$TITLE")"
 
-	write_lyrics "$LYRICS"
-	return
-}
+CANDIDATES=()
+if [ -n "$ARTIST" ]; then
+	LYRICS_FILE_ARTIST="$LYRICS_DIR/$(slug "$ARTIST")-$TITLE_SLUG"
+	CANDIDATES+=("$ARTIST")
+fi
+if [ -n "$ALBUMARTIST" ]; then
+	LYRICS_FILE_ALBUMARTIST="$LYRICS_DIR/$(slug "$ALBUMARTIST")-$TITLE_SLUG"
+	[ "$ALBUMARTIST" != "$ARTIST" ] && CANDIDATES+=("$ALBUMARTIST")
+fi
 
-genius() {
-	URL="https://genius.com/$ARTIST_TITLE_SLUG-lyrics"
-	LYRICS=$(curl -sLm 10 "$URL" | pup 'div[data-lyrics-container="true"] text{}' | sed \
+try_artist() {
+	[ -z "$1" ] && return 1
+	local artist="$1"
+	local artist_slug="$(slug "$artist")"
+	LYRICS_FILE="$LYRICS_DIR/$artist_slug-$TITLE_SLUG"
+
+	URL="https://genius.com/$artist_slug-$TITLE_SLUG-lyrics"
+	echo "trying $URL"
+	write_lyrics "$(curl -sLm 10 "$URL" | pup 'div[data-lyrics-container="true"] text{}' | sed \
 		-e 's/<[^>]*>//g' \
-		-e 's/&#39;/'"'"'/g' \
+		-e "s/&#39;/'/g" \
 		-e 's/&#34;/"/g' \
-		-e 's/^[ \t]*//;s/[ \t]*$//')
+		-e 's/^[ \t]*//;s/[ \t]*$//')"
+	[ -s "$LYRICS_FILE" ] && return 0
 
-	write_lyrics "$LYRICS"
-	return
+	URL="https://api.lyrics.ovh/v1/$(encode "$artist")/$TITLE_ENC"
+	echo "trying $URL"
+	write_lyrics "$(curl -sLm 3 "$URL" | jq -r '.lyrics // empty')"
+	[ -s "$LYRICS_FILE" ]
 }
 
-[ -f "$LYRICS_FILE" ] || genius || lyrics_api || {
-	notify-send "lyrics not found"
-	exit
+main() {
+	local found=0
+	if [[ -n "$LYRICS_FILE_ARTIST" && -s "$LYRICS_FILE_ARTIST" ]]; then
+		LYRICS_FILE="$LYRICS_FILE_ARTIST"
+		found=1
+	elif [[ -n "$LYRICS_FILE_ALBUMARTIST" && -s "$LYRICS_FILE_ALBUMARTIST" ]]; then
+		LYRICS_FILE="$LYRICS_FILE_ALBUMARTIST"
+		found=1
+	else
+		local i cand
+		for i in "${!CANDIDATES[@]}"; do
+			cand="${CANDIDATES[$i]}"
+			try_artist "$cand" && { found=1; break; }
+		done
+	fi
+	[ $found -eq 0 ] && { notify-send "lyrics not found"; exit 1; }
+
+	${TERMINAL:-st} -e ${EDITOR:-vim} "$LYRICS_FILE"
 }
 
-st -e ${EDITOR:-vim} "$LYRICS_FILE"
+main "$@"
