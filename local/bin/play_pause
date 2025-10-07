@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-BEFORE=$(playerctl status 2>/dev/null)
-[ -z "$BEFORE" ] && exit 0 # no players found
-
-playerctl play-pause
-kill -35 $(pidof slstatus) # sb player

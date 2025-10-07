@@ -11,7 +11,7 @@ xinput --set-prop 'pointer:Razer Razer DeathAdder Essential' 'libinput Accel Pro
 setxkbmap -option caps:escape_shifted_capslock &
 xset r rate 250 30 &
 dunst &
-slstatus &
+sb 2> ~/.cache/sb_err.log &
 nekoray &
 
 csum=""

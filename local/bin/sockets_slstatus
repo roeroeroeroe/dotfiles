@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-tcp_estab=$(ss -ntH state established 2> /dev/null)
-[ -z "$tcp_estab" ] && { printf "remote:0 lo:0"; exit 0; }
-lo_estab=$(grep -cE '127\.0\.0\.1|::1' <<< "$tcp_estab")
-printf "remote:%d lo:%d" \
-	"$(( $(wc -l <<< "$tcp_estab") - lo_estab ))" \
-	"$lo_estab"

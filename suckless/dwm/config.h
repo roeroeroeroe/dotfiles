@@ -64,61 +64,103 @@ static char dmenumon[2] = "0";
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
+/* use xev(1) */
+#define KEY_PRINT  107
+#define KEY_RETURN 36
+#define KEY_TAB    23
+#define KEY_SPACE  65
+#define KEY_COMMA  59
+#define KEY_MINUS  20
+#define KEY_PERIOD 60
+#define KEY_EQUAL  21
+#define KEY_GRAVE  49
+#define KEY_XF86_AUDIO_LOWER_VOLUME 122
+#define KEY_XF86_AUDIO_MUTE         121
+#define KEY_XF86_AUDIO_NEXT         171
+#define KEY_XF86_AUDIO_PLAY         172
+#define KEY_XF86_AUDIO_PREV         173
+#define KEY_XF86_AUDIO_RAISE_VOLUME 123
+#define KEY_B 56
+#define KEY_C 54
+#define KEY_E 26
+#define KEY_H 43
+#define KEY_J 44
+#define KEY_K 45
+#define KEY_L 46
+#define KEY_M 58
+#define KEY_N 57
+#define KEY_Q 24
+#define KEY_R 27
+#define KEY_S 39
+#define KEY_T 28
+#define KEY_U 30
+#define KEY_W 25
+#define KEY_1 10
+#define KEY_2 11
+#define KEY_3 12
+#define KEY_4 13
+#define KEY_5 14
+#define KEY_6 15
+#define KEY_7 16
+#define KEY_8 17
+#define KEY_9 18
+#define KEY_0 19
+
 static const Key keys[] = {
-	/* modifier                     keycode function         argument */
-	{ 0,        /* XF86AudioMute */ 121,   spawn,            CMD("volume", "mute") },
-	{ 0, /* XF86AudioLowerVolume */ 122,   spawn,            CMD("volume", "-") },
-	{ 0, /* XF86AudioRaiseVolume */ 123,   spawn,            CMD("volume", "+") },
-	{ 0,        /* XF86AudioPlay */ 172,   spawn,            CMD("play_pause") },
-	{ 0,        /* XF86AudioPrev */ 173,   spawn,            CMD("playerctl", "previous") },
-	{ 0,        /* XF86AudioNext */ 171,   spawn,            CMD("playerctl", "next") },
-	{ Mod1Mask,             /* m */ 58,    spawn,            CMD("toggle_mic_notify") },
-	{ Mod1Mask|ControlMask, /* b */ 56,    spawn,            CMD("browser_bookmarks_dmenu") },
-	{ Mod1Mask|ControlMask, /* m */ 58,    spawn,            CMD("powermenu_dmenu") },
-	{ 0,                /* Print */ 107,   spawn,            CMD("screenshot_dmenu") },
-	{ Mod1Mask|ControlMask, /* n */ 57,    spawn,            CMD("notes_dmenu") },
-	{ Mod1Mask,             /* u */ 30,    spawn,            CMD("unicode_dmenu") },
-	{ Mod1Mask|ControlMask, /* e */ 26,    spawn,            CMD("st", "-e", "nvimf", "-i") },
-	{ Mod1Mask|ControlMask, /* l */ 46,    spawn,            CMD("cmus_lyrics") },
-	{ Mod1Mask|ControlMask, /* s */ 39,    spawn,            CMD("pavucontrol") },
-	{ Mod1Mask|ControlMask, /* r */ 27,    spawn,            CMD("simplescreenrecorder", "--no-systray") },
-	{ Mod1Mask|ControlMask, /* c */ 54,    spawn,            CMD("cmus_launcher") },
-	{ MODKEY,          /* Return */ 36,    spawn,            {.v = termcmd } },
-	{ MODKEY,               /* b */ 56,    togglebar,        {0} },
-	{ MODKEY|ShiftMask,     /* b */ 56,    toggletopbar,     {0} },
-	{ MODKEY|ShiftMask,     /* j */ 44,    rotatestack,      {.i = +1 } },
-	{ MODKEY|ShiftMask,     /* k */ 45,    rotatestack,      {.i = -1 } },
-	{ MODKEY,               /* j */ 44,    focusstack,       {.i = +1 } },
-	{ MODKEY,               /* k */ 45,    focusstack,       {.i = -1 } },
-	{ MODKEY,               /* h */ 43,    setmfact,         {.f = -mfactdelta} },
-	{ MODKEY,               /* l */ 46,    setmfact,         {.f = +mfactdelta} },
-	{ MODKEY|ShiftMask,/* Return */ 36,    zoom,             {0} },
-	{ MODKEY,             /* Tab */ 23,    view,             {0} },
-	{ MODKEY,               /* w */ 25,    killclient,       {0} },
-	{ MODKEY,               /* t */ 28,    setlayout,        {.v = &layouts[0]} },
-	{ MODKEY,               /* m */ 58,    setlayout,        {.v = &layouts[2]} },
-	{ MODKEY,           /* space */ 65,    spawn,            {.v = dmenucmd } },
-	{ MODKEY,               /* s */ 39,    togglefloating,   {0} },
-	{ MODKEY,           /* comma */ 59,    focusmon,         {.i = -1 } },
-	{ MODKEY,          /* period */ 60,    focusmon,         {.i = +1 } },
-	{ MODKEY|ShiftMask, /* comma */ 59,    tagmon,           {.i = -1 } },
-	{ MODKEY|ShiftMask,/* period */ 60,    tagmon,           {.i = +1 } },
-	{ MODKEY,           /* minus */ 20,    setgaps,          {.i = -gapdelta } },
-	{ MODKEY,           /* equal */ 21,    setgaps,          {.i = +gapdelta } },
-	{ MODKEY|ShiftMask, /* equal */ 21,    setgaps,          {.i = 0 } },
-	{ MODKEY,           /* grave */ 49,    view,             {.ui = ~0 } },
-	{ MODKEY|ShiftMask, /* grave */ 49,    tag,              {.ui = ~0 } },
-	{ MODKEY|ShiftMask,     /* q */ 24,    quit,             {0} },
-	TAGKEYS(                /* 1 */ 10,                      0)
-	TAGKEYS(                /* 2 */ 11,                      1)
-	TAGKEYS(                /* 3 */ 12,                      2)
-	TAGKEYS(                /* 4 */ 13,                      3)
-	TAGKEYS(                /* 5 */ 14,                      4)
-	TAGKEYS(                /* 6 */ 15,                      5)
-	TAGKEYS(                /* 7 */ 16,                      6)
-	TAGKEYS(                /* 8 */ 17,                      7)
-	TAGKEYS(                /* 9 */ 18,                      8)
-	TAGKEYS(                /* 0 */ 19,                      9)
+	/* modifier               keycode       function          argument */
+	{ 0,                      KEY_XF86_AUDIO_LOWER_VOLUME, spawn, CMD("volume", "-") },
+	{ 0,                      KEY_XF86_AUDIO_RAISE_VOLUME, spawn, CMD("volume", "+") },
+	{ 0,                      KEY_XF86_AUDIO_MUTE,   spawn,   CMD("volume", "mute") },
+	{ 0,                      KEY_XF86_AUDIO_PLAY,   spawn,   SHCMD("playerctl play-pause && kill -35 $(pidof sb)") },
+	{ 0,                      KEY_XF86_AUDIO_PREV,   spawn,   SHCMD("playerctl previous && kill -35 $(pidof sb)") },
+	{ 0,                      KEY_XF86_AUDIO_NEXT,   spawn,   SHCMD("playerctl next && kill -35 $(pidof sb)") },
+	{ Mod1Mask,               KEY_M,        spawn,            CMD("toggle_mic_notify") },
+	{ Mod1Mask|ControlMask,   KEY_B,        spawn,            CMD("browser_bookmarks_dmenu") },
+	{ Mod1Mask|ControlMask,   KEY_M,        spawn,            CMD("powermenu_dmenu") },
+	{ 0,                      KEY_PRINT,    spawn,            CMD("screenshot_dmenu") },
+	{ Mod1Mask|ControlMask,   KEY_N,        spawn,            CMD("notes_dmenu") },
+	{ Mod1Mask,               KEY_U,        spawn,            CMD("unicode_dmenu") },
+	{ Mod1Mask|ControlMask,   KEY_E,        spawn,            CMD("st", "-e", "nvimf", "-i") },
+	{ Mod1Mask|ControlMask,   KEY_L,        spawn,            CMD("cmus_lyrics") },
+	{ Mod1Mask|ControlMask,   KEY_S,        spawn,            CMD("pavucontrol") },
+	{ Mod1Mask|ControlMask,   KEY_R,        spawn,            CMD("simplescreenrecorder", "--no-systray") },
+	{ Mod1Mask|ControlMask,   KEY_C,        spawn,            CMD("cmus_launcher") },
+	{ MODKEY,                 KEY_RETURN,   spawn,            {.v = termcmd } },
+	{ MODKEY,                 KEY_B,        togglebar,        {0} },
+	{ MODKEY|ShiftMask,       KEY_B,        toggletopbar,     {0} },
+	{ MODKEY|ShiftMask,       KEY_J,        rotatestack,      {.i = +1 } },
+	{ MODKEY|ShiftMask,       KEY_K,        rotatestack,      {.i = -1 } },
+	{ MODKEY,                 KEY_J,        focusstack,       {.i = +1 } },
+	{ MODKEY,                 KEY_K,        focusstack,       {.i = -1 } },
+	{ MODKEY,                 KEY_H,        setmfact,         {.f = -mfactdelta} },
+	{ MODKEY,                 KEY_L,        setmfact,         {.f = +mfactdelta} },
+	{ MODKEY|ShiftMask,       KEY_RETURN,   zoom,             {0} },
+	{ MODKEY,                 KEY_TAB,      view,             {0} },
+	{ MODKEY,                 KEY_W,        killclient,       {0} },
+	{ MODKEY,                 KEY_T,        setlayout,        {.v = &layouts[0]} },
+	{ MODKEY,                 KEY_M,        setlayout,        {.v = &layouts[2]} },
+	{ MODKEY,                 KEY_SPACE,    spawn,            {.v = dmenucmd } },
+	{ MODKEY,                 KEY_S,        togglefloating,   {0} },
+	{ MODKEY,                 KEY_COMMA,    focusmon,         {.i = -1 } },
+	{ MODKEY,                 KEY_PERIOD,   focusmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask,       KEY_COMMA,    tagmon,           {.i = -1 } },
+	{ MODKEY|ShiftMask,       KEY_PERIOD,   tagmon,           {.i = +1 } },
+	{ MODKEY,                 KEY_MINUS,    setgaps,          {.i = -gapdelta } },
+	{ MODKEY,                 KEY_EQUAL,    setgaps,          {.i = +gapdelta } },
+	{ MODKEY|ShiftMask,       KEY_EQUAL,    setgaps,          {.i = 0 } },
+	{ MODKEY,                 KEY_GRAVE,    view,             {.ui = ~0 } },
+	{ MODKEY|ShiftMask,       KEY_GRAVE,    tag,              {.ui = ~0 } },
+	{ MODKEY|ShiftMask,       KEY_Q,        quit,             {0} },
+	TAGKEYS(                  KEY_1,                          0)
+	TAGKEYS(                  KEY_2,                          1)
+	TAGKEYS(                  KEY_3,                          2)
+	TAGKEYS(                  KEY_4,                          3)
+	TAGKEYS(                  KEY_5,                          4)
+	TAGKEYS(                  KEY_6,                          5)
+	TAGKEYS(                  KEY_7,                          6)
+	TAGKEYS(                  KEY_8,                          7)
+	TAGKEYS(                  KEY_9,                          8)
+	TAGKEYS(                  KEY_0,                          9)
 };
 
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
