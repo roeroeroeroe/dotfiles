@@ -15,39 +15,20 @@ import (
 
 const netName = "net"
 
-func readUintFrom(f *os.File, buf []byte) (uint64, error) {
-	n, err := f.ReadAt(buf, 0)
+func readU64From(f *os.File, buf []byte) (uint64, error) {
+	if _, err := f.Seek(0, 0); err != nil {
+		return 0, err
+	}
+
+	n, err := f.Read(buf)
 	if err != nil && err != io.EOF {
 		return 0, err
 	}
 	if n == 0 {
 		return 0, errors.New("empty")
 	}
-	b := buf[:n]
 
-	i := 0
-	for i < len(b) && (b[i] == ' ' || b[i] == '\t' || b[i] == '\n' || b[i] == '\r') {
-		i++
-	}
-	if i == len(b) {
-		return 0, errors.New("no digits")
-	}
-
-	var (
-		found bool
-		num   uint64
-	)
-	for _, c := range b[i:] {
-		if c < '0' || c > '9' {
-			break
-		}
-		found = true
-		num = num*10 + uint64(c-'0')
-	}
-	if !found {
-		return 0, errors.New("no digits")
-	}
-	return num, nil
+	return util.ParseU64(buf[:n])
 }
 
 func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
@@ -82,13 +63,13 @@ func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 
 	buf := make([]byte, constants.NetFileReadBufSize)
 
-	prevRx, err := readUintFrom(rxFile, buf)
+	prevRx, err := readU64From(rxFile, buf)
 	if err != nil {
 		util.Warn("%s: read %s: %v", name, rxPath, err)
 		ch <- ""
 		return
 	}
-	prevTx, err := readUintFrom(txFile, buf)
+	prevTx, err := readU64From(txFile, buf)
 	if err != nil {
 		util.Warn("%s: read %s: %v", name, txPath, err)
 		ch <- ""
@@ -98,13 +79,13 @@ func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 	sec := max(1, uint64(cfg.Interval.Seconds()))
 
 	send := func() {
-		rx, err := readUintFrom(rxFile, buf)
+		rx, err := readU64From(rxFile, buf)
 		if err != nil {
 			util.Warn("%s: read rx: %v", name, err)
 			ch <- ""
 			return
 		}
-		tx, err := readUintFrom(txFile, buf)
+		tx, err := readU64From(txFile, buf)
 		if err != nil {
 			util.Warn("%s: read tx: %v", name, err)
 			ch <- ""

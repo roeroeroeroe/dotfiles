@@ -9,10 +9,10 @@ import (
 	"roe/sb/util"
 )
 
-const memName = "mem"
+const swapName = "swap"
 
-func startMem(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
-	name := memName
+func startSwap(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+	name := swapName
 
 	f, err := os.Open(constants.ProcMeminfoPath)
 	if err != nil {
@@ -23,10 +23,10 @@ func startMem(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 
 	buf := make([]byte, constants.MemInfoReadBufSize)
 
-	var total, available uint64
+	var total, free uint64
 	fields := []util.MeminfoField{
-		{Key: []byte("MemTotal:"), Ptr: &total},
-		{Key: []byte("MemAvailable:"), Ptr: &available},
+		{Key: []byte("SwapTotal:"), Ptr: &total},
+		{Key: []byte("SwapFree:"), Ptr: &free},
 	}
 
 	send := func() {
@@ -34,7 +34,7 @@ func startMem(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 			util.Warn("%s: %v", name, err)
 			ch <- ""
 		} else {
-			ch <- util.HumanBytes((total - available) * 1024)
+			ch <- util.HumanBytes((total - free) * 1024)
 		}
 	}
 
@@ -52,5 +52,5 @@ func startMem(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 }
 
 func init() {
-	statusbar.Register(memName, startMem)
+	statusbar.Register(swapName, startSwap)
 }

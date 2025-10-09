@@ -28,7 +28,13 @@ func startUptime(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan
 	buf := make([]byte, constants.UptimeReadBufSize)
 
 	send := func() {
-		n, err := f.ReadAt(buf, 0)
+		if _, err := f.Seek(0, 0); err != nil {
+			util.Warn("%s: seek %s: %v", name, constants.ProcUptimePath, err)
+			ch <- ""
+			return
+		}
+
+		n, err := f.Read(buf)
 		if err != nil && err != io.EOF {
 			util.Warn("%s: read %s: %v", name, constants.ProcUptimePath, err)
 			ch <- ""
@@ -60,8 +66,10 @@ func startUptime(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan
 			ch <- fmt.Sprintf("%dd %dh %dm", days, hours, minutes)
 		case hours > 0:
 			ch <- fmt.Sprintf("%dh %dm", hours, minutes)
-		default:
+		case minutes > 0:
 			ch <- fmt.Sprintf("%dm", minutes)
+		default:
+			ch <- fmt.Sprintf("%ds", intS)
 		}
 	}
 

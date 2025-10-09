@@ -29,6 +29,7 @@ var (
 // mem         used                        -                -
 // net         rx, tx                      iface (eth0)     per max(1, Interval.Seconds())
 // sh          -                           command          timeout=Interval*0.75
+// swap        used                        -                -
 // tcp         ESTABLISHED remote, local   -                -
 // text        -                           string           Interval, Signal unused
 // time        -                           time.Layout      -
@@ -49,12 +50,14 @@ var Components = []entry{
 	{"ip", cfg{Arg: iface}},
 	text(") "),
 	{"net", cfg{Arg: iface, Interval: time.Second}},
-	text(" tcp_01{"),
+	text(" tcp{"),
 	{"tcp", cfg{Interval: time.Second}},
 	text("} ]   [ disk:"),
 	{"disk", cfg{Arg: "/", Interval: 3 * time.Second}},
 	text(" mem:"),
 	{"mem", cfg{Interval: 2 * time.Second}},
+	text(" swap:"),
+	{"swap", cfg{Interval: 2 * time.Second}},
 	text(" cpu:"),
 	{"cpu", cfg{Interval: 2 * time.Second}},
 	text(" ]   [ "),

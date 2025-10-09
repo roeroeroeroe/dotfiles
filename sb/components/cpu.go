@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"time"
 
 	"roe/sb/constants"
@@ -43,7 +42,7 @@ func parseStat(f *os.File, buf []byte) (uint64, uint64, error) {
 
 		var idle, total uint64
 		for i, field := range fields {
-			num, err := strconv.ParseUint(string(field), 10, 64)
+			num, err := util.ParseU64(field)
 			if err != nil {
 				return 0, 0, fmt.Errorf("parse uint: %v", err)
 			}
