@@ -10,7 +10,7 @@ import (
 
 const timeName = "time"
 
-func startTime(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startTime(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := timeName
 
 	layout, ok := cfg.Arg.(string)
@@ -19,15 +19,15 @@ func startTime(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan s
 		layout = constants.DefaultTimeLayout
 	}
 
-	ch <- time.Now().Format(layout)
+	update(time.Now().Format(layout))
 
 	ticker := time.NewTicker(cfg.Interval)
 	for {
 		select {
 		case <-ticker.C:
-			ch <- time.Now().Format(layout)
+			update(time.Now().Format(layout))
 		case <-trigger:
-			ch <- time.Now().Format(layout)
+			update(time.Now().Format(layout))
 		}
 	}
 }

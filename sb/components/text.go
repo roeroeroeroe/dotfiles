@@ -7,14 +7,14 @@ import (
 
 const textName = "text"
 
-func startText(cfg statusbar.ComponentConfig, ch chan<- string, _ <-chan struct{}) {
+func startText(cfg statusbar.ComponentConfig, update func (string), _ <-chan struct{}) {
 	name := textName
 
 	if text, ok := cfg.Arg.(string); !ok || text == "" {
 		util.Warn("%s: Arg not a string or empty", name)
-		ch <- ""
+		update("")
 	} else {
-		ch <- text
+		update(text)
 	}
 }
 

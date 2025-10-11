@@ -14,20 +14,20 @@ import (
 
 const ipName = "ip"
 
-func startIP(cfg statusbar.ComponentConfig, ch chan<- string, _ <-chan struct{}) {
+func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct{}) {
 	name := ipName
 
 	iface, err := util.ArgOrFirstUpIface(cfg.Arg)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
 	send := func() {
 		addrs, err := iface.Addrs()
 		if err != nil || len(addrs) == 0 {
-			ch <- ""
+			update("")
 			return
 		}
 		var ip string
@@ -44,7 +44,7 @@ func startIP(cfg statusbar.ComponentConfig, ch chan<- string, _ <-chan struct{})
 				ip = ipnet.IP.String()
 			}
 		}
-		ch <- ip
+		update(ip)
 	}
 
 	send()

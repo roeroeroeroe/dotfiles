@@ -18,18 +18,12 @@ import (
 )
 
 func main() {
-	type update struct {
-		index int
-		value string
-	}
-
 	var (
 		triggers      []chan struct{}
 		mu            sync.RWMutex
 		state         = make([]string, 0, len(config.Components))
 		bufPool       = sync.Pool{New: func() any { return new(bytes.Buffer) }}
 		sigToTriggers = map[syscall.Signal][]chan struct{}{}
-		updateCh      = make(chan update, len(config.Components))
 		redrawCh      = make(chan struct{}, 1)
 	)
 
@@ -96,6 +90,8 @@ func main() {
 		}
 	}
 
+	noopTrigger := make(chan struct{}, 1)
+
 	for _, e := range config.Components {
 		component, ok := statusbar.Registry[e.Name]
 		if !ok {
@@ -105,42 +101,37 @@ func main() {
 
 		index := len(state)
 		state = append(state, config.Placeholder)
-		trigger := make(chan struct{}, 1)
-		triggers = append(triggers, trigger)
 
+		var trigger chan struct{}
 		if s := e.Config.Signal; s != 0 {
+			trigger = make(chan struct{}, 1)
 			sig := syscall.Signal(s)
 			sigToTriggers[sig] = append(sigToTriggers[sig], trigger)
+		} else {
+			trigger = noopTrigger
+		}
+		triggers = append(triggers, trigger)
+
+		update := func(str string) {
+			if str == "" {
+				str = config.Placeholder
+			}
+			mu.Lock()
+			state[index] = str
+			mu.Unlock()
+
+			select {
+			case redrawCh <- struct{}{}:
+			default:
+			}
 		}
 
-		updates := make(chan string)
-		go func(i int) {
-			for v := range updates {
-				updateCh <- update{index: i, value: v}
-			}
-		}(index)
-
-		go component(e.Config, updates, trigger)
+		go component(e.Config, update, trigger)
 	}
 
 	if len(state) == 0 {
 		util.Fatalf("no active components")
 	}
-
-	go func() {
-		for u := range updateCh {
-			if u.value == "" {
-				u.value = config.Placeholder
-			}
-			mu.Lock()
-			state[u.index] = u.value
-			select {
-			case redrawCh <- struct{}{}:
-			default:
-			}
-			mu.Unlock()
-		}
-	}()
 
 	redrawTimer := time.AfterFunc(config.RedrawDelay, draw)
 	go func() {

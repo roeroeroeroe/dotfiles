@@ -11,13 +11,13 @@ import (
 
 const memName = "mem"
 
-func startMem(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startMem(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := memName
 
 	f, err := os.Open(constants.ProcMeminfoPath)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -32,9 +32,9 @@ func startMem(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 	send := func() {
 		if err := util.ParseMeminfo(f, buf, fields); err != nil {
 			util.Warn("%s: %v", name, err)
-			ch <- ""
+			update("")
 		} else {
-			ch <- util.HumanBytes((total - available) * 1024)
+			update(util.HumanBytes((total - available) * 1024))
 		}
 	}
 

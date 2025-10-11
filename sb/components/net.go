@@ -31,13 +31,13 @@ func readU64From(f *os.File, buf []byte) (uint64, error) {
 	return util.ParseU64(buf[:n])
 }
 
-func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startNet(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := netName
 
 	iface, err := util.ArgOrFirstUpIface(cfg.Arg)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -49,7 +49,7 @@ func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 	rxFile, err := os.Open(rxPath)
 	if err != nil {
 		util.Warn("%s: open %s: %v", name, rxPath, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -57,7 +57,7 @@ func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 	if err != nil {
 		rxFile.Close()
 		util.Warn("%s: open %s: %v", name, txPath, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -66,13 +66,13 @@ func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 	prevRx, err := readU64From(rxFile, buf)
 	if err != nil {
 		util.Warn("%s: read %s: %v", name, rxPath, err)
-		ch <- ""
+		update("")
 		return
 	}
 	prevTx, err := readU64From(txFile, buf)
 	if err != nil {
 		util.Warn("%s: read %s: %v", name, txPath, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -82,18 +82,18 @@ func startNet(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 		rx, err := readU64From(rxFile, buf)
 		if err != nil {
 			util.Warn("%s: read rx: %v", name, err)
-			ch <- ""
+			update("")
 			return
 		}
 		tx, err := readU64From(txFile, buf)
 		if err != nil {
 			util.Warn("%s: read tx: %v", name, err)
-			ch <- ""
+			update("")
 			return
 		}
 
-		ch <- fmt.Sprintf("rx:%s tx:%s",
-			util.HumanBytes((rx-prevRx)/sec), util.HumanBytes((tx-prevTx)/sec))
+		update(fmt.Sprintf("rx:%s tx:%s",
+			util.HumanBytes((rx-prevRx)/sec), util.HumanBytes((tx-prevTx)/sec)))
 
 		prevRx = rx
 		prevTx = tx

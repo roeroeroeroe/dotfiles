@@ -57,13 +57,13 @@ func parseStat(f *os.File, buf []byte) (uint64, uint64, error) {
 	return 0, 0, errors.New("cpu line not found")
 }
 
-func startCPU(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startCPU(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := cpuName
 
 	f, err := os.Open(constants.ProcStatPath)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -74,17 +74,17 @@ func startCPU(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 		idle, total, err := parseStat(f, buf)
 		if err != nil {
 			util.Warn("%s: %v", name, err)
-			ch <- ""
+			update("")
 			return
 		}
 
 		if prevTotal != 0 {
 			totalDelta := float64(total - prevTotal)
 			if totalDelta == 0 {
-				ch <- ""
+				update("")
 			} else {
 				idleDelta := float64(idle - prevIdle)
-				ch <- fmt.Sprintf("%.0f%%", (1.0-idleDelta/totalDelta)*100.0)
+				update(fmt.Sprintf("%.0f%%", (1.0-idleDelta/totalDelta)*100.0))
 			}
 		}
 

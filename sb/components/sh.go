@@ -12,13 +12,13 @@ import (
 
 const shName = "sh"
 
-func startSh(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startSh(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := shName
 
 	command, ok := cfg.Arg.(string)
 	if !ok || command == "" {
 		util.Warn("%s: Arg not a string or empty", name)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -31,9 +31,9 @@ func startSh(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan str
 		out, err := exec.CommandContext(ctx, "sh", "-c", command).Output()
 		if err != nil {
 			util.Warn("%s: \"%s\" failed: %v", name, command, err)
-			ch <- ""
+			update("")
 		} else {
-			ch <- strings.TrimSpace(string(out))
+			update(strings.TrimSpace(string(out)))
 		}
 	}
 

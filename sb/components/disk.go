@@ -12,7 +12,7 @@ import (
 
 const diskName = "disk"
 
-func startDisk(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startDisk(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := diskName
 
 	mountpoint, ok := cfg.Arg.(string)
@@ -26,9 +26,9 @@ func startDisk(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan s
 		err := unix.Statfs(mountpoint, &stat)
 		if err != nil {
 			util.Warn("%s: statfs %s: %v", name, mountpoint, err)
-			ch <- ""
+			update("")
 		} else {
-			ch <- util.HumanBytes((stat.Blocks - stat.Bfree) * uint64(stat.Frsize))
+			update(util.HumanBytes((stat.Blocks - stat.Bfree) * uint64(stat.Frsize)))
 		}
 	}
 

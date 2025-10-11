@@ -113,7 +113,7 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 	return remote, local
 }
 
-func startTCP(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startTCP(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := tcpName
 
 	var (
@@ -123,7 +123,7 @@ func startTCP(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 	files[0], err = os.Open(constants.ProcTCPPath)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -131,7 +131,7 @@ func startTCP(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 	if err != nil {
 		files[0].Close()
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -143,7 +143,7 @@ func startTCP(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan st
 
 	send := func() {
 		remote, local := parseTCP(files, bufs, chunks, decodeBuf)
-		ch <- fmt.Sprintf("r:%d l:%d", remote, local)
+		update(fmt.Sprintf("r:%d l:%d", remote, local))
 	}
 
 	send()

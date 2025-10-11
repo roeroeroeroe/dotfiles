@@ -11,13 +11,13 @@ import (
 
 const swapName = "swap"
 
-func startSwap(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startSwap(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := swapName
 
 	f, err := os.Open(constants.ProcMeminfoPath)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -32,9 +32,9 @@ func startSwap(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan s
 	send := func() {
 		if err := util.ParseMeminfo(f, buf, fields); err != nil {
 			util.Warn("%s: %v", name, err)
-			ch <- ""
+			update("")
 		} else {
-			ch <- util.HumanBytes((total - free) * 1024)
+			update(util.HumanBytes((total - free) * 1024))
 		}
 	}
 

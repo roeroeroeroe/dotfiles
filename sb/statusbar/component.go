@@ -12,7 +12,7 @@ type ComponentConfig struct {
 	Signal   int
 }
 
-type StartComponent func(cfg ComponentConfig, ch chan<- string, trigger <-chan struct{})
+type StartComponent func(cfg ComponentConfig, update func(string), trigger <-chan struct{})
 
 var Registry = make(map[string]StartComponent)
 

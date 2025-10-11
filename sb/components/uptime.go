@@ -15,13 +15,13 @@ import (
 
 const uptimeName = "uptime"
 
-func startUptime(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan struct{}) {
+func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := uptimeName
 
 	f, err := os.Open(constants.ProcUptimePath)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
-		ch <- ""
+		update("")
 		return
 	}
 
@@ -30,28 +30,28 @@ func startUptime(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan
 	send := func() {
 		if _, err := f.Seek(0, 0); err != nil {
 			util.Warn("%s: seek %s: %v", name, constants.ProcUptimePath, err)
-			ch <- ""
+			update("")
 			return
 		}
 
 		n, err := f.Read(buf)
 		if err != nil && err != io.EOF {
 			util.Warn("%s: read %s: %v", name, constants.ProcUptimePath, err)
-			ch <- ""
+			update("")
 			return
 		}
 
 		fields := bytes.Fields(buf[:n])
 		if len(fields) < 1 {
 			util.Warn("%s: unexpected %s format", name, constants.ProcUptimePath)
-			ch <- ""
+			update("")
 			return
 		}
 
 		s, err := strconv.ParseFloat(string(fields[0]), 64)
 		if err != nil {
 			util.Warn("%s: ParseFloat: %v", name, err)
-			ch <- ""
+			update("")
 			return
 		}
 
@@ -63,13 +63,13 @@ func startUptime(cfg statusbar.ComponentConfig, ch chan<- string, trigger <-chan
 		)
 		switch {
 		case days > 0:
-			ch <- fmt.Sprintf("%dd %dh %dm", days, hours, minutes)
+			update(fmt.Sprintf("%dd %dh %dm", days, hours, minutes))
 		case hours > 0:
-			ch <- fmt.Sprintf("%dh %dm", hours, minutes)
+			update(fmt.Sprintf("%dh %dm", hours, minutes))
 		case minutes > 0:
-			ch <- fmt.Sprintf("%dm", minutes)
+			update(fmt.Sprintf("%dm", minutes))
 		default:
-			ch <- fmt.Sprintf("%ds", intS)
+			update(fmt.Sprintf("%ds", intS))
 		}
 	}
 
