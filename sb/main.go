@@ -19,7 +19,6 @@ import (
 
 func main() {
 	var (
-		triggers      []chan struct{}
 		mu            sync.RWMutex
 		state         = make([]string, 0, len(config.Components))
 		bufPool       = sync.Pool{New: func() any { return new(bytes.Buffer) }}
@@ -110,7 +109,6 @@ func main() {
 		} else {
 			trigger = noopTrigger
 		}
-		triggers = append(triggers, trigger)
 
 		update := func(str string) {
 			if str == "" {
@@ -133,11 +131,22 @@ func main() {
 		util.Fatalf("no active components")
 	}
 
-	redrawTimer := time.AfterFunc(config.RedrawDelay, draw)
+	redrawTimer := time.NewTimer(config.RedrawDelay)
+	redrawTimer.Stop()
 	go func() {
-		for range redrawCh {
-			redrawTimer.Stop()
-			redrawTimer = time.AfterFunc(config.RedrawDelay, draw)
+		for {
+			select {
+			case <-redrawCh:
+				if !redrawTimer.Stop() {
+					select {
+					case <-redrawTimer.C:
+					default:
+					}
+				}
+				redrawTimer.Reset(config.RedrawDelay)
+			case <-redrawTimer.C:
+				draw()
+			}
 		}
 	}()
 

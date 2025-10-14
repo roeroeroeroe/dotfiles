@@ -18,25 +18,27 @@ var (
 	// used when a component produces no output
 	Placeholder = "n/a"
 	// minimum interval between redraws, used to batch multiple rapid updates
-	RedrawDelay = 100 * time.Millisecond
+	RedrawDelay = 150 * time.Millisecond
 )
 
-// component   description                 argument         note
+// component   description                 argument             note
 //
-// cpu         perc                        -                -
-// disk        used                        mountpoint (/)   -
-// ip          -                           iface (eth0)     prefers v4; Interval, Signal unused
-// mem         used                        -                -
-// net         rx, tx                      iface (eth0)     per max(1, Interval.Seconds())
-// sh          -                           command          timeout=Interval*0.75
-// swap        used                        -                -
-// tcp         ESTABLISHED remote, local   -                -
-// text        -                           string           Interval, Signal unused
-// time        -                           time.Layout      -
-// uptime      -                           -                -
+// cpu         perc                        -                    -
+// disk        used                        mountpoint (/)       -
+// disk_io     perc                        block device (sda)   per max(1, Interval.Milliseconds())
+// ip          -                           iface (eth0)         prefers v4; Interval, Signal unused
+// mem         used                        -                    -
+// net         rx, tx                      iface (eth0)         per max(1, Interval.Seconds())
+// sh          -                           command              timeout=Interval*0.75
+// swap        used                        -                    -
+// tcp         ESTABLISHED remote, local   -                    -
+// text        -                           string               Interval, Signal unused
+// time        -                           time.Layout          -
+// uptime      -                           -                    -
 
 // convenience
 const iface = "enp3s0"
+const blockDevice = "sda"
 
 // convenience
 func text(str string) entry { return entry{"text", cfg{Arg: str}} }
@@ -52,9 +54,11 @@ var Components = []entry{
 	{"net", cfg{Arg: iface, Interval: time.Second}},
 	text(" tcp{"),
 	{"tcp", cfg{Interval: time.Second}},
-	text("} ]   [ disk:"),
+	text("} ]   [ disk{u:"),
 	{"disk", cfg{Arg: "/", Interval: 3 * time.Second}},
-	text(" mem:"),
+	text(" io:"),
+	{"disk_io", cfg{Arg: blockDevice, Interval: time.Second}},
+	text("} mem:"),
 	{"mem", cfg{Interval: 2 * time.Second}},
 	text(" swap:"),
 	{"swap", cfg{Interval: 2 * time.Second}},

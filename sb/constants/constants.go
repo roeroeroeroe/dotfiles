@@ -6,6 +6,9 @@ const (
 
 	DefaultDiskMount = "/"
 
+	SysBlockPath      = "/sys/block"
+	DiskIOReadBufSize = 512
+
 	SysNetClassPath    = "/sys/class/net"
 	NetLinkReadBufSize = 8192
 

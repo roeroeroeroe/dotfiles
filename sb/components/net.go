@@ -101,7 +101,7 @@ func startNet(cfg statusbar.ComponentConfig, update func(string), trigger <-chan
 
 	send()
 
-	ticker := time.NewTicker(cfg.Interval)
+	ticker := time.NewTicker(time.Duration(sec) * time.Second)
 	for {
 		select {
 		case <-ticker.C:
