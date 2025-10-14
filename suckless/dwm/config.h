@@ -26,7 +26,7 @@ static const char *colors[][3]  = {
 	[SchemeSel]  = { col_sel_fg,  col_sel_bg,  col_sel_bd },
 };
 
-static const char *tags[] = { "*", "*", "*", "*", "*", "*", "*", "*", "*", "*" };
+static const char *tags[] = { "*", "*", "*", "*", "*", "*" };
 
 static const Rule rules[] = {
 	/* class     instance     title     tags mask     isfloating     monitor */
@@ -157,10 +157,10 @@ static const Key keys[] = {
 	TAGKEYS(                  KEY_4,                          3)
 	TAGKEYS(                  KEY_5,                          4)
 	TAGKEYS(                  KEY_6,                          5)
-	TAGKEYS(                  KEY_7,                          6)
-	TAGKEYS(                  KEY_8,                          7)
-	TAGKEYS(                  KEY_9,                          8)
-	TAGKEYS(                  KEY_0,                          9)
+	// TAGKEYS(                  KEY_7,                          6)
+	// TAGKEYS(                  KEY_8,                          7)
+	// TAGKEYS(                  KEY_9,                          8)
+	// TAGKEYS(                  KEY_0,                          9)
 };
 
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
