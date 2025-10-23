@@ -26,10 +26,10 @@ var (
 // cpu         perc                        -                    -
 // disk        used                        mountpoint (/)       -
 // disk_io     perc                        block device (sda)   per max(1, Interval.Milliseconds())
+// exec        -                           argv []string        timeout=Interval*0.75
 // ip          -                           iface (eth0)         prefers v4; Interval, Signal unused
 // mem         used                        -                    -
 // net         rx, tx                      iface (eth0)         per max(1, Interval.Seconds())
-// sh          -                           command              timeout=Interval*0.75
 // swap        used                        -                    -
 // tcp         ESTABLISHED remote, local   -                    -
 // text        -                           string               Interval, Signal unused
@@ -45,9 +45,9 @@ func text(str string) entry { return entry{"text", cfg{Arg: str}} }
 
 var Components = []entry{
 	text("[ "),
-	{"sh", cfg{Arg: "player_sb", Interval: time.Second, Signal: 35}},
+	{"exec", cfg{Arg: []string{"player_sb"}, Interval: time.Second, Signal: 35}},
 	text(" vol:"),
-	{"sh", cfg{Arg: "volume", Interval: 3 * time.Second, Signal: 36}},
+	{"exec", cfg{Arg: []string{"volume"}, Interval: 3 * time.Second, Signal: 36}},
 	text(" ]   [ " + iface + " ("),
 	{"ip", cfg{Arg: iface}},
 	text(") "),

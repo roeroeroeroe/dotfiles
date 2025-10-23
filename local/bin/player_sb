@@ -4,54 +4,53 @@ TITLE_MAX_LEN=25
 PLAYING_ICON="󰐊"
 PAUSED_ICON="󰏤"
 
-fmt_s() {
-	printf "%02d:%02d" "$(( $1 / 60 ))" "$(( $1 % 60 ))"
-}
-
 handle_cmus() {
-	DATA=$1
-	STATUS=$(echo "$DATA" | grep -m 1 "^status " | cut -d " " -f 2-)
-	[ "$STATUS" = "stopped" ] && exit 0
+	local data="$1"
+	local status="" dur=0 pos=0 title=""
+	local line
+	while IFS= read -r line; do
+		case "$line" in
+			status\ *)
+				status=${line#status }
+				[ "$status" = "stopped" ] && exit 0
+				;;
+			duration\ *)
+				dur=${line#duration }
+				;;
+			position\ *)
+				pos=${line#position }
+				;;
+			tag\ title\ *)
+				title=${line#tag title }
+				;;
+		esac
+	done <<< "$data"
 
-	case "$STATUS" in
-		"playing") ICON="$PLAYING_ICON " ;;
-		"paused") ICON="$PAUSED_ICON " ;;
-		*) ICON="" ;;
+	local icon=""
+	case "$status" in
+		playing) icon="$PLAYING_ICON" ;;
+		paused) icon="$PAUSED_ICON" ;;
 	esac
 
-	DURATION=$(echo "$DATA" | grep -m 1 "^duration " | cut -d " " -f 2-)
-	POS=$(echo "$DATA" | grep -m 1 "^position " | cut -d " " -f 2-)
-	TS="$(fmt_s "$POS")/$(fmt_s "$DURATION")"
+	[ ${#title} -gt $TITLE_MAX_LEN ] && title="${title:0:TITLE_MAX_LEN}..."
 
-	TITLE=$(echo "$DATA" | grep "^tag title " | cut -d " " -f 3-)
-	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN}..."
-
-	printf "%s%s %s" \
-		"$ICON" "$TS" "$TITLE"
+	printf "%s %02d:%02d/%02d:%02d %s" \
+		"$icon" \
+		$((pos / 60)) $((pos % 60)) $((dur / 60)) $((dur % 60)) \
+		"$title"
 }
 
-handle_playerctl() {
-	STATUS=$1
+cmus_data="$(cmus-remote -Q 2> /dev/null)" && \
+	{ handle_cmus "$cmus_data"; exit 0; }
 
-	case "$STATUS" in
-		"Playing") ICON="$PLAYING_ICON " ;;
-		"Paused") ICON="$PAUSED_ICON " ;;
-		*) ICON="" ;;
-	esac
+pc_out="$(playerctl metadata --format '{{status}}|{{title}}' 2> /dev/null)"
+pc_title="${pc_out#*|}"
+case "${pc_out%%|*}" in
+	Playing) icon="$PLAYING_ICON" ;;
+	Paused) icon="$PAUSED_ICON" ;;
+	*) icon="" ;;
+esac
 
-	TITLE=$(playerctl metadata title)
-	[ "${#TITLE}" -gt $TITLE_MAX_LEN ] && TITLE="${TITLE:0:TITLE_MAX_LEN}..."
-
-	printf "%s%s" \
-		"$ICON" "$TITLE"
-}
-
-CMUS_DATA="$(cmus-remote -Q 2>/dev/null)"
-if [ -n "$CMUS_DATA" ]; then
-	handle_cmus "$CMUS_DATA"
-else
-	PLAYERCTL_STATUS="$(playerctl status 2>/dev/null)"
-	if [ -n "$PLAYERCTL_STATUS" ]; then
-		handle_playerctl "$PLAYERCTL_STATUS"
-	fi
-fi
+[ ${#pc_title} -gt $TITLE_MAX_LEN ] && pc_title="${pc_title:0:TITLE_MAX_LEN}..."
+printf "%s %s" \
+	"$icon" "$pc_title"

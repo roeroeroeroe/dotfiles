@@ -13,4 +13,5 @@ export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export TERMINAL="st"
 export EDITOR="nvim"
 export PAGER="less -igmj .5"
-export CHATTERINO2_RECENT_MESSAGES_URL="https://recent-messages.zneix.eu/api/v2/recent-messages/%1"
+
+export NODE_REPL_HISTORY=""
