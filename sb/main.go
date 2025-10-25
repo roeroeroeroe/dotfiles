@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -19,12 +20,23 @@ import (
 
 func main() {
 	var (
-		mu            sync.RWMutex
-		state         = make([]string, 0, len(config.Components))
 		bufPool       = sync.Pool{New: func() any { return new(bytes.Buffer) }}
 		sigToTriggers = map[syscall.Signal][]chan struct{}{}
 		redrawCh      = make(chan struct{}, 1)
 	)
+
+	activeCount := 0
+	for _, e := range config.Components {
+		if _, ok := statusbar.Registry[e.Name]; ok {
+			activeCount++
+		} else {
+			util.Warn("unknown component %s, skipping", e.Name)
+		}
+	}
+	if activeCount == 0 {
+		util.Fatalf("no active components")
+	}
+	state := make([]atomic.Value, activeCount)
 
 	var (
 		sFlag bool
@@ -41,17 +53,14 @@ func main() {
 			buf := bufPool.Get().(*bytes.Buffer)
 			buf.Reset()
 
-			mu.RLock()
-			for i := range state {
-				buf.WriteString(state[i])
+			for i := range activeCount {
+				buf.WriteString(state[i].Load().(string))
 			}
-			mu.RUnlock()
 
 			buf.WriteByte('\n')
 			if _, err := os.Stdout.Write(buf.Bytes()); err != nil {
 				util.Warn("Stdout.Write: %v", err)
 			}
-
 			bufPool.Put(buf)
 		}
 	} else {
@@ -65,11 +74,9 @@ func main() {
 			buf := bufPool.Get().(*bytes.Buffer)
 			buf.Reset()
 
-			mu.RLock()
-			for i := range state {
-				buf.WriteString(state[i])
+			for i := range activeCount {
+				buf.WriteString(state[i].Load().(string))
 			}
-			mu.RUnlock()
 
 			b := buf.Bytes()
 			if err := xproto.ChangePropertyChecked(
@@ -91,15 +98,15 @@ func main() {
 
 	noopTrigger := make(chan struct{}, 1)
 
+	slotIndex := 0
 	for _, e := range config.Components {
 		component, ok := statusbar.Registry[e.Name]
 		if !ok {
-			util.Warn("unknown component %s, skipping", e.Name)
 			continue
 		}
 
-		index := len(state)
-		state = append(state, config.Placeholder)
+		index := slotIndex
+		state[index].Store(config.Placeholder)
 
 		var trigger chan struct{}
 		if s := e.Config.Signal; s != 0 {
@@ -114,21 +121,17 @@ func main() {
 			if str == "" {
 				str = config.Placeholder
 			}
-			mu.Lock()
-			state[index] = str
-			mu.Unlock()
-
-			select {
-			case redrawCh <- struct{}{}:
-			default:
+			if state[index].Load().(string) != str {
+				state[index].Store(str)
+				select {
+				case redrawCh <- struct{}{}:
+				default:
+				}
 			}
 		}
 
 		go component(e.Config, update, trigger)
-	}
-
-	if len(state) == 0 {
-		util.Fatalf("no active components")
+		slotIndex++
 	}
 
 	redrawTimer := time.NewTimer(config.RedrawDelay)
