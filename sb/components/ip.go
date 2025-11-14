@@ -17,9 +17,15 @@ const ipName = "ip"
 func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct{}) {
 	name := ipName
 
-	iface, err := util.ArgOrFirstUpIface(cfg.Arg)
+	ifaceName, ok := cfg.Arg.(string)
+	if !ok || ifaceName == "" {
+		util.Warn("%s: Arg not a string or empty", name)
+		update("")
+		return
+	}
+	iface, err := net.InterfaceByName(ifaceName)
 	if err != nil {
-		util.Warn("%s: %v", name, err)
+		util.Warn("%s: interface %s: %v", name, ifaceName, err)
 		update("")
 		return
 	}
@@ -80,14 +86,12 @@ func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct
 		}
 
 		for _, m := range msgs {
-			if m.Header.Type != unix.RTM_NEWADDR && m.Header.Type != unix.RTM_DELADDR {
-				continue
+			if (m.Header.Type == unix.RTM_NEWADDR || m.Header.Type == unix.RTM_DELADDR) &&
+				len(m.Data) >= unix.SizeofIfAddrmsg &&
+				int((*(*unix.IfAddrmsg)(unsafe.Pointer(&m.Data[0]))).Index) == iface.Index {
+				send()
+				break
 			}
-			if len(m.Data) < unix.SizeofIfAddrmsg ||
-				int((*(*unix.IfAddrmsg)(unsafe.Pointer(&m.Data[0]))).Index) != iface.Index {
-				continue
-			}
-			send()
 		}
 	}
 }

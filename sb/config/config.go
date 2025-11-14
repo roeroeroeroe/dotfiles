@@ -18,23 +18,26 @@ var (
 	// used when a component produces no output
 	Placeholder = "n/a"
 	// minimum interval between redraws, used to batch multiple rapid updates
-	RedrawDelay = 150 * time.Millisecond
+	RedrawDelay = 50 * time.Millisecond
 )
 
-// component   description                 argument             note
+// component        description                 argument             note
 //
-// cpu         perc                        -                    -
-// disk        used                        mountpoint (/)       -
-// disk_io     perc                        block device (sda)   per max(1, Interval.Milliseconds())
-// exec        -                           argv []string        timeout=Interval*0.75
-// ip          -                           iface (eth0)         prefers v4; Interval, Signal unused
-// mem         used                        -                    -
-// net         rx, tx                      iface (eth0)         per max(1, Interval.Seconds())
-// swap        used                        -                    -
-// tcp         ESTABLISHED remote, local   -                    -
-// text        -                           string               Interval, Signal unused
-// time        -                           time.Layout          -
-// uptime      -                           -                    -
+// cat              -                           path                 reads at most `constants.CatReadBufSize` B
+// cpu              perc                        -                    -
+// disk             used                        mountpoint (/)       -
+// disk_io          perc                        block device (sda)   per max(1, Interval.Milliseconds())
+// exec             -                           argv []string        timeout=Interval*0.75
+// ip               -                           iface (eth0)         prefers v4; Interval, Signal unused
+// kernel_release   -                           -                    Interval, Signal unused
+// mem              used                        -                    -
+// net              rx, tx                      iface (eth0)         per max(1, Interval.Seconds())
+// swap             used                        -                    -
+// tcp              ESTABLISHED remote, local   -                    -
+// text             -                           string               Interval, Signal unused
+// time             -                           time.Layout          -
+// uptime           -                           -                    -
+// user             -                           -                    Interval, Signal unused
 
 // convenience
 const iface = "enp3s0"

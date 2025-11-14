@@ -56,8 +56,8 @@ func main() {
 			for i := range activeCount {
 				buf.WriteString(state[i].Load().(string))
 			}
-
 			buf.WriteByte('\n')
+
 			if _, err := os.Stdout.Write(buf.Bytes()); err != nil {
 				util.Warn("Stdout.Write: %v", err)
 			}
@@ -91,7 +91,6 @@ func main() {
 			).Check(); err != nil {
 				util.Warn("set name: %v", err)
 			}
-
 			bufPool.Put(buf)
 		}
 	}

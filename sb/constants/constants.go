@@ -1,6 +1,8 @@
 package constants
 
 const (
+	CatReadBufSize = 64
+
 	ProcStatPath       = "/proc/stat"
 	CPUStatReadBufSize = 4096
 

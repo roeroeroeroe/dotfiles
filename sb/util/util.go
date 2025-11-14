@@ -4,12 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"net"
 	"os"
-	"path/filepath"
-	"strings"
-
-	"roe/sb/constants"
 )
 
 type MeminfoField struct {
@@ -18,8 +13,8 @@ type MeminfoField struct {
 	found bool
 }
 
-func Warn(format string, args ...any)   { fmt.Fprintf(os.Stderr, format+"\n", args...) }
-func Fatalf(format string, args ...any) { Warn(format, args...); os.Exit(1) }
+func Warn(format string, a ...any)   { fmt.Fprintf(os.Stderr, format+"\n", a...) }
+func Fatalf(format string, a ...any) { Warn(format, a...); os.Exit(1) }
 
 var iecPrefixes = []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"}
 
@@ -42,34 +37,6 @@ func HumanBytes(b uint64) string {
 	}
 
 	return fmt.Sprintf("%.1f %s", n, iecPrefixes[i])
-}
-
-func ArgOrFirstUpIface(arg any) (*net.Interface, error) {
-	if name, ok := arg.(string); ok && name != "" {
-		iface, err := net.InterfaceByName(name)
-		if err != nil {
-			return nil, fmt.Errorf("interface %s: %v", name, err)
-		}
-		return iface, nil
-	}
-	ents, err := os.ReadDir(constants.SysNetClassPath)
-	if err != nil {
-		return nil, err
-	}
-	for _, e := range ents {
-		name := e.Name()
-		if name == "lo" {
-			continue
-		}
-		b, err := os.ReadFile(filepath.Join(constants.SysNetClassPath, name, "operstate"))
-		if err != nil {
-			continue
-		}
-		if strings.TrimSpace(string(b)) == "up" {
-			return net.InterfaceByName(name)
-		}
-	}
-	return nil, errors.New("no up interface")
 }
 
 func ParseU64(buf []byte) (uint64, error) {

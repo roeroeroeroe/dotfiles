@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"time"
@@ -34,9 +35,15 @@ func readU64From(f *os.File, buf []byte) (uint64, error) {
 func startNet(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := netName
 
-	iface, err := util.ArgOrFirstUpIface(cfg.Arg)
+	ifaceName, ok := cfg.Arg.(string)
+	if !ok || ifaceName == "" {
+		util.Warn("%s: Arg not a string or empty", name)
+		update("")
+		return
+	}
+	iface, err := net.InterfaceByName(ifaceName)
 	if err != nil {
-		util.Warn("%s: %v", name, err)
+		util.Warn("%s: interface %s: %v", name, ifaceName, err)
 		update("")
 		return
 	}
@@ -65,12 +72,16 @@ func startNet(cfg statusbar.ComponentConfig, update func(string), trigger <-chan
 
 	prevRx, err := readU64From(rxFile, buf)
 	if err != nil {
+		rxFile.Close()
+		txFile.Close()
 		util.Warn("%s: read %s: %v", name, rxPath, err)
 		update("")
 		return
 	}
 	prevTx, err := readU64From(txFile, buf)
 	if err != nil {
+		rxFile.Close()
+		txFile.Close()
 		util.Warn("%s: read %s: %v", name, txPath, err)
 		update("")
 		return
@@ -81,13 +92,13 @@ func startNet(cfg statusbar.ComponentConfig, update func(string), trigger <-chan
 	send := func() {
 		rx, err := readU64From(rxFile, buf)
 		if err != nil {
-			util.Warn("%s: read rx: %v", name, err)
+			util.Warn("%s: read %s: %v", name, rxPath, err)
 			update("")
 			return
 		}
 		tx, err := readU64From(txFile, buf)
 		if err != nil {
-			util.Warn("%s: read tx: %v", name, err)
+			util.Warn("%s: read %s: %v", name, txPath, err)
 			update("")
 			return
 		}

@@ -82,24 +82,26 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 
 			var need int
 			if i == 1 {
-				if len(ipHex) < 32 {
-					continue
-				}
 				need = 16
 			} else {
-				if len(ipHex) < 8 {
-					continue
-				}
 				need = 4
+			}
+			if len(ipHex) != need*2 {
+				continue
 			}
 
 			dst := decodeBuf[:need]
 			if _, err := hex.Decode(dst, ipHex); err != nil {
 				continue
 			}
-
-			for k := 0; k < need/2; k++ {
-				dst[k], dst[need-1-k] = dst[need-1-k], dst[k]
+			if need == 16 {
+				for k := 0; k < 16; k += 4 {
+					dst[k], dst[k+1], dst[k+2], dst[k+3] =
+						dst[k+3], dst[k+2], dst[k+1], dst[k]
+				}
+			} else {
+				dst[0], dst[1], dst[2], dst[3] =
+					dst[3], dst[2], dst[1], dst[0]
 			}
 
 			if net.IP(dst).IsLoopback() {
