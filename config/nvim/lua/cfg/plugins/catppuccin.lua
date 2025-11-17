@@ -15,11 +15,11 @@ return {
 
 		vim.cmd("colorscheme catppuccin")
 		vim.api.nvim_set_hl(0, "CursorLine", { bg = "#111111" })
-		vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ffa0ff", bg = "#111111" })
+		vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#cccccc", bg = "#111111" })
 		vim.api.nvim_set_hl(0, "Normal", { bg = "#000000" })
 		vim.api.nvim_set_hl(0, "NormalNC", { bg = "#000000" })
 		vim.api.nvim_set_hl(0, "VertSplit", { bg = "#000000" })
 
-		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "#000000", fg = "#ffa0ff" })
+		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "#000000", fg = "#cccccc" })
 	end,
 }

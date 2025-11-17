@@ -3,7 +3,7 @@
     "iconTheme": "light"
   },
   "colors": {
-    "accent": "#ffa0ff",
+    "accent": "#cccccc",
     "messages": {
       "backgrounds": {
         "alternate": "#101010",
@@ -12,11 +12,11 @@
       "disabled": "#4d000000",
       "highlightAnimationEnd": "#00525252",
       "highlightAnimationStart": "#80525252",
-      "selection": "#4dffa0ff",
+      "selection": "#4dcccccc",
       "textColors": {
         "caret": "#525252",
         "chatPlaceholder": "#525252",
-        "link": "#ffa0ff",
+        "link": "#cccccc",
         "regular": "#cccccc",
         "system": "#525252"
       }
@@ -24,7 +24,7 @@
     "scrollbars": {
       "background": "#000000",
       "thumb": "#525252",
-      "thumbSelected": "#ffa0ff"
+      "thumbSelected": "#cccccc"
     },
     "splits": {
       "background": "#000000",
@@ -37,12 +37,12 @@
         "border": "#525252",
         "focusedBackground": "#000000",
         "focusedBorder": "#525252",
-        "focusedText": "#ffa0ff",
+        "focusedText": "#cccccc",
         "text": "#525252"
       },
       "input": {
         "background": "#000000",
-        "text": "#ffa0ff"
+        "text": "#cccccc"
       },
       "messageSeperator": "#525252",
       "resizeHandle": "#525252",
@@ -61,9 +61,9 @@
           "regular": "#525252",
           "unfocused": "#525252"
         },
-        "text": "#ffa0ff"
+        "text": "#cccccc"
       },
-      "liveIndicator": "#ffa0ff",
+      "liveIndicator": "#cccccc",
       "newMessage": {
         "backgrounds": {
           "hover": "#000000",
@@ -98,11 +98,11 @@
           "unfocused": "#000000"
         },
         "line": {
-          "hover": "#ffa0ff",
-          "regular": "#ffa0ff",
-          "unfocused": "#ffa0ff"
+          "hover": "#cccccc",
+          "regular": "#cccccc",
+          "unfocused": "#cccccc"
         },
-        "text": "#ffa0ff"
+        "text": "#cccccc"
       }
     },
     "window": {

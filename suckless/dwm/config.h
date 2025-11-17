@@ -17,9 +17,9 @@ static const char *fonts[]   = {
 static const char col_norm_fg[] = "#525252";
 static const char col_norm_bg[] = "#000000";
 static const char col_norm_bd[] = "#525252";
-static const char col_sel_fg[]  = "#ffa0ff";
+static const char col_sel_fg[]  = "#cccccc";
 static const char col_sel_bg[]  = "#000000";
-static const char col_sel_bd[]  = "#ffa0ff";
+static const char col_sel_bd[]  = "#cccccc";
 static const char *colors[][3]  = {
 	/*               fg           bg           border   */
 	[SchemeNorm] = { col_norm_fg, col_norm_bg, col_norm_bd },
