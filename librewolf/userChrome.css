@@ -1,3 +1,7 @@
+* {
+  border-radius: 0 !important;
+}
+
 #alltabs-button,
 #personal-bookmarks .bookmark-item .toolbarbutton-icon,
 .tab-icon-image {

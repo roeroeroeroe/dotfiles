@@ -12,7 +12,6 @@ setxkbmap -option caps:escape_shifted_capslock &
 xset r rate 250 30 &
 dunst &
 sb 2> ~/.cache/sb_err.log &
-nekoray &
 
 csum=""
 new_csum=$(sha1sum $(which dwm))

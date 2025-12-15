@@ -1,5 +1,6 @@
 alias ls="ls --color=auto"
 alias grep="grep --color=auto"
+alias ip="ip -c=auto"
 alias la="ls -A"
 alias ll="ls -l"
 alias lh="ll -h"

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+[ "$1" = "-h" ] && {
+	echo "Usage: ${0##*/} [--dry-run]
+  --dry-run   \`echo\` the filenames"
+	exit 0
+}
+
+UNDO_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/nvim/undo"
+[ ! -d "$UNDO_DIR" ] && { echo "$UNDO_DIR is not a directory" >&2; exit 1; }
+
+if [ "$1" = "--dry-run" ]; then
+	find "$UNDO_DIR" -type f -mtime +30 -exec echo {} \;
+else
+	find "$UNDO_DIR" -type f -mtime +30 -exec rm -v {} \;
+fi

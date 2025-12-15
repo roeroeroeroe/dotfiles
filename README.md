@@ -1,6 +1,7 @@
 ```bash
 sudo pacman -S --needed - < pkglist
 yay -S --needed - < aurpkglist
+./buildcmus
 ```
 ```bash
 sed -i "s/enp3s0/<INTERFACE>/" sb/config/config.go

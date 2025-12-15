@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 
 	"roe/sb/statusbar"
@@ -44,14 +45,16 @@ const iface = "enp3s0"
 const blockDevice = "sda"
 
 // convenience
-func text(str string) entry { return entry{"text", cfg{Arg: str}} }
+func text(format string, a ...any) entry {
+	return entry{"text", cfg{Arg: fmt.Sprintf(format, a...)}}
+}
 
 var Components = []entry{
 	text("[ "),
 	{"exec", cfg{Arg: []string{"player_sb"}, Interval: time.Second, Signal: 35}},
 	text(" vol:"),
 	{"exec", cfg{Arg: []string{"volume"}, Interval: 3 * time.Second, Signal: 36}},
-	text(" ]   [ " + iface + " ("),
+	text(" ]   [ %s (", iface),
 	{"ip", cfg{Arg: iface}},
 	text(") "),
 	{"net", cfg{Arg: iface, Interval: time.Second}},

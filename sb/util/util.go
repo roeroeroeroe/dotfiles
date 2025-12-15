@@ -8,8 +8,8 @@ import (
 )
 
 type MeminfoField struct {
-	Key   []byte
 	Ptr   *uint64
+	Key   []byte
 	found bool
 }
 

@@ -1,6 +1,5 @@
 alacritty
 alsa-utils
-cmus
 dunst
 earlyoom
 easytag
@@ -45,6 +44,7 @@ postgresql
 qbittorrent
 reflector
 ripgrep
+rpi-imager
 songrec
 streamlink
 tcpdump
@@ -58,6 +58,7 @@ unzip
 valkey
 vim
 whois
+wireshark-qt
 xclip
 xdg-user-dirs
 xorg-server

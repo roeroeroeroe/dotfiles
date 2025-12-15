@@ -25,8 +25,8 @@ func startMem(cfg statusbar.ComponentConfig, update func(string), trigger <-chan
 
 	var total, available uint64
 	fields := []util.MeminfoField{
-		{Key: []byte("MemTotal:"), Ptr: &total},
-		{Key: []byte("MemAvailable:"), Ptr: &available},
+		{Ptr: &total, Key: []byte("MemTotal:")},
+		{Ptr: &available, Key: []byte("MemAvailable:")},
 	}
 
 	send := func() {

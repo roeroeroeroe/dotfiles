@@ -2,7 +2,7 @@ _rainbow_saturation=0.2 # 0..1
 _rainbow_lightness=0.45 # 0..1
 _rainbow_step=15
 
-_colorize_user=2 # 0=false, 1=accent, 2=rainbow
+_colorize_user=1 # 0=false, 1=accent, 2=rainbow
 _primary_color="white"
 _accent_color=15 # bright white
 

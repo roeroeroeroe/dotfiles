@@ -15,10 +15,3 @@ ipapi() {
 	[ -z "$input" ] && return
 	echo "$input" | tr " " "\n" | parallel -j 4 'curl -s "ip-api.com/json/{}" | jq'
 }
-
-hex() {
-	[ -z "$1" ] && return
-	local color="${1#\#}"
-	! [[ "$color" =~ ^[A-Fa-f0-9]{6}$ ]] && { echo "invalid hex code"; return; }
-	magick -size 600x600 xc:#"$color" -strip "$color".png
-}

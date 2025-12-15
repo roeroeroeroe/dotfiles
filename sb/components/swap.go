@@ -25,8 +25,8 @@ func startSwap(cfg statusbar.ComponentConfig, update func(string), trigger <-cha
 
 	var total, free uint64
 	fields := []util.MeminfoField{
-		{Key: []byte("SwapTotal:"), Ptr: &total},
-		{Key: []byte("SwapFree:"), Ptr: &free},
+		{Ptr: &total, Key: []byte("SwapTotal:")},
+		{Ptr: &free, Key: []byte("SwapFree:")},
 	}
 
 	send := func() {
