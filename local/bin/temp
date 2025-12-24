@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+shopt -s nullglob
+for d in /sys/class/thermal/thermal_zone*; do
+	read -r type < "$d/type"
+	read -r temp < "$d/temp"
+
+	printf "%s (%s): %d.%01d °C\n" \
+		"${d##*/}" \
+		"$type" \
+		"$(( temp / 1000 ))" \
+		"$(( (temp % 1000) / 100 ))"
+done
