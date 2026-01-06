@@ -3,7 +3,7 @@
 functions=("desktop" "area" "window" "monitor" "ocr")
 
 dir="$(xdg-user-dir PICTURES)/Screenshots"
-file="$(date +%Y-%m-%d-%H-%M-%S).png"
+file="$(date +%s).png"
 [ -d "$dir" ] || mkdir -p "$dir"
 
 delay=0
@@ -13,13 +13,9 @@ input=$(dmenu -p "delay in seconds (0-60)" <&-) && {
 	fi
 }
 
-save() {
-	tee "$file" | xclip -se c -t image/png
-}
-
 capture() {
 	sleep $delay
-	cd "$dir" && maim -f png "$@" | save
+	cd "$dir" && maim -f png "$@" | tee "$file" | xclip -se c -t image/png
 }
 
 desktop() {
@@ -50,7 +46,7 @@ monitor() {
 	done
 	unset IFS
 
-	target=$(printf "%s\n" "${monitors[@]}" | dmenu -l 4) || exit 2
+	target=$(printf "%s\n" "${monitors[@]}" | dmenu -l ${#monitors[@]}) || exit 2
 	for m in "${monitors[@]}"; do
 		[ "$m" = "$target" ] && {
 			capture -d 0.5 -g ${geometries[${target}]} -qu
@@ -67,7 +63,7 @@ ocr() {
 	tesseract "$TEMP" - -l eng 2>/dev/null | xclip -se c
 }
 
-choice=$(printf "%s\n" "${functions[@]}" | dmenu -l 5 2>/dev/null) || exit
+choice=$(printf "%s\n" "${functions[@]}" | dmenu -l ${#functions[@]} 2> /dev/null) || exit 0
 for f in "${functions[@]}"; do
 	[ "$f" = "$choice" ] && {
 		eval "$f"

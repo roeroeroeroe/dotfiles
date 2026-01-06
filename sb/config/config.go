@@ -22,27 +22,31 @@ var (
 	RedrawDelay = 50 * time.Millisecond
 )
 
-// component        description                 argument             note
-//
-// cat              -                           path                 reads at most `constants.CatReadBufSize` B
-// cpu              perc                        -                    -
-// disk             used                        mountpoint (/)       -
-// disk_io          perc                        block device (sda)   per max(1, Interval.Milliseconds())
-// exec             -                           argv []string        timeout=Interval*0.75
-// ip               -                           iface (eth0)         prefers v4; Interval, Signal unused
-// kernel_release   -                           -                    Interval, Signal unused
-// mem              used                        -                    -
-// net              rx, tx                      iface (eth0)         per max(1, Interval.Seconds())
-// swap             used                        -                    -
-// tcp              ESTABLISHED remote, local   -                    -
-// text             -                           string               Interval, Signal unused
-// time             -                           time.Layout          -
-// uptime           -                           -                    -
-// user             -                           -                    Interval, Signal unused
+/*
+Name             description                 Arg                  Arg type      note
+
+cat              -                           path                 string        reads at most `constants.CatReadBufSize` B
+cpu              perc                        -                    -             -
+disk             used                        mountpoint (/)       string        -
+disk_io          perc                        block device (sda)   string        per max(1, Interval.Milliseconds())
+exec             -                           argv                 []string      timeout=Interval*0.75
+ip               -                           iface (eth0)         string        prefers v4; Interval, Signal unused
+kernel_release   -                           -                    -             Interval, Signal unused
+mem              used                        -                    -             -
+net              rx, tx                      iface (eth0)         string        per max(1, Interval.Seconds())
+swap             used                        -                    -             -
+tcp              ESTABLISHED remote, local   -                    -             -
+text             -                           text                 string        Interval, Signal unused
+time             -                           layout               time.Layout   -
+uptime           -                           raw                  bool          -
+user             -                           -                    -             Interval, Signal unused
+*/
 
 // convenience
-const iface = "enp3s0"
-const blockDevice = "sda"
+const (
+	iface       = "enp3s0"
+	blockDevice = "sda"
+)
 
 // convenience
 func text(format string, a ...any) entry {

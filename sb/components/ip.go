@@ -46,7 +46,7 @@ func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct
 				ip = ipnet.IP.String()
 				break
 			}
-			if ip == "" && ipnet.IP.To16() != nil {
+			if ip == "" && ipnet.IP.To16() != nil && !ipnet.IP.IsLinkLocalUnicast() {
 				ip = ipnet.IP.String()
 			}
 		}

@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
-DMENU_LINES=40
 LUT_FILE="${XDG_DATA_HOME:-"$HOME/.local/share"}/unicode"
+
+if [ "$1" = "--gen" ]; then
+	curl -s "https://www.unicode.org/Public/UNIDATA/UnicodeData.txt" | awk -F ";" '
+	{
+		code = sprintf("U+%04X", strtonum("0x"$1))
+		char = sprintf("%c", strtonum("0x"$1))
+		print char "\t" code "\t" $2
+	}' > "$LUT_FILE"
+	test -s "$LUT_FILE"
+	exit
+fi
+
+DMENU_LINES=40
 
 [ ! -f "$LUT_FILE" ] && { echo "lut not found at $LUT_FILE"; exit 1; }
 chosen=$(cat "$LUT_FILE" | dmenu -i -l "$DMENU_LINES") || exit 0

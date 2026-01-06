@@ -18,6 +18,45 @@ const uptimeName = "uptime"
 func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
 	name := uptimeName
 
+	var formatUptime func(string) string
+	raw, ok := cfg.Arg.(bool)
+	if ok && raw {
+		formatUptime = func(uptimeString string) string { return uptimeString }
+	} else {
+		formatUptime = func(uptimeString string) string {
+			fS, err := strconv.ParseFloat(uptimeString, 64)
+			if err != nil {
+				util.Warn("%s: ParseFloat: %v", name, err)
+				return ""
+			}
+			s := int64(fS)
+			const (
+				minute = 60
+				hour   = 60 * minute
+				day    = 24 * hour
+				week   = 7 * day
+			)
+			var (
+				w = s / week
+				d = (s % week) / day
+				h = (s % day) / hour
+				m = (s % hour) / minute
+			)
+			switch {
+			case w > 0:
+				return fmt.Sprintf("%dw %dd %dh", w, d, h)
+			case d > 0:
+				return fmt.Sprintf("%dd %dh %dm", d, h, m)
+			case h > 0:
+				return fmt.Sprintf("%dh %dm", h, m)
+			case m > 0:
+				return fmt.Sprintf("%dm %ds", m, s)
+			default:
+				return fmt.Sprintf("%ds", s)
+			}
+		}
+	}
+
 	f, err := os.Open(constants.ProcUptimePath)
 	if err != nil {
 		util.Warn("%s: %v", name, err)
@@ -41,36 +80,14 @@ func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-c
 			return
 		}
 
-		fields := bytes.Fields(buf[:n])
-		if len(fields) < 1 {
+		index := bytes.IndexByte(buf[:n], ' ')
+		if index == -1 {
 			util.Warn("%s: unexpected %s format", name, constants.ProcUptimePath)
 			update("")
 			return
 		}
 
-		s, err := strconv.ParseFloat(string(fields[0]), 64)
-		if err != nil {
-			util.Warn("%s: ParseFloat: %v", name, err)
-			update("")
-			return
-		}
-
-		intS := int(s)
-		var (
-			days    = intS / 86400
-			hours   = (intS % 86400) / 3600
-			minutes = (intS % 3600) / 60
-		)
-		switch {
-		case days > 0:
-			update(fmt.Sprintf("%dd %dh %dm", days, hours, minutes))
-		case hours > 0:
-			update(fmt.Sprintf("%dh %dm", hours, minutes))
-		case minutes > 0:
-			update(fmt.Sprintf("%dm", minutes))
-		default:
-			update(fmt.Sprintf("%ds", intS))
-		}
+		update(formatUptime(string(buf[:index])))
 	}
 
 	send()

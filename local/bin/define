@@ -41,16 +41,9 @@ def example(e):
 		""
 	end;
 
-def syns(a):
-	if (a | length) > 0 then
-		"\n\t\tsynonyms: " + (a | join(", "))
-	else
-		""
-	end;
-
-def ants(a):
-	if (a | length) > 0 then
-		"\n\t\tantonyms: " + (a | join(", "))
+def list($label; $a):
+	if ($a | length) > 0 then
+		"\n\t\t" + $label + ": " + ($a | join(", "))
 	else
 		""
 	end;
@@ -58,8 +51,8 @@ def ants(a):
 def fmtDef:
 	"\t" + .definition +
 	example(.example) +
-	syns(.synonyms) +
-	ants(.antonyms);
+	list("synonyms"; .synonyms) +
+	list("antonyms"; .antonyms);
 
 def fmtPOS:
 	pos(.partOfSpeech + ":") + "\n" +

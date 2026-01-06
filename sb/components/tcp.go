@@ -53,6 +53,13 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 		}
 		j++
 
+		var need int
+		if i == 0 {
+			need = net.IPv4len
+		} else {
+			need = net.IPv6len
+		}
+
 		for j < len(buf) {
 			lf := bytes.IndexByte(buf[j:], '\n')
 			var line []byte
@@ -80,12 +87,6 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 			}
 			ipHex := addrField[:colon]
 
-			var need int
-			if i == 1 {
-				need = 16
-			} else {
-				need = 4
-			}
 			if len(ipHex) != need*2 {
 				continue
 			}
@@ -94,14 +95,15 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 			if _, err := hex.Decode(dst, ipHex); err != nil {
 				continue
 			}
-			if need == 16 {
+
+			if need == net.IPv4len {
+				dst[0], dst[1], dst[2], dst[3] =
+					dst[3], dst[2], dst[1], dst[0]
+			} else {
 				for k := 0; k < 16; k += 4 {
 					dst[k], dst[k+1], dst[k+2], dst[k+3] =
 						dst[k+3], dst[k+2], dst[k+1], dst[k]
 				}
-			} else {
-				dst[0], dst[1], dst[2], dst[3] =
-					dst[3], dst[2], dst[1], dst[0]
 			}
 
 			if net.IP(dst).IsLoopback() {
