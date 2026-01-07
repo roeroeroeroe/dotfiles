@@ -50,7 +50,7 @@ func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-c
 			case h > 0:
 				return fmt.Sprintf("%dh %dm", h, m)
 			case m > 0:
-				return fmt.Sprintf("%dm %ds", m, s)
+				return fmt.Sprintf("%dm %ds", m, s%minute)
 			default:
 				return fmt.Sprintf("%ds", s)
 			}
