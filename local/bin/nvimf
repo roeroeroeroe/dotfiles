@@ -7,13 +7,21 @@
 }
 
 DIRS=(
+	# exact directories
+)
+
+SCAN_DIRS=(
 	"$HOME/Downloads/git"
 	"$HOME/Projects"
 	"$HOME/suckless"
 	"$XDG_CONFIG_HOME"
 )
 
-DEST=$(find "${DIRS[@]}" -type d -maxdepth 1 -mindepth 1 2> /dev/null |
+while IFS= read -r d; do
+	DIRS+=("$d")
+done < <(find "${SCAN_DIRS[@]}" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)
+
+DEST=$(printf "%s\n" "${DIRS[@]}" |
 	fzf --preview "tree -C {}" \
 		--bind "ctrl-j:down,ctrl-k:up,alt-j:preview-down,alt-k:preview-up")
 

@@ -47,7 +47,11 @@ func parseStat(f *os.File, buf []byte) (uint64, uint64, error) {
 				return 0, 0, fmt.Errorf("parse uint: %v", err)
 			}
 			total += num
-			if i == 3 || i == 4 {
+			const (
+				idleFieldIndex   = 3
+				iowaitFieldIndex = 4
+			)
+			if i == idleFieldIndex || i == iowaitFieldIndex {
 				idle += num
 			}
 		}

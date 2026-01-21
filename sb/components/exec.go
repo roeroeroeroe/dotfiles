@@ -3,6 +3,7 @@ package components
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os/exec"
 	"strings"
 	"time"
@@ -37,7 +38,13 @@ func startExec(cfg statusbar.ComponentConfig, update func(string), trigger <-cha
 
 		out, err := exec.CommandContext(ctx, eName, args...).Output()
 		if err != nil {
-			util.Warn("%s: \"%s\" failed: %v", name, cmdline, err)
+			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+				util.Warn("%s: \"%s\" timed out after %v",
+					name, cmdline, timeout)
+			} else {
+				util.Warn("%s: \"%s\": %v",
+					name, cmdline, err)
+			}
 			update("")
 		} else {
 			update(string(bytes.TrimSpace(out)))
