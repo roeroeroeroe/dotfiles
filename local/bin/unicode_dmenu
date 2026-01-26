@@ -5,6 +5,8 @@ LUT_FILE="${XDG_DATA_HOME:-"$HOME/.local/share"}/unicode"
 if [ "$1" = "--gen" ]; then
 	curl -s "https://www.unicode.org/Public/UNIDATA/UnicodeData.txt" | awk -F ";" '
 	{
+		if ($3 ~ /^(Cc|Cf|Cs|Co|Cn)$/)
+			next
 		code = sprintf("U+%04X", strtonum("0x"$1))
 		char = sprintf("%c", strtonum("0x"$1))
 		print char "\t" code "\t" $2
