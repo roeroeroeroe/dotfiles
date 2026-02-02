@@ -26,7 +26,7 @@ var (
 Name             description                 Arg                  Arg type      note
 
 cat              -                           path                 string        reads at most `constants.CatReadBufSize` B
-cpu              perc                        -                    -             -
+cpu              perc                        perCPU               bool          -
 disk             used                        mountpoint (/)       string        -
 disk_io          perc                        block device (sda)   string        per max(1, Interval.Milliseconds())
 exec             -                           argv                 []string      timeout=Interval*0.75
@@ -49,7 +49,12 @@ const (
 )
 
 // convenience
-func text(format string, a ...any) entry {
+func text(s string) entry {
+	return entry{"text", cfg{Arg: s}}
+}
+
+// convenience
+func textf(format string, a ...any) entry {
 	return entry{"text", cfg{Arg: fmt.Sprintf(format, a...)}}
 }
 
@@ -58,9 +63,9 @@ var Components = []entry{
 	{"exec", cfg{Arg: []string{"player_sb"}, Interval: time.Second, Signal: 35}},
 	text(" vol:"),
 	{"exec", cfg{Arg: []string{"volume"}, Interval: 3 * time.Second, Signal: 36}},
-	text(" ]   [ %s (", iface),
+	text(" ]   [ "),
 	{"ip", cfg{Arg: iface}},
-	text(") "),
+	text(" "),
 	{"net", cfg{Arg: iface, Interval: time.Second}},
 	text(" tcp{"),
 	{"tcp", cfg{Interval: time.Second}},
@@ -72,17 +77,17 @@ var Components = []entry{
 	{"mem", cfg{Interval: 2 * time.Second}},
 	text(" swap:"),
 	{"swap", cfg{Interval: 2 * time.Second}},
-	text(" cpu:"),
-	{"cpu", cfg{Interval: 2 * time.Second}},
-	text(" ]   [ "),
+	text(" cpu:["),
+	{"cpu", cfg{Arg: true, Interval: 2 * time.Second}},
+	text("] ]   [ "),
 	{"time", cfg{Arg: "Mon 01/02 15:04:05", Interval: time.Second}},
 	text(" up:"),
 	{"uptime", cfg{Interval: 5 * time.Second}},
 	text(" ]"),
 	// a simpler example:
-	// text("cpu:"),
-	// {"cpu", cfg{Interval: 2 * time.Second}},
-	// text(", mem:"),
+	// text("cpu:["),
+	// {"cpu", cfg{Arg: true, Interval: 2 * time.Second}},
+	// text("], mem:"),
 	// {"mem", cfg{Interval: 2 * time.Second}},
 	// text("   "),
 	// {"time", cfg{Arg: "15:04:05", Interval: time.Second}},

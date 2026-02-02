@@ -3,8 +3,10 @@ package constants
 const (
 	CatReadBufSize = 64
 
-	ProcStatPath       = "/proc/stat"
-	CPUStatReadBufSize = 4096
+	ProcStatPath                = "/proc/stat"
+	CPUStatReadBufSize          = 4096
+	ProcStatCPUIdleFieldIndex   = 3
+	ProcStatCPUIowaitFieldIndex = 4
 
 	DefaultDiskMount = "/"
 
