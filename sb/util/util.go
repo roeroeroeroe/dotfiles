@@ -16,14 +16,15 @@ type MeminfoField struct {
 func Warn(format string, a ...any)   { fmt.Fprintf(os.Stderr, format+"\n", a...) }
 func Fatalf(format string, a ...any) { Warn(format, a...); os.Exit(1) }
 
-var iecPrefixes = []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"}
-
-const (
-	base  = 1024
-	fBase = float64(base)
-)
+var iecPrefixes = [...]string{
+	"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB",
+}
 
 func HumanBytes(b uint64) string {
+	const (
+		base  = 1024
+		fBase = float64(base)
+	)
 	if b < base {
 		return fmt.Sprintf("%d %s", b, iecPrefixes[0])
 	}

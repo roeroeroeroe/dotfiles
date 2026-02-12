@@ -35,7 +35,7 @@ kernel_release   -                           -                    -             
 mem              used                        -                    -             -
 net              rx, tx                      iface (eth0)         string        per max(1, Interval.Seconds())
 swap             used                        -                    -             -
-tcp              ESTABLISHED remote, local   -                    -             -
+tcp              ESTABLISHED remote, local   -                    -             "local" = connections whose remote address is loopback; "remote" = all other connections
 text             -                           text                 string        Interval, Signal unused
 time             -                           layout               time.Layout   -
 uptime           -                           raw                  bool          -

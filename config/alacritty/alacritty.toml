@@ -16,6 +16,10 @@ bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
 unfocused_hollow = true
 style            = { shape = "Block", blinking = "Off" }
 
+[colors]
+cursor         = { text = "CellBackground", cursor = "#cccccc" }
+vi_mode_cursor = { text = "CellBackground", cursor = "#cccccc" }
+
 [colors.primary]
 background = "#000000"
 foreground = "#cccccc"
