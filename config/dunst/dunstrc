@@ -9,8 +9,8 @@
 	frame_color = "#cccccc"
 	background = "#000000"
 	foreground = "#525252"
-	font = JetBrainsMono NF SemiBold 10
-	format = "<span weight='bold' font='12'>%s</span>\n%b"
+	font = JetBrainsMono 11
+	format = "<span weight='bold'>%s</span>\n%b"
 	corner_radius = 14
 	mouse_left_click = close_current
 	mouse_middle_click = do_action, close_current

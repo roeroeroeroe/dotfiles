@@ -54,6 +54,7 @@ terminus-font
 tesseract
 tesseract-data-eng
 tree
+tree-sitter-cli
 ttf-jetbrains-mono-nerd
 unzip
 valkey
