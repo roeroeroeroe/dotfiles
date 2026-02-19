@@ -15,3 +15,10 @@ ipapi() {
 	[ -z "$input" ] && return
 	echo "$input" | tr " " "\n" | parallel -j 4 'curl -s "ip-api.com/json/{}" | jq'
 }
+
+xclipclear() {
+	local selection
+	for selection in primary secondary clipboard; do
+		xclip -se $selection < /dev/null
+	done
+}

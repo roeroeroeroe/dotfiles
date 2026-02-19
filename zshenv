@@ -13,5 +13,6 @@ export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export TERMINAL="st"
 export EDITOR="nvim"
 export PAGER="less -igmj .5"
+export MANPAGER="nvim -c Man!"
 
 export NODE_REPL_HISTORY=""

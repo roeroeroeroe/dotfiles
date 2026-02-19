@@ -117,7 +117,7 @@ static const Key keys[] = {
 	{ 0,                      KEY_XF86_AUDIO_NEXT,   spawn,   SHCMD("playerctl next && kill -35 $(pidof sb)") },
 	{ Mod1Mask,               KEY_M,        spawn,            CMD("toggle_mic_notify") },
 	{ Mod1Mask|ControlMask,   KEY_B,        spawn,            CMD("browser_bookmarks_dmenu") },
-	{ Mod1Mask|ControlMask,   KEY_M,        spawn,            CMD("powermenu_dmenu") },
+	{ Mod1Mask|ControlMask,   KEY_M,        spawn,            CMD("slock") },
 	{ 0,                      KEY_PRINT,    spawn,            CMD("screenshot_dmenu") },
 	{ Mod1Mask|ControlMask,   KEY_N,        spawn,            CMD("notes_dmenu") },
 	{ Mod1Mask,               KEY_U,        spawn,            CMD("unicode_dmenu") },

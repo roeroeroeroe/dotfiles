@@ -23,6 +23,7 @@
 #include "util.h"
 
 char *argv0;
+int failtrack = 0;
 
 enum {
 	BG,
@@ -208,6 +209,8 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				if (running) {
 					XBell(dpy, 100);
 					failure = 1;
+					if (failcount != 0 && ++failtrack >= failcount)
+						system(failcommand);
 				}
 				explicit_bzero(&passwd, sizeof(passwd));
 				len = 0;
