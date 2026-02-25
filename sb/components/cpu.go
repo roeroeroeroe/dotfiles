@@ -22,8 +22,7 @@ type CPU struct {
 }
 
 func NewCPU(perCPU bool, interval time.Duration, signal syscall.Signal) *CPU {
-	base := statusbar.NewBaseComponentConfig("cpu", interval, signal)
-	base.MustBeNonZero()
+	base := statusbar.NewBaseComponentConfigNonZero("cpu", interval, signal)
 	return &CPU{*base, perCPU}
 }
 

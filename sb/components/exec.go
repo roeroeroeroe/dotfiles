@@ -38,8 +38,7 @@ func NewExec(argv []string, timeout, interval time.Duration, signal syscall.Sign
 		panic(name + ": timeout >= interval")
 	}
 
-	base := statusbar.NewBaseComponentConfig(name, interval, signal)
-	base.MustBeNonZero()
+	base := statusbar.NewBaseComponentConfigNonZero(name, interval, signal)
 	return &Exec{argv, *base, timeout}
 }
 

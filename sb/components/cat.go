@@ -32,8 +32,7 @@ func NewCat(path string, readBufSize int, trimSpace bool, interval time.Duration
 		readBufSize = constants.DefaultCatReadBufSize
 	}
 
-	base := statusbar.NewBaseComponentConfig(name, interval, signal)
-	base.MustBeNonZero()
+	base := statusbar.NewBaseComponentConfigNonZero(name, interval, signal)
 	return &Cat{path, *base, readBufSize, trimSpace}
 }
 

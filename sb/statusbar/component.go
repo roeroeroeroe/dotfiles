@@ -6,7 +6,7 @@ import (
 )
 
 type Component interface {
-	Start(update func(string), trigger <-chan struct{})
+	Start(func(string), <-chan struct{})
 	Signal() syscall.Signal
 }
 
@@ -23,10 +23,11 @@ func NewBaseComponentConfig(name string, interval time.Duration, signal syscall.
 	return &BaseComponentConfig{name, interval, signal}
 }
 
-func (b BaseComponentConfig) MustBeNonZero() {
-	if b.Interval == 0 && b.Sig == 0 {
-		panic(b.Name + ": both interval and signal are 0")
+func NewBaseComponentConfigNonZero(name string, interval time.Duration, signal syscall.Signal) *BaseComponentConfig {
+	if interval == 0 && signal == 0 {
+		panic(name + ": both interval and signal are 0")
 	}
+	return NewBaseComponentConfig(name, interval, signal)
 }
 
 func (b BaseComponentConfig) Signal() syscall.Signal {

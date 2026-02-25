@@ -20,8 +20,7 @@ type Uptime struct {
 }
 
 func NewUptime(raw bool, interval time.Duration, signal syscall.Signal) *Uptime {
-	base := statusbar.NewBaseComponentConfig("uptime", interval, signal)
-	base.MustBeNonZero()
+	base := statusbar.NewBaseComponentConfigNonZero("uptime", interval, signal)
 	return &Uptime{*base, raw}
 }
 

@@ -20,8 +20,7 @@ type TCP struct {
 }
 
 func NewTCP(interval time.Duration, signal syscall.Signal) *TCP {
-	base := statusbar.NewBaseComponentConfig("tcp", interval, signal)
-	base.MustBeNonZero()
+	base := statusbar.NewBaseComponentConfigNonZero("tcp", interval, signal)
 	return &TCP{*base}
 }
 

@@ -21,8 +21,7 @@ func NewTime(layout string, interval time.Duration, signal syscall.Signal) *Time
 		layout = constants.DefaultTimeLayout
 	}
 
-	base := statusbar.NewBaseComponentConfig(name, interval, signal)
-	base.MustBeNonZero()
+	base := statusbar.NewBaseComponentConfigNonZero(name, interval, signal)
 	return &Time{layout, *base}
 }
 
