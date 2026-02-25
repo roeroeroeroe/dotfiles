@@ -1,8 +1,10 @@
 package components
 
 import (
+	"bytes"
 	"io"
 	"os"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -10,24 +12,45 @@ import (
 	"roe/sb/util"
 )
 
-const catName = "cat"
+type Cat struct {
+	path string
+	statusbar.BaseComponentConfig
+	readBufSize int
+	trimSpace   bool
+}
 
-func startCat(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := catName
-
-	path, ok := cfg.Arg.(string)
-	if !ok || path == "" {
-		util.Warn("%s: Arg not a string or empty", name)
-		update("")
-		return
+func NewCat(path string, readBufSize int, trimSpace bool, interval time.Duration, signal syscall.Signal) *Cat {
+	const name = "cat"
+	if path == "" {
+		panic(name + ": empty path")
+	}
+	if readBufSize <= 0 {
+		if readBufSize < 0 {
+			panic(name + ": negative read buffer size")
+		}
+		util.Warn("%s: read buffer size is 0, using %d", name, constants.DefaultCatReadBufSize)
+		readBufSize = constants.DefaultCatReadBufSize
 	}
 
-	buf := make([]byte, constants.CatReadBufSize)
+	base := statusbar.NewBaseComponentConfig(name, interval, signal)
+	base.MustBeNonZero()
+	return &Cat{path, *base, readBufSize, trimSpace}
+}
+
+func (c *Cat) Start(update func(string), trigger <-chan struct{}) {
+	buf := make([]byte, c.readBufSize)
+
+	var toString func([]byte) string
+	if c.trimSpace {
+		toString = func(b []byte) string { return string(bytes.TrimSpace(b)) }
+	} else {
+		toString = func(b []byte) string { return string(b) }
+	}
 
 	send := func() {
-		f, err := os.Open(path)
+		f, err := os.Open(c.path)
 		if err != nil {
-			util.Warn("%s: open %s: %v", name, path, err)
+			util.Warn("%s: open %s: %v", c.Name, c.path, err)
 			update("")
 			return
 		}
@@ -35,7 +58,7 @@ func startCat(cfg statusbar.ComponentConfig, update func(string), trigger <-chan
 
 		n, err := f.Read(buf)
 		if err != nil && err != io.EOF {
-			util.Warn("%s: read %s: %v", name, path, err)
+			util.Warn("%s: read %s: %v", c.Name, c.path, err)
 			update("")
 			return
 		}
@@ -43,26 +66,13 @@ func startCat(cfg statusbar.ComponentConfig, update func(string), trigger <-chan
 		if n == len(buf) {
 			var tmp [1]byte
 			if n, _ := f.Read(tmp[:]); n > 0 {
-				util.Warn("%s: truncated output from %s", name, path)
+				util.Warn("%s: truncated output from %s", c.Name, c.path)
 			}
 		}
 
-		update(string(buf[:n]))
+		update(toString(buf[:n]))
 	}
 
 	send()
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(catName, startCat)
+	c.BaseComponentConfig.Loop(send, trigger)
 }

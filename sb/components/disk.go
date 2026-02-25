@@ -1,6 +1,7 @@
 package components
 
 import (
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -10,22 +11,29 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-const diskName = "disk"
+type Disk struct {
+	mountpoint string
+	statusbar.BaseComponentConfig
+}
 
-func startDisk(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := diskName
-
-	mountpoint, ok := cfg.Arg.(string)
-	if !ok || mountpoint == "" {
-		util.Warn("%s: Arg not a string or empty, using %s", name, constants.DefaultDiskMount)
+func NewDisk(mountpoint string, interval time.Duration, signal syscall.Signal) *Disk {
+	const name = "disk"
+	if mountpoint == "" {
+		util.Warn("%s: empty mountpoint, using %s", name, constants.DefaultDiskMount)
 		mountpoint = constants.DefaultDiskMount
 	}
 
+	base := statusbar.NewBaseComponentConfig(name, interval, signal)
+	base.MustBeNonZero()
+	return &Disk{mountpoint, *base}
+}
+
+func (d *Disk) Start(update func(string), trigger <-chan struct{}) {
 	var stat unix.Statfs_t
 	send := func() {
-		err := unix.Statfs(mountpoint, &stat)
+		err := unix.Statfs(d.mountpoint, &stat)
 		if err != nil {
-			util.Warn("%s: statfs %s: %v", name, mountpoint, err)
+			util.Warn("%s: statfs %s: %v", d.Name, d.mountpoint, err)
 			update("")
 		} else {
 			update(util.HumanBytes((stat.Blocks - stat.Bfree) * uint64(stat.Frsize)))
@@ -33,18 +41,5 @@ func startDisk(cfg statusbar.ComponentConfig, update func(string), trigger <-cha
 	}
 
 	send()
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(diskName, startDisk)
+	d.BaseComponentConfig.Loop(send, trigger)
 }

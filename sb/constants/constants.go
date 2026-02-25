@@ -1,10 +1,12 @@
 package constants
 
+const KiB = 1 << 10
+
 const (
-	CatReadBufSize = 64
+	DefaultCatReadBufSize = 64
 
 	ProcStatPath                = "/proc/stat"
-	CPUStatReadBufSize          = 4096
+	CPUStatReadBufSize          = 4 * KiB
 	ProcStatCPUIdleFieldIndex   = 3
 	ProcStatCPUIowaitFieldIndex = 4
 
@@ -14,18 +16,18 @@ const (
 	DiskIOReadBufSize = 512
 
 	SysNetClassPath    = "/sys/class/net"
-	NetLinkReadBufSize = 8192
+	NetLinkReadBufSize = 8 * KiB
 
 	ProcMeminfoPath    = "/proc/meminfo"
-	MemInfoReadBufSize = 2048
+	MemInfoReadBufSize = 2 * KiB
 
 	NetFileReadBufSize = 64
 
 	ProcTCPPath        = "/proc/net/tcp"
 	ProcTCP6Path       = "/proc/net/tcp6"
-	TCPReadBufSize     = 16384
+	TCPReadBufSize     = 16 * KiB
 	TCPIPDecodeBufSize = 16
-	TCPReadChunkSize   = 4096
+	TCPReadChunkSize   = 4 * KiB
 
 	DefaultTimeLayout = "Mon 01/02 15:04:05"
 

@@ -8,6 +8,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -15,7 +16,105 @@ import (
 	"roe/sb/util"
 )
 
-const cpuName = "cpu"
+type CPU struct {
+	statusbar.BaseComponentConfig
+	perCPU bool
+}
+
+func NewCPU(perCPU bool, interval time.Duration, signal syscall.Signal) *CPU {
+	base := statusbar.NewBaseComponentConfig("cpu", interval, signal)
+	base.MustBeNonZero()
+	return &CPU{*base, perCPU}
+}
+
+func (cpu *CPU) Start(update func(string), trigger <-chan struct{}) {
+	f, err := os.Open(constants.ProcStatPath)
+	if err != nil {
+		util.Warn("%s: %v", cpu.Name, err)
+		update("")
+		return
+	}
+
+	buf := make([]byte, constants.CPUStatReadBufSize)
+
+	var send func()
+	if cpu.perCPU {
+		initCap := runtime.NumCPU()
+		var (
+			a = make([]cpuSample, 0, initCap)
+			b = make([]cpuSample, 0, initCap)
+		)
+
+		var (
+			prev    = a[:0]
+			samples = b[:0]
+		)
+
+		outBuf := make([]byte, 0, len("100.0% ")*initCap)
+
+		send = func() {
+			var err error
+			samples, err = parsePerCPUStat(f, buf, samples[:0])
+			if err != nil {
+				util.Warn("%s: %v", cpu.Name, err)
+				update("")
+				return
+			}
+
+			if len(prev) == 0 || len(prev) != len(samples) {
+				prev, samples = samples, prev
+				return
+			}
+
+			outBuf = outBuf[:0]
+
+			for i, s := range samples {
+				totalDelta := float64(s.total - prev[i].total)
+				if totalDelta == 0 {
+					update("")
+					prev, samples = samples, prev
+					return
+				}
+				idleDelta := float64(s.idle - prev[i].idle)
+				outBuf = strconv.AppendFloat(outBuf, (1.0-idleDelta/totalDelta)*100.0, 'f', 1, 64)
+				outBuf = append(outBuf, '%', ' ')
+			}
+			if len(outBuf) > 0 {
+				outBuf = outBuf[:len(outBuf)-1]
+			}
+
+			update(string(outBuf))
+
+			prev, samples = samples, prev
+		}
+	} else {
+		var prevIdle, prevTotal uint64
+		send = func() {
+			idle, total, err := parseStat(f, buf)
+			if err != nil {
+				util.Warn("%s: %v", cpu.Name, err)
+				update("")
+				return
+			}
+
+			if prevTotal != 0 {
+				totalDelta := float64(total - prevTotal)
+				if totalDelta == 0 {
+					update("")
+				} else {
+					idleDelta := float64(idle - prevIdle)
+					update(fmt.Sprintf("%.1f%%", (1.0-idleDelta/totalDelta)*100.0))
+				}
+			}
+
+			prevIdle = idle
+			prevTotal = total
+		}
+	}
+
+	send()
+	cpu.BaseComponentConfig.Loop(send, trigger)
+}
 
 type cpuSample struct{ idle, total uint64 }
 
@@ -110,113 +209,4 @@ func parsePerCPUStat(f *os.File, buf []byte, out []cpuSample) ([]cpuSample, erro
 	}
 
 	return out, nil
-}
-
-func startCPU(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := cpuName
-
-	perCPU := false
-	if v, ok := cfg.Arg.(bool); ok && v {
-		perCPU = true
-	}
-
-	f, err := os.Open(constants.ProcStatPath)
-	if err != nil {
-		util.Warn("%s: %v", name, err)
-		update("")
-		return
-	}
-
-	buf := make([]byte, constants.CPUStatReadBufSize)
-
-	var send func()
-	if perCPU {
-		initCap := runtime.NumCPU()
-		var (
-			a = make([]cpuSample, 0, initCap)
-			b = make([]cpuSample, 0, initCap)
-		)
-
-		var (
-			prev    = a[:0]
-			samples = b[:0]
-		)
-
-		outBuf := make([]byte, 0, len("100.0% ")*initCap)
-
-		send = func() {
-			var err error
-			samples, err = parsePerCPUStat(f, buf, samples[:0])
-			if err != nil {
-				util.Warn("%s: %v", name, err)
-				update("")
-				return
-			}
-
-			if len(prev) == 0 || len(prev) != len(samples) {
-				prev, samples = samples, prev
-				return
-			}
-
-			outBuf = outBuf[:0]
-
-			for i, s := range samples {
-				totalDelta := float64(s.total - prev[i].total)
-				if totalDelta == 0 {
-					update("")
-					prev, samples = samples, prev
-					return
-				}
-				idleDelta := float64(s.idle - prev[i].idle)
-				outBuf = strconv.AppendFloat(outBuf, (1.0-idleDelta/totalDelta)*100.0, 'f', 1, 64)
-				outBuf = append(outBuf, '%', ' ')
-			}
-			if len(outBuf) > 0 {
-				outBuf = outBuf[:len(outBuf)-1]
-			}
-
-			update(string(outBuf))
-
-			prev, samples = samples, prev
-		}
-	} else {
-		var prevIdle, prevTotal uint64
-		send = func() {
-			idle, total, err := parseStat(f, buf)
-			if err != nil {
-				util.Warn("%s: %v", name, err)
-				update("")
-				return
-			}
-
-			if prevTotal != 0 {
-				totalDelta := float64(total - prevTotal)
-				if totalDelta == 0 {
-					update("")
-				} else {
-					idleDelta := float64(idle - prevIdle)
-					update(fmt.Sprintf("%.1f%%", (1.0-idleDelta/totalDelta)*100.0))
-				}
-			}
-
-			prevIdle = idle
-			prevTotal = total
-		}
-	}
-
-	send()
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(cpuName, startCPU)
 }

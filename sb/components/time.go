@@ -1,6 +1,7 @@
 package components
 
 import (
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -8,30 +9,25 @@ import (
 	"roe/sb/util"
 )
 
-const timeName = "time"
+type Time struct {
+	layout string
+	statusbar.BaseComponentConfig
+}
 
-func startTime(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := timeName
-
-	layout, ok := cfg.Arg.(string)
-	if !ok || layout == "" {
-		util.Warn("%s: Arg not a string or empty, using %s", name, constants.DefaultTimeLayout)
+func NewTime(layout string, interval time.Duration, signal syscall.Signal) *Time {
+	const name = "time"
+	if layout == "" {
+		util.Warn("%s: empty layout, using %s", name, constants.DefaultTimeLayout)
 		layout = constants.DefaultTimeLayout
 	}
 
-	update(time.Now().Format(layout))
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			update(time.Now().Format(layout))
-		case <-trigger:
-			update(time.Now().Format(layout))
-		}
-	}
+	base := statusbar.NewBaseComponentConfig(name, interval, signal)
+	base.MustBeNonZero()
+	return &Time{layout, *base}
 }
 
-func init() {
-	statusbar.Register(timeName, startTime)
+func (t *Time) Start(update func(string), trigger <-chan struct{}) {
+	send := func() { update(time.Now().Format(t.layout)) }
+	send()
+	t.BaseComponentConfig.Loop(send, trigger)
 }

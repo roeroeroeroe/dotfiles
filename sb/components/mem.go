@@ -2,6 +2,7 @@ package components
 
 import (
 	"os"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -9,14 +10,20 @@ import (
 	"roe/sb/util"
 )
 
-const memName = "mem"
+type Mem struct {
+	statusbar.BaseComponentConfig
+}
 
-func startMem(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := memName
+func NewMem(interval time.Duration, signal syscall.Signal) *Mem {
+	base := statusbar.NewBaseComponentConfig("mem", interval, signal)
+	base.MustBeNonZero()
+	return &Mem{*base}
+}
 
+func (m *Mem) Start(update func(string), trigger <-chan struct{}) {
 	f, err := os.Open(constants.ProcMeminfoPath)
 	if err != nil {
-		util.Warn("%s: %v", name, err)
+		util.Warn("%s: %v", m.Name, err)
 		update("")
 		return
 	}
@@ -31,26 +38,13 @@ func startMem(cfg statusbar.ComponentConfig, update func(string), trigger <-chan
 
 	send := func() {
 		if err := util.ParseMeminfo(f, buf, fields); err != nil {
-			util.Warn("%s: %v", name, err)
+			util.Warn("%s: %v", m.Name, err)
 			update("")
 		} else {
-			update(util.HumanBytes((total - available) * 1024))
+			update(util.HumanBytes((total - available) * constants.KiB))
 		}
 	}
 
 	send()
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(memName, startMem)
+	m.BaseComponentConfig.Loop(send, trigger)
 }

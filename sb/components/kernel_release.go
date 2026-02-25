@@ -7,20 +7,21 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-const kernelReleaseName = "kernel_release"
+type KernelRelease struct {
+	statusbar.BaseComponentConfig
+}
 
-func startKernelRelease(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct{}) {
-	name := kernelReleaseName
+func NewKernelRelease() *KernelRelease {
+	base := statusbar.NewBaseComponentConfig("kernel_release", 0, 0)
+	return &KernelRelease{*base}
+}
 
+func (kr *KernelRelease) Start(update func(string), _ <-chan struct{}) {
 	utsname := &unix.Utsname{}
 	if err := unix.Uname(utsname); err != nil {
-		util.Warn("%s: uname: %v", name, err)
+		util.Warn("%s: uname: %v", kr.Name, err)
 		update("")
 	} else {
 		update(unix.ByteSliceToString(utsname.Release[:]))
 	}
-}
-
-func init() {
-	statusbar.Register(kernelReleaseName, startKernelRelease)
 }

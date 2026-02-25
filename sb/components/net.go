@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -14,7 +15,102 @@ import (
 	"roe/sb/util"
 )
 
-const netName = "net"
+type Net struct {
+	ifaceName string
+	statusbar.BaseComponentConfig
+}
+
+func NewNet(ifaceName string, interval time.Duration, signal syscall.Signal) *Net {
+	const name = "net"
+	if ifaceName == "" {
+		panic(name + ": empty interface name")
+	}
+	sec := uint64(interval.Seconds())
+	if sec < 1 {
+		panic(name + ": interval < 1s")
+	}
+
+	orig := interval
+	interval = time.Duration(sec) * time.Second
+
+	if orig > interval {
+		util.Warn("%s: interval adjusted: %v -> %v", name, orig, interval)
+	}
+
+	base := statusbar.NewBaseComponentConfig(name, interval, signal)
+	return &Net{ifaceName, *base}
+}
+
+func (n *Net) Start(update func(string), trigger <-chan struct{}) {
+	iface, err := net.InterfaceByName(n.ifaceName)
+	if err != nil {
+		util.Warn("%s: interface %s: %v", n.Name, n.ifaceName, err)
+		update("")
+		return
+	}
+
+	rxPath := filepath.Join(constants.SysNetClassPath, iface.Name, "statistics", "rx_bytes")
+	rxFile, err := os.Open(rxPath)
+	if err != nil {
+		util.Warn("%s: open %s: %v", n.Name, rxPath, err)
+		update("")
+		return
+	}
+
+	txPath := filepath.Join(constants.SysNetClassPath, iface.Name, "statistics", "tx_bytes")
+	txFile, err := os.Open(txPath)
+	if err != nil {
+		rxFile.Close()
+		util.Warn("%s: open %s: %v", n.Name, txPath, err)
+		update("")
+		return
+	}
+
+	buf := make([]byte, constants.NetFileReadBufSize)
+
+	prevRx, err := readU64From(rxFile, buf)
+	if err != nil {
+		rxFile.Close()
+		txFile.Close()
+		util.Warn("%s: read %s: %v", n.Name, rxPath, err)
+		update("")
+		return
+	}
+	prevTx, err := readU64From(txFile, buf)
+	if err != nil {
+		rxFile.Close()
+		txFile.Close()
+		util.Warn("%s: read %s: %v", n.Name, txPath, err)
+		update("")
+		return
+	}
+
+	sec := uint64(n.Interval.Seconds())
+
+	send := func() {
+		rx, err := readU64From(rxFile, buf)
+		if err != nil {
+			util.Warn("%s: read %s: %v", n.Name, rxPath, err)
+			update("")
+			return
+		}
+		tx, err := readU64From(txFile, buf)
+		if err != nil {
+			util.Warn("%s: read %s: %v", n.Name, txPath, err)
+			update("")
+			return
+		}
+
+		update(fmt.Sprintf("rx:%s tx:%s",
+			util.HumanBytes((rx-prevRx)/sec), util.HumanBytes((tx-prevTx)/sec)))
+
+		prevRx = rx
+		prevTx = tx
+	}
+
+	send()
+	n.BaseComponentConfig.Loop(send, trigger)
+}
 
 func readU64From(f *os.File, buf []byte) (uint64, error) {
 	if _, err := f.Seek(0, 0); err != nil {
@@ -30,99 +126,4 @@ func readU64From(f *os.File, buf []byte) (uint64, error) {
 	}
 
 	return util.ParseU64(buf[:n])
-}
-
-func startNet(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := netName
-
-	ifaceName, ok := cfg.Arg.(string)
-	if !ok || ifaceName == "" {
-		util.Warn("%s: Arg not a string or empty", name)
-		update("")
-		return
-	}
-	iface, err := net.InterfaceByName(ifaceName)
-	if err != nil {
-		util.Warn("%s: interface %s: %v", name, ifaceName, err)
-		update("")
-		return
-	}
-
-	var (
-		rxPath = filepath.Join(constants.SysNetClassPath, iface.Name, "statistics", "rx_bytes")
-		txPath = filepath.Join(constants.SysNetClassPath, iface.Name, "statistics", "tx_bytes")
-	)
-
-	rxFile, err := os.Open(rxPath)
-	if err != nil {
-		util.Warn("%s: open %s: %v", name, rxPath, err)
-		update("")
-		return
-	}
-
-	txFile, err := os.Open(txPath)
-	if err != nil {
-		rxFile.Close()
-		util.Warn("%s: open %s: %v", name, txPath, err)
-		update("")
-		return
-	}
-
-	buf := make([]byte, constants.NetFileReadBufSize)
-
-	prevRx, err := readU64From(rxFile, buf)
-	if err != nil {
-		rxFile.Close()
-		txFile.Close()
-		util.Warn("%s: read %s: %v", name, rxPath, err)
-		update("")
-		return
-	}
-	prevTx, err := readU64From(txFile, buf)
-	if err != nil {
-		rxFile.Close()
-		txFile.Close()
-		util.Warn("%s: read %s: %v", name, txPath, err)
-		update("")
-		return
-	}
-
-	sec := max(1, uint64(cfg.Interval.Seconds()))
-
-	send := func() {
-		rx, err := readU64From(rxFile, buf)
-		if err != nil {
-			util.Warn("%s: read %s: %v", name, rxPath, err)
-			update("")
-			return
-		}
-		tx, err := readU64From(txFile, buf)
-		if err != nil {
-			util.Warn("%s: read %s: %v", name, txPath, err)
-			update("")
-			return
-		}
-
-		update(fmt.Sprintf("rx:%s tx:%s",
-			util.HumanBytes((rx-prevRx)/sec), util.HumanBytes((tx-prevTx)/sec)))
-
-		prevRx = rx
-		prevTx = tx
-	}
-
-	send()
-
-	ticker := time.NewTicker(time.Duration(sec) * time.Second)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(netName, startNet)
 }

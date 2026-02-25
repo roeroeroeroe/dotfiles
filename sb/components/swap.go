@@ -2,6 +2,7 @@ package components
 
 import (
 	"os"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -9,14 +10,20 @@ import (
 	"roe/sb/util"
 )
 
-const swapName = "swap"
+type Swap struct {
+	statusbar.BaseComponentConfig
+}
 
-func startSwap(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := swapName
+func NewSwap(interval time.Duration, signal syscall.Signal) *Swap {
+	base := statusbar.NewBaseComponentConfig("swap", interval, signal)
+	base.MustBeNonZero()
+	return &Swap{*base}
+}
 
+func (s *Swap) Start(update func(string), trigger <-chan struct{}) {
 	f, err := os.Open(constants.ProcMeminfoPath)
 	if err != nil {
-		util.Warn("%s: %v", name, err)
+		util.Warn("%s: %v", s.Name, err)
 		update("")
 		return
 	}
@@ -31,26 +38,13 @@ func startSwap(cfg statusbar.ComponentConfig, update func(string), trigger <-cha
 
 	send := func() {
 		if err := util.ParseMeminfo(f, buf, fields); err != nil {
-			util.Warn("%s: %v", name, err)
+			util.Warn("%s: %v", s.Name, err)
 			update("")
 		} else {
-			update(util.HumanBytes((total - free) * 1024))
+			update(util.HumanBytes((total - free) * constants.KiB))
 		}
 	}
 
 	send()
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(swapName, startSwap)
+	s.BaseComponentConfig.Loop(send, trigger)
 }

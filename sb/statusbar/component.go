@@ -1,30 +1,61 @@
 package statusbar
 
 import (
+	"syscall"
 	"time"
-
-	"roe/sb/util"
 )
 
-type ComponentConfig struct {
-	Arg      any
-	Interval time.Duration
-	Signal   int
+type Component interface {
+	Start(update func(string), trigger <-chan struct{})
+	Signal() syscall.Signal
 }
 
-type StartComponent func(cfg ComponentConfig, update func(string), trigger <-chan struct{})
+type BaseComponentConfig struct {
+	Name     string
+	Interval time.Duration
+	Sig      syscall.Signal
+}
 
-var Registry = make(map[string]StartComponent)
+func NewBaseComponentConfig(name string, interval time.Duration, signal syscall.Signal) *BaseComponentConfig {
+	if interval < 0 {
+		panic(name + ": negative interval")
+	}
+	return &BaseComponentConfig{name, interval, signal}
+}
 
-func Register(name string, f StartComponent) {
-	if name == "" {
-		util.Fatalf("Register: invalid component (empty name)")
+func (b BaseComponentConfig) MustBeNonZero() {
+	if b.Interval == 0 && b.Sig == 0 {
+		panic(b.Name + ": both interval and signal are 0")
 	}
-	if f == nil {
-		util.Fatalf("Register: invalid component (nil StartComponent)")
+}
+
+func (b BaseComponentConfig) Signal() syscall.Signal {
+	return b.Sig
+}
+
+func (b BaseComponentConfig) Loop(send func(), trigger <-chan struct{}) {
+	if b.Interval == 0 {
+		for {
+			<-trigger
+			send()
+		}
 	}
-	if _, exists := Registry[name]; exists {
-		util.Fatalf("Register: duplicate name: %s", name)
+
+	ticker := time.NewTicker(b.Interval)
+
+	if b.Sig == 0 {
+		for {
+			<-ticker.C
+			send()
+		}
 	}
-	Registry[name] = f
+
+	for {
+		select {
+		case <-ticker.C:
+			send()
+		case <-trigger:
+			send()
+		}
+	}
 }

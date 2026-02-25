@@ -1,23 +1,22 @@
 package components
 
-import (
-	"roe/sb/statusbar"
-	"roe/sb/util"
-)
+import "roe/sb/statusbar"
 
-const textName = "text"
-
-func startText(cfg statusbar.ComponentConfig, update func (string), _ <-chan struct{}) {
-	name := textName
-
-	if text, ok := cfg.Arg.(string); !ok || text == "" {
-		util.Warn("%s: Arg not a string or empty", name)
-		update("")
-	} else {
-		update(text)
-	}
+type Text struct {
+	text string
+	statusbar.BaseComponentConfig
 }
 
-func init() {
-	statusbar.Register(textName, startText)
+func NewText(text string) *Text {
+	const name = "text"
+	if text == "" {
+		panic(name + ": empty text")
+	}
+
+	base := statusbar.NewBaseComponentConfig(name, 0, 0)
+	return &Text{text, *base}
+}
+
+func (t *Text) Start(update func(string), _ <-chan struct{}) {
+	update(t.text)
 }

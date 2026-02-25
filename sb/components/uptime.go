@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -13,20 +14,26 @@ import (
 	"roe/sb/util"
 )
 
-const uptimeName = "uptime"
+type Uptime struct {
+	statusbar.BaseComponentConfig
+	raw bool
+}
 
-func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := uptimeName
+func NewUptime(raw bool, interval time.Duration, signal syscall.Signal) *Uptime {
+	base := statusbar.NewBaseComponentConfig("uptime", interval, signal)
+	base.MustBeNonZero()
+	return &Uptime{*base, raw}
+}
 
+func (u *Uptime) Start(update func(string), trigger <-chan struct{}) {
 	var formatUptime func(string) string
-	raw, ok := cfg.Arg.(bool)
-	if ok && raw {
+	if u.raw {
 		formatUptime = func(uptimeString string) string { return uptimeString }
 	} else {
 		formatUptime = func(uptimeString string) string {
 			fS, err := strconv.ParseFloat(uptimeString, 64)
 			if err != nil {
-				util.Warn("%s: ParseFloat: %v", name, err)
+				util.Warn("%s: ParseFloat: %v", u.Name, err)
 				return ""
 			}
 			s := int64(fS)
@@ -59,7 +66,7 @@ func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-c
 
 	f, err := os.Open(constants.ProcUptimePath)
 	if err != nil {
-		util.Warn("%s: %v", name, err)
+		util.Warn("%s: %v", u.Name, err)
 		update("")
 		return
 	}
@@ -68,21 +75,21 @@ func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-c
 
 	send := func() {
 		if _, err := f.Seek(0, 0); err != nil {
-			util.Warn("%s: seek %s: %v", name, constants.ProcUptimePath, err)
+			util.Warn("%s: seek %s: %v", u.Name, constants.ProcUptimePath, err)
 			update("")
 			return
 		}
 
 		n, err := f.Read(buf)
 		if err != nil && err != io.EOF {
-			util.Warn("%s: read %s: %v", name, constants.ProcUptimePath, err)
+			util.Warn("%s: read %s: %v", u.Name, constants.ProcUptimePath, err)
 			update("")
 			return
 		}
 
 		index := bytes.IndexByte(buf[:n], ' ')
 		if index == -1 {
-			util.Warn("%s: unexpected %s format", name, constants.ProcUptimePath)
+			util.Warn("%s: unexpected %s format", u.Name, constants.ProcUptimePath)
 			update("")
 			return
 		}
@@ -91,18 +98,5 @@ func startUptime(cfg statusbar.ComponentConfig, update func(string), trigger <-c
 	}
 
 	send()
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(uptimeName, startUptime)
+	u.BaseComponentConfig.Loop(send, trigger)
 }

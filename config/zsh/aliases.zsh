@@ -10,8 +10,8 @@ alias cp="cp -iv"
 alias mkdir="mkdir -vp"
 alias less="less -igmj .5"
 alias copy="xclip -se c"
-alias ru="setxkbmap 'ru'"
-alias у="setxkbmap 'us'"
+alias ru="setxkbmap ru"
+alias у="setxkbmap us" # U+0443 CYRILLIC SMALL LETTER U
 alias yay="PKGEXT=.pkg.tar yay" # skip compression
 alias whois="whois -H"
 alias history="history 1"

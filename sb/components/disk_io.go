@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -13,64 +14,78 @@ import (
 	"roe/sb/util"
 )
 
-const diskIOName = "disk_io"
+type DiskIO struct {
+	blockDeviceName string
+	statusbar.BaseComponentConfig
+}
 
-func startDiskIO(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := diskIOName
-
-	blockDeviceName, ok := cfg.Arg.(string)
-	if !ok || blockDeviceName == "" {
-		util.Warn("%s: Arg not a string or empty", name)
-		update("")
-		return
+func NewDiskIO(blockDeviceName string, interval time.Duration, signal syscall.Signal) *DiskIO {
+	const name = "disk_io"
+	if blockDeviceName == "" {
+		panic(name + ": empty block device name")
+	}
+	ms := interval.Milliseconds()
+	if ms < 1 {
+		panic(name + ": interval < 1ms")
 	}
 
-	statPath := filepath.Join(constants.SysBlockPath, blockDeviceName, "stat")
+	orig := interval
+	interval = time.Duration(ms) * time.Millisecond
+
+	if orig > interval {
+		util.Warn("%s: interval adjusted: %v -> %v", name, orig, interval)
+	}
+
+	base := statusbar.NewBaseComponentConfig(name, interval, signal)
+	return &DiskIO{blockDeviceName, *base}
+}
+
+func (d *DiskIO) Start(update func(string), trigger <-chan struct{}) {
+	statPath := filepath.Join(constants.SysBlockPath, d.blockDeviceName, "stat")
 	file, err := os.Open(statPath)
 	if err != nil {
-		util.Warn("%s: open %s: %v", name, statPath, err)
+		util.Warn("%s: open %s: %v", d.Name, statPath, err)
 		update("")
 		return
 	}
 
 	var (
 		prevWait uint64
-		ms       = max(1, uint64(cfg.Interval.Milliseconds()))
-		fMs      = float64(ms)
+		fMs      = float64(d.Interval.Milliseconds())
 		buf      = make([]byte, constants.DiskIOReadBufSize)
 	)
 
 	send := func() {
 		if _, err := file.Seek(0, 0); err != nil {
-			util.Warn("%s: seek: %v", name, err)
+			util.Warn("%s: seek: %v", d.Name, err)
 			update("")
 			return
 		}
 
 		n, err := file.Read(buf)
 		if err != nil && err != io.EOF {
-			util.Warn("%s: read: %v", name, err)
+			util.Warn("%s: read: %v", d.Name, err)
 			update("")
 			return
 		}
 		b := buf[:n]
 
 		if len(b) == 0 {
-			util.Warn("%s: empty read", name)
+			util.Warn("%s: empty read", d.Name)
 			update("")
 			return
 		}
 
 		fields := bytes.Fields(b)
 		if len(fields) < 10 {
-			util.Warn("%s: no io_ticks field", name)
+			util.Warn("%s: no io_ticks field", d.Name)
 			update("")
 			return
 		}
 
 		wait, err := util.ParseU64(fields[9])
 		if err != nil {
-			util.Warn("%s: parse uint: %v", name, err)
+			util.Warn("%s: parse uint: %v", d.Name, err)
 			update("")
 			return
 		}
@@ -85,18 +100,5 @@ func startDiskIO(cfg statusbar.ComponentConfig, update func(string), trigger <-c
 	}
 
 	send()
-
-	ticker := time.NewTicker(time.Duration(ms) * time.Millisecond)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(diskIOName, startDiskIO)
+	d.BaseComponentConfig.Loop(send, trigger)
 }

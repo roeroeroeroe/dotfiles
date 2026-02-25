@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"syscall"
 	"time"
 
 	"roe/sb/constants"
@@ -14,15 +15,68 @@ import (
 	"roe/sb/util"
 )
 
-const tcpName = "tcp"
+type TCP struct {
+	statusbar.BaseComponentConfig
+}
 
-func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, uint) {
+func NewTCP(interval time.Duration, signal syscall.Signal) *TCP {
+	base := statusbar.NewBaseComponentConfig("tcp", interval, signal)
+	base.MustBeNonZero()
+	return &TCP{*base}
+}
+
+func (tcp *TCP) Start(update func(string), trigger <-chan struct{}) {
+	var (
+		files = make([]*os.File, 2)
+		err   error
+	)
+	files[0], err = os.Open(constants.ProcTCPPath)
+	if err != nil {
+		util.Warn("%s: %v", tcp.Name, err)
+		update("")
+		return
+	}
+
+	files[1], err = os.Open(constants.ProcTCP6Path)
+	if err != nil {
+		files[0].Close()
+		util.Warn("%s: %v", tcp.Name, err)
+		update("")
+		return
+	}
+
+	var (
+		bufs = [][]byte{
+			make([]byte, 0, constants.TCPReadBufSize),
+			make([]byte, 0, constants.TCPReadBufSize),
+		}
+		chunks = [][]byte{
+			make([]byte, constants.TCPReadChunkSize),
+			make([]byte, constants.TCPReadChunkSize),
+		}
+		decodeBuf = make([]byte, constants.TCPIPDecodeBufSize)
+	)
+
+	send := func() {
+		remote, local, err := parseTCP(files, bufs, chunks, decodeBuf)
+		if err != nil {
+			util.Warn("%s: %v", tcp.Name, err)
+			update("")
+		} else {
+			update(fmt.Sprintf("r:%d l:%d", remote, local))
+		}
+	}
+
+	send()
+	tcp.BaseComponentConfig.Loop(send, trigger)
+}
+
+func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, uint, error) {
 	var remote, local uint
 
 	for i, f := range files {
 		if _, err := f.Seek(0, 0); err != nil {
-			util.Warn("%s: seek: %v", tcpName, err)
-			continue
+			return 0, 0, err
 		}
 
 		var (
@@ -36,7 +90,7 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 			}
 			if err != nil {
 				if err != io.EOF {
-					util.Warn("%s: read: %v", tcpName, err)
+					return 0, 0, err
 				}
 				break
 			}
@@ -114,55 +168,5 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 		}
 	}
 
-	return remote, local
-}
-
-func startTCP(cfg statusbar.ComponentConfig, update func(string), trigger <-chan struct{}) {
-	name := tcpName
-
-	var (
-		files = make([]*os.File, 2)
-		err   error
-	)
-	files[0], err = os.Open(constants.ProcTCPPath)
-	if err != nil {
-		util.Warn("%s: %v", name, err)
-		update("")
-		return
-	}
-
-	files[1], err = os.Open(constants.ProcTCP6Path)
-	if err != nil {
-		files[0].Close()
-		util.Warn("%s: %v", name, err)
-		update("")
-		return
-	}
-
-	var (
-		bufs      = [][]byte{make([]byte, 0, constants.TCPReadBufSize), make([]byte, 0, constants.TCPReadBufSize)}
-		chunks    = [][]byte{make([]byte, constants.TCPReadChunkSize), make([]byte, constants.TCPReadChunkSize)}
-		decodeBuf = make([]byte, constants.TCPIPDecodeBufSize)
-	)
-
-	send := func() {
-		remote, local := parseTCP(files, bufs, chunks, decodeBuf)
-		update(fmt.Sprintf("r:%d l:%d", remote, local))
-	}
-
-	send()
-
-	ticker := time.NewTicker(cfg.Interval)
-	for {
-		select {
-		case <-ticker.C:
-			send()
-		case <-trigger:
-			send()
-		}
-	}
-}
-
-func init() {
-	statusbar.Register(tcpName, startTCP)
+	return remote, local, nil
 }

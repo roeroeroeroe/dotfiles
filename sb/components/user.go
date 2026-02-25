@@ -7,19 +7,20 @@ import (
 	"roe/sb/util"
 )
 
-const userName = "user"
-
-func startUser(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct{}) {
-	name := userName
-
-	if u, err := user.Current(); err != nil {
-		util.Warn("%s: %v", name, err)
-		update("")
-	} else {
-		update(u.Username)
-	}
+type User struct {
+	statusbar.BaseComponentConfig
 }
 
-func init() {
-	statusbar.Register(userName, startUser)
+func NewUser() *User {
+	base := statusbar.NewBaseComponentConfig("user", 0, 0)
+	return &User{*base}
+}
+
+func (u *User) Start(update func(string), _ <-chan struct{}) {
+	if user, err := user.Current(); err != nil {
+		util.Warn("%s: %v", u.Name, err)
+		update("")
+	} else {
+		update(user.Username)
+	}
 }

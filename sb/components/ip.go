@@ -12,20 +12,25 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-const ipName = "ip"
+type IP struct {
+	ifaceName string
+	statusbar.BaseComponentConfig
+}
 
-func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct{}) {
-	name := ipName
-
-	ifaceName, ok := cfg.Arg.(string)
-	if !ok || ifaceName == "" {
-		util.Warn("%s: Arg not a string or empty", name)
-		update("")
-		return
+func NewIP(ifaceName string) *IP {
+	const name = "ip"
+	if ifaceName == "" {
+		panic(name + ": empty interface name")
 	}
-	iface, err := net.InterfaceByName(ifaceName)
+
+	base := statusbar.NewBaseComponentConfig(name, 0, 0)
+	return &IP{ifaceName, *base}
+}
+
+func (ip *IP) Start(update func(string), _ <-chan struct{}) {
+	iface, err := net.InterfaceByName(ip.ifaceName)
 	if err != nil {
-		util.Warn("%s: interface %s: %v", name, ifaceName, err)
+		util.Warn("%s: interface %s: %v", ip.Name, ip.ifaceName, err)
 		update("")
 		return
 	}
@@ -57,7 +62,7 @@ func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct
 
 	fd, err := unix.Socket(unix.AF_NETLINK, unix.SOCK_RAW, unix.NETLINK_ROUTE)
 	if err != nil {
-		util.Warn("%s: socket: %v", name, err)
+		util.Warn("%s: socket: %v", ip.Name, err)
 		return
 	}
 
@@ -66,7 +71,7 @@ func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct
 		Groups: unix.RTMGRP_IPV4_IFADDR | unix.RTMGRP_IPV6_IFADDR,
 	}); err != nil {
 		unix.Close(fd)
-		util.Warn("%s: bind: %v", name, err)
+		util.Warn("%s: bind: %v", ip.Name, err)
 		return
 	}
 
@@ -75,13 +80,13 @@ func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct
 	for {
 		n, _, err := unix.Recvfrom(fd, buf, 0)
 		if err != nil {
-			util.Warn("%s: recvfrom: %v", name, err)
+			util.Warn("%s: recvfrom: %v", ip.Name, err)
 			continue
 		}
 
 		msgs, err := syscall.ParseNetlinkMessage(buf[:n])
 		if err != nil {
-			util.Warn("%s: ParseNetlinkMessage: %v", name, err)
+			util.Warn("%s: ParseNetlinkMessage: %v", ip.Name, err)
 			continue
 		}
 
@@ -94,8 +99,4 @@ func startIP(cfg statusbar.ComponentConfig, update func(string), _ <-chan struct
 			}
 		}
 	}
-}
-
-func init() {
-	statusbar.Register(ipName, startIP)
 }

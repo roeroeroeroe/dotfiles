@@ -9,9 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	_ "roe/sb/components"
 	"roe/sb/config"
-	"roe/sb/statusbar"
 	"roe/sb/util"
 
 	"github.com/jezek/xgb"
@@ -19,24 +17,18 @@ import (
 )
 
 func main() {
+	if len(config.Components) == 0 {
+		util.Warn("0 components")
+		os.Exit(2)
+	}
+
 	var (
 		bufPool       = sync.Pool{New: func() any { return new(bytes.Buffer) }}
 		sigToTriggers = map[syscall.Signal][]chan struct{}{}
 		redrawCh      = make(chan struct{}, 1)
 	)
 
-	activeCount := 0
-	for _, e := range config.Components {
-		if _, ok := statusbar.Registry[e.Name]; ok {
-			activeCount++
-		} else {
-			util.Warn("unknown component %s, skipping", e.Name)
-		}
-	}
-	if activeCount == 0 {
-		util.Fatalf("no active components")
-	}
-	state := make([]atomic.Value, activeCount)
+	state := make([]atomic.Value, len(config.Components))
 
 	var (
 		sFlag bool
@@ -53,7 +45,7 @@ func main() {
 			buf := bufPool.Get().(*bytes.Buffer)
 			buf.Reset()
 
-			for i := range activeCount {
+			for i := range len(config.Components) {
 				buf.WriteString(state[i].Load().(string))
 			}
 			buf.WriteByte('\n')
@@ -66,7 +58,8 @@ func main() {
 	} else {
 		conn, err := xgb.NewConn()
 		if err != nil {
-			util.Fatalf("x conn: %v", err)
+			util.Warn("x conn: %v", err)
+			os.Exit(1)
 		}
 		root := xproto.Setup(conn).DefaultScreen(conn).Root
 
@@ -74,7 +67,7 @@ func main() {
 			buf := bufPool.Get().(*bytes.Buffer)
 			buf.Reset()
 
-			for i := range activeCount {
+			for i := range len(config.Components) {
 				buf.WriteString(state[i].Load().(string))
 			}
 
@@ -97,18 +90,11 @@ func main() {
 
 	noopTrigger := make(chan struct{}, 1)
 
-	slotIndex := 0
-	for _, e := range config.Components {
-		component, ok := statusbar.Registry[e.Name]
-		if !ok {
-			continue
-		}
-
-		index := slotIndex
-		state[index].Store(config.Placeholder)
+	for i, c := range config.Components {
+		state[i].Store(config.Placeholder)
 
 		var trigger chan struct{}
-		if s := e.Config.Signal; s != 0 {
+		if s := c.Signal(); s != 0 {
 			trigger = make(chan struct{}, 1)
 			sig := syscall.Signal(s)
 			sigToTriggers[sig] = append(sigToTriggers[sig], trigger)
@@ -120,8 +106,8 @@ func main() {
 			if str == "" {
 				str = config.Placeholder
 			}
-			if state[index].Load().(string) != str {
-				state[index].Store(str)
+			if state[i].Load().(string) != str {
+				state[i].Store(str)
 				select {
 				case redrawCh <- struct{}{}:
 				default:
@@ -129,8 +115,7 @@ func main() {
 			}
 		}
 
-		go component(e.Config, update, trigger)
-		slotIndex++
+		go c.Start(update, trigger)
 	}
 
 	redrawTimer := time.NewTimer(config.RedrawDelay)
