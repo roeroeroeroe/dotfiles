@@ -4,7 +4,11 @@ yay -S --needed - < aurpkglist
 ./buildcmus
 ```
 ```bash
-sed -i "s/enp3s0/<INTERFACE>/" sb/config/config.go
+iface="<INTERFACE>"
+block_dev="<BLOCK_DEVICE>"
+sed -i -e "s/\"enp3s0\"/\"$iface\"/" -e "s/\"sda\"/\"$block_dev\"/" \
+    sb/config/config.go
+cd sb && make && mv -vf sb ~/.local/bin/sb
 ```
 ## zsh
 ```bash
