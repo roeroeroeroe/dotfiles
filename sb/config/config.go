@@ -50,7 +50,7 @@ var Components = []statusbar.Component{
 	// c.NewText("cpu:"),
 	// c.NewCPU(false, 2*time.Second, 0),
 	// c.NewText(", mem:"),
-	// c.NewMem(c.MemUsedPerc, 2*time.Second, 0),
+	// c.NewMem(c.MetricUsedPerc, 2*time.Second, 0),
 	// c.NewText("   "),
 	// c.NewTime("15:04:05", time.Second, 0),
 }
