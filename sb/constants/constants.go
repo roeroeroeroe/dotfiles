@@ -33,9 +33,6 @@ const (
 
 	DefaultTimeLayout = "Mon 01/02 15:04:05"
 
-	ProcUptimePath    = "/proc/uptime"
-	UptimeReadBufSize = 128
-
 	VolumePulseClientName   = "sb_volume"
 	VolumeInitialRetryDelay = 1 * time.Second
 	VolumeMaxRetryDelay     = 30 * time.Second
