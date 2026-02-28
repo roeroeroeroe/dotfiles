@@ -1,5 +1,7 @@
 package constants
 
+import "time"
+
 const KiB = 1 << 10
 
 const (
@@ -33,4 +35,8 @@ const (
 
 	ProcUptimePath    = "/proc/uptime"
 	UptimeReadBufSize = 128
+
+	VolumePulseClientName   = "sb_volume"
+	VolumeInitialRetryDelay = 1 * time.Second
+	VolumeMaxRetryDelay     = 30 * time.Second
 )

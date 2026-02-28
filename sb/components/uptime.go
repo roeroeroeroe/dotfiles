@@ -1,17 +1,15 @@
 package components
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"os"
 	"strconv"
 	"syscall"
 	"time"
 
-	"roe/sb/constants"
 	"roe/sb/statusbar"
 	"roe/sb/util"
+
+	"golang.org/x/sys/unix"
 )
 
 type Uptime struct {
@@ -25,17 +23,14 @@ func NewUptime(raw bool, interval time.Duration, signal syscall.Signal) *Uptime 
 }
 
 func (u *Uptime) Start(update func(string), trigger <-chan struct{}) {
-	var formatUptime func(string) string
+	var formatUptime func(float64) string
 	if u.raw {
-		formatUptime = func(uptimeString string) string { return uptimeString }
+		formatUptime = func(upSec float64) string {
+			return strconv.FormatFloat(upSec, 'f', 0, 64)
+		}
 	} else {
-		formatUptime = func(uptimeString string) string {
-			fS, err := strconv.ParseFloat(uptimeString, 64)
-			if err != nil {
-				util.Warn("%s: ParseFloat: %v", u.Name, err)
-				return ""
-			}
-			s := int64(fS)
+		formatUptime = func(upSec float64) string {
+			s := int64(upSec)
 			const (
 				minute = 60
 				hour   = 60 * minute
@@ -63,37 +58,14 @@ func (u *Uptime) Start(update func(string), trigger <-chan struct{}) {
 		}
 	}
 
-	f, err := os.Open(constants.ProcUptimePath)
-	if err != nil {
-		util.Warn("%s: %v", u.Name, err)
-		update("")
-		return
-	}
-
-	buf := make([]byte, constants.UptimeReadBufSize)
-
+	var info unix.Sysinfo_t
 	send := func() {
-		if _, err := f.Seek(0, 0); err != nil {
-			util.Warn("%s: seek %s: %v", u.Name, constants.ProcUptimePath, err)
+		if err := unix.Sysinfo(&info); err != nil {
+			util.Warn("%s: sysinfo: %v", u.Name, err)
 			update("")
-			return
+		} else {
+			update(formatUptime(float64(info.Uptime)))
 		}
-
-		n, err := f.Read(buf)
-		if err != nil && err != io.EOF {
-			util.Warn("%s: read %s: %v", u.Name, constants.ProcUptimePath, err)
-			update("")
-			return
-		}
-
-		index := bytes.IndexByte(buf[:n], ' ')
-		if index == -1 {
-			util.Warn("%s: unexpected %s format", u.Name, constants.ProcUptimePath)
-			update("")
-			return
-		}
-
-		update(formatUptime(string(buf[:index])))
 	}
 
 	send()

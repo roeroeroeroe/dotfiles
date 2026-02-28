@@ -17,9 +17,7 @@ func Warn(format string, a ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", a...)
 }
 
-var iecPrefixes = [...]string{
-	"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB",
-}
+var iecPrefixes = [...]string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
 
 func HumanBytes(b uint64) string {
 	const base = 1024

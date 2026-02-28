@@ -1,13 +1,13 @@
 package components
 
 import (
-	"os"
 	"syscall"
 	"time"
 
-	"roe/sb/constants"
 	"roe/sb/statusbar"
 	"roe/sb/util"
+
+	"golang.org/x/sys/unix"
 )
 
 type Swap struct {
@@ -24,39 +24,29 @@ func NewSwap(metric UsageMetric, interval time.Duration, signal syscall.Signal) 
 }
 
 func (s *Swap) Start(update func(string), trigger <-chan struct{}) {
-	f, err := os.Open(constants.ProcMeminfoPath)
-	if err != nil {
-		util.Warn("%s: %v", s.Name, err)
+	var info unix.Sysinfo_t
+	if err := unix.Sysinfo(&info); err != nil {
+		util.Warn("%s: sysinfo: %v", s.Name, err)
 		update("")
 		return
 	}
-
-	buf := make([]byte, constants.MemInfoReadBufSize)
-
-	var total, free uint64
-	fields := []util.MeminfoField{
-		{Ptr: &total, Key: []byte("SwapTotal:")},
-		{Ptr: &free, Key: []byte("SwapFree:")},
-	}
-
-	if err := util.ParseMeminfo(f, buf, fields); err != nil {
-		util.Warn("%s: initial read: %v", s.Name, err)
-		update("")
-		return
-	}
-	if total == 0 {
+	if info.Totalswap == 0 {
 		util.Warn("%s: no swap", s.Name)
 		update("")
 		return
 	}
 
 	send := func() {
-		if err := util.ParseMeminfo(f, buf, fields); err != nil {
-			util.Warn("%s: %v", s.Name, err)
+		err := unix.Sysinfo(&info)
+		if err != nil {
+			util.Warn("%s: sysinfo: %v", s.Name, err)
 			update("")
 		} else {
-			used := (total - free) * constants.KiB
-			update(s.metric.Format(used, total*constants.KiB))
+			var (
+				unit = uint64(info.Unit)
+				used = (info.Totalswap - info.Freeswap) * unit
+			)
+			update(s.metric.Format(used, info.Totalswap*unit))
 		}
 	}
 

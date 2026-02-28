@@ -2,6 +2,8 @@ Simple X11 status bar inspired by slstatus.
 Linux only.
 
 Edit `config/config.go`, then run `make` to build.
+Available TAGS:
+  with_pulse   Links with libpulse, required for the volume component.
 
 You can use real-time signals to force a redraw of specific component(s). For example:
 `kill -35 $(pidof sb)`

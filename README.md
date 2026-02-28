@@ -8,7 +8,7 @@ iface="<INTERFACE>"
 block_dev="<BLOCK_DEVICE>"
 sed -i -e "s/\"enp3s0\"/\"$iface\"/" -e "s/\"sda\"/\"$block_dev\"/" \
     sb/config/config.go
-cd sb && make && mv -vf sb ~/.local/bin/sb
+cd sb && make TAGS=with_pulse && mv -vf sb ~/.local/bin/sb
 ```
 ## zsh
 ```bash

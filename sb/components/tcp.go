@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -15,13 +16,29 @@ import (
 	"roe/sb/util"
 )
 
+type TCPConnCountMode uint8
+
+const (
+	TCPModeTotal TCPConnCountMode = iota
+	TCPModeRemote
+	TCPModeLocal
+	TCPModeRemoteAndLocal
+)
+
 type TCP struct {
 	statusbar.BaseComponentConfig
+	connCountMode TCPConnCountMode
 }
 
-func NewTCP(interval time.Duration, signal syscall.Signal) *TCP {
-	base := statusbar.NewBaseComponentConfigNonZero("tcp", interval, signal)
-	return &TCP{*base}
+func NewTCP(connCountMode TCPConnCountMode, interval time.Duration, signal syscall.Signal) *TCP {
+	const name = "tcp"
+	switch connCountMode {
+	case TCPModeTotal, TCPModeRemote, TCPModeLocal, TCPModeRemoteAndLocal:
+	default:
+		panic(name + ": unknown connection count mode")
+	}
+	base := statusbar.NewBaseComponentConfigNonZero(name, interval, signal)
+	return &TCP{*base, connCountMode}
 }
 
 func (tcp *TCP) Start(update func(string), trigger <-chan struct{}) {
@@ -61,7 +78,16 @@ func (tcp *TCP) Start(update func(string), trigger <-chan struct{}) {
 		if err != nil {
 			util.Warn("%s: %v", tcp.Name, err)
 			update("")
-		} else {
+			return
+		}
+		switch tcp.connCountMode {
+		case TCPModeTotal:
+			update(strconv.FormatUint(remote+local, 10))
+		case TCPModeRemote:
+			update(strconv.FormatUint(remote, 10))
+		case TCPModeLocal:
+			update(strconv.FormatUint(local, 10))
+		case TCPModeRemoteAndLocal:
 			update(fmt.Sprintf("r:%d l:%d", remote, local))
 		}
 	}
@@ -70,8 +96,8 @@ func (tcp *TCP) Start(update func(string), trigger <-chan struct{}) {
 	tcp.BaseComponentConfig.Loop(send, trigger)
 }
 
-func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, uint, error) {
-	var remote, local uint
+func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint64, uint64, error) {
+	var remote, local uint64
 
 	for i, f := range files {
 		if _, err := f.Seek(0, 0); err != nil {
@@ -129,6 +155,7 @@ func parseTCP(files []*os.File, bufs, chunks [][]byte, decodeBuf []byte) (uint, 
 
 			fields := bytes.Fields(line)
 			if len(fields) < 4 ||
+				// TCP_ESTABLISHED
 				len(fields[3]) != 2 || fields[3][0] != '0' || fields[3][1] != '1' {
 				continue
 			}
