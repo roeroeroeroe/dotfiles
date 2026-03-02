@@ -9,6 +9,13 @@
 
 #include "volume_pulse.h"
 
+#define PA_UNREF(op_expr)\
+	do {\
+		pa_operation *op = (op_expr);\
+		if (op)\
+			pa_operation_unref(op);\
+	} while (0)
+
 typedef struct volume_pulse {
 	pa_mainloop *mainloop;
 	pa_context *context;
@@ -34,11 +41,8 @@ context_state_cb(pa_context *c, void *userdata)
 
 	switch (pa_context_get_state(c)) {
 	case PA_CONTEXT_READY:
-		pa_operation *op;
-		if ((op = pa_context_subscribe(c, m, NULL, NULL)))
-			pa_operation_unref(op);
-		if ((op = pa_context_get_server_info(v->context, server_info_cb, v)))
-			pa_operation_unref(op);
+		PA_UNREF(pa_context_subscribe(c, m, NULL, NULL));
+		PA_UNREF(pa_context_get_server_info(v->context, server_info_cb, v));
 		break;
 	case PA_CONTEXT_FAILED:
 		/* FALLTHROUGH */
@@ -69,10 +73,8 @@ server_info_cb(pa_context *c, const pa_server_info *i, void *userdata)
 	if (!v->default_sink)
 		return;
 
-	pa_operation *op = pa_context_get_sink_info_by_name(c, v->default_sink,
-	                                                    sink_info_cb, v);
-	if (op)
-		pa_operation_unref(op);
+	PA_UNREF(pa_context_get_sink_info_by_name(c, v->default_sink,
+	                                          sink_info_cb, v));
 }
 
 static void
@@ -129,22 +131,16 @@ subscribe_cb(pa_context *c, pa_subscription_event_type_t t, uint32_t index,
 
 	pa_subscription_event_type_t facility = t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK;
 	if (facility == PA_SUBSCRIPTION_EVENT_SERVER) {
-		if (pa_context_get_state(v->context) == PA_CONTEXT_READY) {
-			pa_operation *op = pa_context_get_server_info(v->context,
-			                                              server_info_cb, v);
-			if (op)
-				pa_operation_unref(op);
-		}
+		if (pa_context_get_state(v->context) == PA_CONTEXT_READY)
+			PA_UNREF(pa_context_get_server_info(v->context,
+			                                    server_info_cb, v));
 		return;
 	}
 
 	if (facility == PA_SUBSCRIPTION_EVENT_SINK &&
-	    v->sink_index != 0 && v->sink_index == index) {
-		pa_operation *op = pa_context_get_sink_info_by_index(c, index,
-		                                                     sink_info_cb, v);
-		if (op)
-			pa_operation_unref(op);
-	}
+	    v->sink_index != 0 && v->sink_index == index)
+		PA_UNREF(pa_context_get_sink_info_by_index(c, index,
+		                                           sink_info_cb, v));
 }
 
 volume_pulse_t *

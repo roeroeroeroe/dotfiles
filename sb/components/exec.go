@@ -32,7 +32,7 @@ func NewExec(argv []string, timeout, interval time.Duration, signal syscall.Sign
 			panic(name + ": interval==0 && timeout==0")
 		}
 		timeout = interval * 3 / 4
-		util.Warn("%s: empty timeout, using %v (interval=%v, %v*0.75=%v)",
+		util.Warn("%s: timeout is 0, using %v (interval=%v, %v*0.75=%v)",
 			name, timeout, interval, interval, timeout)
 	} else if interval != 0 && timeout >= interval {
 		panic(name + ": timeout >= interval")

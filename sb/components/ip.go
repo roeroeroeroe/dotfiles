@@ -2,101 +2,139 @@ package components
 
 import (
 	"net"
-	"syscall"
-	"unsafe"
 
-	"roe/sb/constants"
+	"roe/sb/netmon"
 	"roe/sb/statusbar"
 	"roe/sb/util"
+)
 
-	"golang.org/x/sys/unix"
+type IPPreference uint8
+
+const (
+	IPPrefer4 IPPreference = iota
+	IPPrefer6
+	IPAny
 )
 
 type IP struct {
 	ifaceName string
 	statusbar.BaseComponentConfig
+	ifaceIndex int
+	preference IPPreference
 }
 
-func NewIP(ifaceName string) *IP {
+func NewIP(ifaceName string, preference IPPreference) *IP {
 	const name = "ip"
 	if ifaceName == "" {
 		panic(name + ": empty interface name")
 	}
 
 	base := statusbar.NewBaseComponentConfig(name, 0, 0)
-	return &IP{ifaceName, *base}
+	return &IP{
+		ifaceName:           ifaceName,
+		BaseComponentConfig: *base,
+		preference:          preference,
+	}
 }
 
 func (ip *IP) Start(update func(string), _ <-chan struct{}) {
-	iface, err := net.InterfaceByName(ip.ifaceName)
-	if err != nil {
-		util.Warn("%s: interface %s: %v", ip.Name, ip.ifaceName, err)
-		update("")
-		return
-	}
-
 	send := func() {
-		addrs, err := iface.Addrs()
-		if err != nil || len(addrs) == 0 {
+		iface, err := net.InterfaceByName(ip.ifaceName)
+		if err != nil {
+			util.Warn("%s: %v", ip.Name, err)
+			ip.ifaceIndex = 0
 			update("")
 			return
 		}
-		var ip string
+		ip.ifaceIndex = iface.Index
+
+		addrs, err := iface.Addrs()
+		if err != nil {
+			util.Warn("%s: %v", ip.Name, err)
+			update("")
+			return
+		}
+		if len(addrs) == 0 {
+			update("")
+			return
+		}
+
+		var v4, v6 net.IP
 		for _, a := range addrs {
 			ipnet, ok := a.(*net.IPNet)
 			if !ok {
 				continue
 			}
-			if ipnet.IP.To4() != nil {
-				ip = ipnet.IP.String()
-				break
+			addr := ipnet.IP
+			if addr.IsLoopback() {
+				continue
 			}
-			if ip == "" && ipnet.IP.To16() != nil && !ipnet.IP.IsLinkLocalUnicast() {
-				ip = ipnet.IP.String()
+
+			if addr4 := addr.To4(); addr4 != nil {
+				if ip.preference == IPPrefer4 || ip.preference == IPAny {
+					update(addr.String())
+					return
+				}
+				if v4 == nil {
+					v4 = addr
+				}
+				continue
+			}
+
+			if addr.IsLinkLocalUnicast() {
+				continue
+			}
+
+			if ip.preference == IPPrefer6 || ip.preference == IPAny {
+				update(addr.String())
+				return
+			}
+			if v6 == nil {
+				v6 = addr
 			}
 		}
-		update(ip)
+
+		var chosen net.IP
+		switch ip.preference {
+		case IPPrefer4:
+			if v4 != nil {
+				chosen = v4
+			} else {
+				chosen = v6
+			}
+		case IPPrefer6:
+			if v6 != nil {
+				chosen = v6
+			} else {
+				chosen = v4
+			}
+		case IPAny:
+			update("")
+			return
+		}
+
+		if chosen != nil {
+			update(chosen.String())
+		} else {
+			update("")
+		}
 	}
 
 	send()
 
-	fd, err := unix.Socket(unix.AF_NETLINK, unix.SOCK_RAW, unix.NETLINK_ROUTE)
-	if err != nil {
-		util.Warn("%s: socket: %v", ip.Name, err)
-		return
-	}
-
-	if err := unix.Bind(fd, &unix.SockaddrNetlink{
-		Family: unix.AF_NETLINK,
-		Groups: unix.RTMGRP_IPV4_IFADDR | unix.RTMGRP_IPV6_IFADDR,
-	}); err != nil {
-		unix.Close(fd)
-		util.Warn("%s: bind: %v", ip.Name, err)
-		return
-	}
-
-	buf := make([]byte, constants.NetLinkReadBufSize)
-
-	for {
-		n, _, err := unix.Recvfrom(fd, buf, 0)
-		if err != nil {
-			util.Warn("%s: recvfrom: %v", ip.Name, err)
-			continue
-		}
-
-		msgs, err := syscall.ParseNetlinkMessage(buf[:n])
-		if err != nil {
-			util.Warn("%s: ParseNetlinkMessage: %v", ip.Name, err)
-			continue
-		}
-
-		for _, m := range msgs {
-			if (m.Header.Type == unix.RTM_NEWADDR || m.Header.Type == unix.RTM_DELADDR) &&
-				len(m.Data) >= unix.SizeofIfAddrmsg &&
-				int((*(*unix.IfAddrmsg)(unsafe.Pointer(&m.Data[0]))).Index) == iface.Index {
+	netmon.Get().AddHandler(func(ev netmon.Event) {
+		switch ev.Type {
+		case netmon.AddrEvent:
+			if ip.ifaceIndex != 0 && ev.Index == ip.ifaceIndex {
 				send()
-				break
+			}
+		case netmon.LinkEvent:
+			if (ip.ifaceIndex != 0 && ev.Index == ip.ifaceIndex) ||
+				ev.Name == ip.ifaceName {
+				send()
 			}
 		}
-	}
+	})
+
+	select {}
 }

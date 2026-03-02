@@ -25,29 +25,23 @@ func NewSwap(metric UsageMetric, interval time.Duration, signal syscall.Signal) 
 
 func (s *Swap) Start(update func(string), trigger <-chan struct{}) {
 	var info unix.Sysinfo_t
-	if err := unix.Sysinfo(&info); err != nil {
-		util.Warn("%s: sysinfo: %v", s.Name, err)
-		update("")
-		return
-	}
-	if info.Totalswap == 0 {
-		util.Warn("%s: no swap", s.Name)
-		update("")
-		return
-	}
-
 	send := func() {
 		err := unix.Sysinfo(&info)
 		if err != nil {
 			util.Warn("%s: sysinfo: %v", s.Name, err)
 			update("")
-		} else {
-			var (
-				unit = uint64(info.Unit)
-				used = (info.Totalswap - info.Freeswap) * unit
-			)
-			update(s.metric.Format(used, info.Totalswap*unit))
+			return
 		}
+		if info.Totalswap == 0 {
+			util.Warn("%s: totalswap is 0", s.Name)
+			update("")
+			return
+		}
+		var (
+			unit = uint64(info.Unit)
+			used = (info.Totalswap - info.Freeswap) * unit
+		)
+		update(s.metric.Format(used, info.Totalswap*unit))
 	}
 
 	send()
