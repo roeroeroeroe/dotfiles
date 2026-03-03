@@ -63,6 +63,7 @@ whois
 wireshark-qt
 xclip
 xdg-user-dirs
+xdotool
 xorg-server
 xorg-setxkbmap
 xorg-xev
