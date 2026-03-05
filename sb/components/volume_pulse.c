@@ -36,14 +36,15 @@ static void
 context_state_cb(pa_context *c, void *userdata)
 {
 	volume_pulse_t *v = userdata;
-	static pa_subscription_mask_t m = PA_SUBSCRIPTION_MASK_SERVER |
-	                                  PA_SUBSCRIPTION_MASK_SINK;
 
 	switch (pa_context_get_state(c)) {
-	case PA_CONTEXT_READY:
+	case PA_CONTEXT_READY: {
+		pa_subscription_mask_t m = PA_SUBSCRIPTION_MASK_SERVER |
+		                           PA_SUBSCRIPTION_MASK_SINK;
 		PA_UNREF(pa_context_subscribe(c, m, NULL, NULL));
 		PA_UNREF(pa_context_get_server_info(v->context, server_info_cb, v));
 		break;
+	}
 	case PA_CONTEXT_FAILED:
 		/* FALLTHROUGH */
 	case PA_CONTEXT_TERMINATED:

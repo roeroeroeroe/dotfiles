@@ -6,33 +6,33 @@ PAUSED_ICON="󰏤"
 
 handle_cmus() {
 	local data="$1"
-	local status="" dur=0 pos=0 title=""
+	local icon="" dur=0 pos=0 title="" rem=4
 	local line
 	while IFS= read -r line; do
 		case "$line" in
 			status\ *)
-				status=${line#status }
-				[ "$status" = "stopped" ] && exit 0
+				case "${line#status }" in
+					playing) icon="$PLAYING_ICON"; ((--rem)) || break ;;
+					paused) icon="$PAUSED_ICON"; ((--rem)) || break ;;
+					stopped) exit 0 ;;
+				esac
 				;;
 			duration\ *)
 				dur=${line#duration }
+				((--rem)) || break
 				;;
 			position\ *)
 				pos=${line#position }
+				((--rem)) || break
 				;;
 			tag\ title\ *)
 				title=${line#tag title }
+				((--rem)) || break
 				;;
 		esac
 	done <<< "$data"
 
-	local icon=""
-	case "$status" in
-		playing) icon="$PLAYING_ICON" ;;
-		paused) icon="$PAUSED_ICON" ;;
-	esac
-
-	[ ${#title} -gt $TITLE_MAX_LEN ] && title="${title:0:TITLE_MAX_LEN}..."
+	[ ${#title} -gt $TITLE_MAX_LEN ] && title="${title::TITLE_MAX_LEN}..."
 
 	printf "%s %02d:%02d/%02d:%02d %s" \
 		"$icon" \

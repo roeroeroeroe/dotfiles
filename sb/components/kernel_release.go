@@ -17,8 +17,8 @@ func NewKernelRelease() *KernelRelease {
 }
 
 func (kr *KernelRelease) Start(update func(string), _ <-chan struct{}) {
-	utsname := &unix.Utsname{}
-	if err := unix.Uname(utsname); err != nil {
+	var utsname unix.Utsname
+	if err := unix.Uname(&utsname); err != nil {
 		util.Warn("%s: uname: %v", kr.Name, err)
 		update("")
 	} else {
