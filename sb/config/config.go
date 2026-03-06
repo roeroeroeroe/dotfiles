@@ -42,7 +42,7 @@ var Components = []statusbar.Component{
 	c.NewText(" cpu:"),
 	c.NewCPU(false, 2*time.Second, 0),
 	c.NewText(" ]   [ "),
-	c.NewTime("Mon 01/02 15:04:05", time.Second, 0),
+	c.NewTime("Mon 01/02 15:04:05 -0700", time.Second, 0),
 	c.NewText(" up:"),
 	c.NewUptime(false, 5*time.Second, 0),
 	c.NewText(" ]"),

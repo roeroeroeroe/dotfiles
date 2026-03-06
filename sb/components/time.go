@@ -4,9 +4,7 @@ import (
 	"syscall"
 	"time"
 
-	"roe/sb/constants"
 	"roe/sb/statusbar"
-	"roe/sb/util"
 )
 
 type Time struct {
@@ -17,8 +15,7 @@ type Time struct {
 func NewTime(layout string, interval time.Duration, signal syscall.Signal) *Time {
 	const name = "time"
 	if layout == "" {
-		util.Warn("%s: empty layout, using %s", name, constants.DefaultTimeLayout)
-		layout = constants.DefaultTimeLayout
+		panic(name + ": empty layout")
 	}
 
 	base := statusbar.NewBaseComponentConfigNonZero(name, interval, signal)

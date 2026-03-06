@@ -16,6 +16,7 @@ compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump"
 
 . "$ZSH_CONF_DIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 . "$ZSH_CONF_DIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+ZSH_HIGHLIGHT_MAXLENGTH=1000
 ZSH_HIGHLIGHT_HIGHLIGHTERS+=(brackets)
 
 unset ZSH_CONF_DIR
