@@ -1,6 +1,9 @@
 Simple X11 status bar inspired by slstatus.
 Linux only.
 
+sb writes the status bar to WM_NAME, which means it only works with window
+managers that display the root window name (such as dwm).
+
 Edit `config/config.go`, then run `make` to build.
 Available TAGS:
   with_pulse   Links against libpulse, required for the volume component.

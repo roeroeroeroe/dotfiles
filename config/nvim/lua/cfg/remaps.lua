@@ -15,3 +15,5 @@ map("n", "N", "Nzz")
 
 map("n", "<Tab>", "<Cmd>bnext<CR>")
 map("n", "<S-Tab>", "<Cmd>bprevious<CR>")
+
+map("t", "<ESC>", "<C-\\><C-n>")

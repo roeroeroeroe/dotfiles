@@ -4,27 +4,28 @@ return {
 	config = function()
 		local ts = require("nvim-treesitter")
 		local parsers = {
-			'bash',
-			'c',
-			'cpp',
-			'css',
-			'go',
-			'html',
-			'javascript',
-			'json',
-			'lua',
-			'markdown',
-			'nginx',
-			'python',
-			'sql',
-			'typescript',
-			'xml',
-			'zsh',
+			"bash",
+			"c",
+			"cpp",
+			"css",
+			"go",
+			"html",
+			"javascript",
+			"json",
+			"lua",
+			"markdown",
+			"nginx",
+			"python",
+			"rust",
+			"sql",
+			"typescript",
+			"xml",
+			"zsh",
 		}
 		ts.install(parsers):wait(300000)
 
 		local patterns = vim.list_extend(vim.deepcopy(parsers), {
-			'sh'
+			"sh",
 		})
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = patterns,
